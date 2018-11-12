@@ -1,0 +1,10 @@
+language: csharp
+mono: none
+solution: EventSourcing.sln
+dotnet: 2.1
+dist: trusty
+sudo: required
+script:
+ - cd ./src
+ - dotnet restore
+ - dotnet build --configuration Release
