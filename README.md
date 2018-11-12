@@ -4,7 +4,7 @@
 
 A .NET Core event sourcing framework.
 
-Easy to integrate in ASP.NET Core project to persist event-sourced domain entities in different storage: Azure blob, AWS cloud object storage.
+Easy to integrate in ASP.NET Core project to persist event-sourced domain entities in different storage: file system, data base (TODO), Azure blob (TODO), AWS cloud object storage (TODO).
 
 ## Usage
 TODO
@@ -214,7 +214,7 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement **Account** as 
         <dd>@Model.Account.Name</dd>
 
         <dt>Balance</dt>
-        <dd>@Model.Account.Balance.ToString("0.00") €</dd>
+        <dd>@Model.Account.Balance.ToString("0.00") â‚¬</dd>
     </dl>
 
     <hr />
