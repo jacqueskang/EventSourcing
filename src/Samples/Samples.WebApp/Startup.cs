@@ -42,7 +42,6 @@ namespace Samples.WebApp
             services
                 .AddDbContext<SampleDbContext>(x =>
                 {
-                    x.
                     x.UseInMemoryDatabase("events");
                     x.EnableSensitiveDataLogging(true);
                 });
