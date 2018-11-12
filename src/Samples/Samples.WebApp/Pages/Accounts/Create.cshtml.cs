@@ -29,10 +29,9 @@ namespace Samples.WebApp.Pages.Accounts
                 return Page();
             }
 
-            var accountId = Guid.NewGuid();
-            var account = new Account(accountId, Name);
+            var account = new Account(Name);
             await _repository.SaveAccountAsync(account);
-            return RedirectToPage("/Accounts/Details", new { id = accountId });
+            return RedirectToPage("/Accounts/Details", new { id = account.Id });
         }
     }
 }
