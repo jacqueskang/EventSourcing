@@ -6,22 +6,18 @@ namespace Samples.Events
 {
     public sealed class AccountCreated : Event
     {
-        public AccountCreated(Guid accountId, string name)
-            : base()
+        public AccountCreated(string name)
         {
-            AccountId = accountId;
             Name = name;
         }
 
         [JsonConstructor]
-        private AccountCreated(Guid id, DateTime dateTime, Guid accountId, string name)
+        private AccountCreated(Guid id, DateTime dateTime, string name)
             : base(id, dateTime)
         {
-            AccountId = accountId;
             Name = name;
         }
 
-        public Guid AccountId { get; }
         public string Name { get; }
 
         public override string ToString()

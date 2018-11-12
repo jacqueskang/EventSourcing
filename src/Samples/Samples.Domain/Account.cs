@@ -8,10 +8,19 @@ namespace Samples.Domain
 {
     public class Account : EventSourcedEntity
     {
-        public Account(Guid id, string name)
-            : base(id, new AccountCreated(id, name))
+        /// <summary>
+        /// Constructor for creating an new account
+        /// </summary>
+        /// <param name="name">Account name</param>
+        public Account(string name)
+            : base(Guid.NewGuid(), new AccountCreated(name))
         { }
 
+        /// <summary>
+        /// Constructor for rebuilding account from historical events
+        /// </summary>
+        /// <param name="id">Account ID</param>
+        /// <param name="history">Historical events</param>
         public Account(Guid id, IEnumerable<IEvent> history)
             : base(id, history)
         { }

@@ -39,7 +39,11 @@ namespace Samples.WebApp
 
             services
                 .AddEventSourcing()
-                .UseFileSystemBinaryStore(x => x.Folder = "C:\\Temp\\EventSourcing")
+                .UseFileSystemBinaryStore(x =>
+                {
+                    x.Folder = "C:\\Temp\\EventSourcing";
+                    x.Extension = ".json";
+                })
                 ;
         }
 
