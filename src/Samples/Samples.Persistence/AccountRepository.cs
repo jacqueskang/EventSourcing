@@ -1,5 +1,6 @@
 ﻿using JKang.EventSourcing.Persistence;
 using Samples.Domain;
+using System;
 using System.Threading.Tasks;
 
 namespace Samples.Persistence
@@ -13,6 +14,11 @@ namespace Samples.Persistence
         public Task CreateAccountAsync(Account account)
         {
             return CreateEntityAsync(account);
+        }
+
+        public Task<Account> FindAccountAsync(Guid id)
+        {
+            return FindEntityAsync(id);
         }
     }
 }

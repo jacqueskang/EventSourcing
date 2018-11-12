@@ -16,19 +16,36 @@ namespace JKang.EventSourcing.Domain
         protected EventSourcedEntity(Guid id, IEvent created)
         {
             Id = id;
-            AppendEvent(created);
+            ReceiveEvent(created);
+        }
+
+        protected EventSourcedEntity(Guid id, IEnumerable<IEvent> history)
+        {
+            Id = id;
+            foreach (IEvent @event in history)
+            {
+                ProcessEvent(@event);
+            }
         }
 
         public Guid Id { get; }
 
-        protected void AppendEvent(IEvent @event)
+        protected abstract void ProcessEvent(IEvent @event);
+
+        protected void ReceiveEvent(IEvent @event)
         {
+            ProcessEvent(@event);
             _pendingEvents.Enqueue(@event);
         }
 
         public IEnumerable<IEvent> GetPendingEvents()
         {
             return _pendingEvents.ToArray();
+        }
+
+        public void ClearPendingEvents()
+        {
+            _pendingEvents.Clear();
         }
     }
 }

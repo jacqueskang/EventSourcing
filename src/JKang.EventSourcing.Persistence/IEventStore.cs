@@ -6,6 +6,7 @@ namespace JKang.EventSourcing.Persistence
 {
     public interface IEventStore
     {
-        Task SaveEventAsync(Guid entityId, IEvent @event);
+        Task AddEventAsync(Guid entityId, IEvent @event);
+        Task<IEvent[]> GetEventsAsync(Guid entityId);
     }
 }

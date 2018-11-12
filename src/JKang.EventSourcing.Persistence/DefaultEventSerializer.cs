@@ -17,6 +17,12 @@ namespace JKang.EventSourcing.Persistence
             Converters = new[] { new StringEnumConverter() },
         };
 
+        public IEvent Deserialize(byte[] serialized)
+        {
+            string json = Encoding.UTF8.GetString(serialized);
+            return JsonConvert.DeserializeObject<IEvent>(json, _settings);
+        }
+
         public byte[] Serialize(IEvent @event)
         {
             return Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(@event, _settings));
