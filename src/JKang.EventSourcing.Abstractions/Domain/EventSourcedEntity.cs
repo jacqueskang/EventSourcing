@@ -1,12 +1,15 @@
 ﻿using JKang.EventSourcing.Events;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace JKang.EventSourcing.Domain
 {
     public abstract class EventSourcedEntity
     {
-        private readonly Queue<IEvent> _pendingEvents = new Queue<IEvent>();
+        private readonly Queue<IEvent> _savedEvents = new Queue<IEvent>();
+        private readonly Queue<IEvent> _unsavedEvents = new Queue<IEvent>();
 
         /// <summary>
         /// Use this constructor to create a new entity
@@ -19,33 +22,52 @@ namespace JKang.EventSourcing.Domain
             ReceiveEvent(created);
         }
 
-        protected EventSourcedEntity(Guid id, IEnumerable<IEvent> history)
+        protected EventSourcedEntity(Guid id, IEnumerable<IEvent> savedEvents)
         {
             Id = id;
-            foreach (IEvent @event in history)
+            foreach (IEvent @event in savedEvents)
             {
                 ProcessEvent(@event);
+                _savedEvents.Enqueue(@event);
             }
         }
 
         public Guid Id { get; }
+
+        public IEnumerable<IEvent> Events { get => _savedEvents.Concat(_unsavedEvents); }
+
+        public Changeset GetChangeset()
+        {
+            return new Changeset(_unsavedEvents, this);
+        }
 
         protected abstract void ProcessEvent(IEvent @event);
 
         protected void ReceiveEvent(IEvent @event)
         {
             ProcessEvent(@event);
-            _pendingEvents.Enqueue(@event);
+            _unsavedEvents.Enqueue(@event);
         }
 
-        public IEnumerable<IEvent> GetPendingEvents()
+        public class Changeset
         {
-            return _pendingEvents.ToArray();
-        }
+            private readonly EventSourcedEntity _entity;
+            public Changeset(IEnumerable<IEvent> events, EventSourcedEntity entity)
+            {
+                Events = events.ToList().AsReadOnly();
+                _entity = entity;
+            }
 
-        public void ClearPendingEvents()
-        {
-            _pendingEvents.Clear();
+            public ReadOnlyCollection<IEvent> Events { get; }
+
+            public void Commit()
+            {
+                for (int i = 0; i < Events.Count; i++)
+                {
+                    IEvent @evt = _entity._unsavedEvents.Dequeue();
+                    _entity._savedEvents.Enqueue(@evt);
+                }
+            }
         }
     }
 }

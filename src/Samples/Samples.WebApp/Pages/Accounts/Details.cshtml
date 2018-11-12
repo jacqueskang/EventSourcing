@@ -10,3 +10,12 @@
     <dt>Name</dt>
     <dd>@Model.Account.Name</dd>
 </dl>
+
+<h3>History</h3>
+
+<ol>
+    @foreach (var @e in Model.Account.Events)
+    {
+        <li>@e</li>
+    }
+</ol>

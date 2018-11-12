@@ -24,12 +24,12 @@ namespace JKang.EventSourcing.Persistence
 
         protected async Task CreateEntityAsync(TEventSourcedEntity entity)
         {
-            IEnumerable<IEvent> pendingEvents = entity.GetPendingEvents();
-            foreach (IEvent @event in pendingEvents)
+            EventSourcedEntity.Changeset changeset = entity.GetChangeset();
+            foreach (IEvent @event in changeset.Events)
             {
                 await _eventStore.AddEventAsync(_entityType, entity.Id, @event);
             }
-            entity.ClearPendingEvents();
+            changeset.Commit();
         }
 
         public Task<Guid[]> GetEntityIdsAsync()

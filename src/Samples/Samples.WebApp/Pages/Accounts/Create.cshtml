@@ -10,6 +10,7 @@
     <div class="form-group">
         <label asp-for="Name"></label>
         <input asp-for="Name" class="form-control" />
+        <span class="text-danger" asp-validation-for="Name"></span>
     </div>
 
     <input type="submit" class="btn btn-primary" value="Create" />

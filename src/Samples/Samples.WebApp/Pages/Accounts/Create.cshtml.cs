@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +13,7 @@ namespace Samples.WebApp.Pages.Accounts
     {
         private readonly IAccountRepository _repository;
 
+        [Required]
         [BindProperty]
         public string Name { get; set; }
 
@@ -22,6 +24,11 @@ namespace Samples.WebApp.Pages.Accounts
 
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+
             var accountId = Guid.NewGuid();
             var account = new Account(accountId, Name);
             await _repository.CreateAccountAsync(account);

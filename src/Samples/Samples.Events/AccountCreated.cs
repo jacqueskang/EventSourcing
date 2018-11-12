@@ -23,5 +23,10 @@ namespace Samples.Events
 
         public Guid AccountId { get; }
         public string Name { get; }
+
+        public override string ToString()
+        {
+            return $"Created at {DateTime} with name '{Name}'";
+        }
     }
 }

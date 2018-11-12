@@ -21,7 +21,7 @@ namespace JKang.EventSourcing.Events
         protected Event(Guid id, DateTime dateTime)
         {
             Id = id;
-            DateTime = DateTime;
+            DateTime = dateTime;
         }
 
         public Guid Id { get; }
