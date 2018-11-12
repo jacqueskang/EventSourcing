@@ -1,8 +1,12 @@
 ﻿@page
 @model Samples.WebApp.Pages.Accounts.DetailsModel
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Account details";
 }
 
-<h2>Details</h2>
+<h2>Account #@Model.Account.Id</h2>
 
+<dl>
+    <dt>Name</dt>
+    <dd>@Model.Account.Name</dd>
+</dl>

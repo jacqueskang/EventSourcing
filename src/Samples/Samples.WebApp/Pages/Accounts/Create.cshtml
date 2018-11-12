@@ -1,0 +1,16 @@
+﻿@page
+@model Samples.WebApp.Pages.Accounts.CreateModel
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Create account</h2>
+
+<form method="post">
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+    </div>
+
+    <input type="submit" class="btn btn-primary" value="Create" />
+</form>

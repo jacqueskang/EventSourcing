@@ -22,13 +22,5 @@ namespace Samples.WebApp.Pages
             AccountIds = await _store.GetAccountIdsAsync();
             return Page();
         }
-
-        public async Task<IActionResult> OnPostCreateAccount()
-        {
-            var accountId = Guid.NewGuid();
-            var account = new Account(accountId);
-            await _store.CreateAccountAsync(account);
-            return RedirectToPage("/Accounts/Details", new { id = accountId });
-        }
     }
 }

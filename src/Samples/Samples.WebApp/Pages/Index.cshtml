@@ -4,10 +4,7 @@
     ViewData["Title"] = "Home page";
 }
 
-<form asp-page-handler="CreateAccount">
-    <input type="submit" class="btn btn-primary" value="CreateAccount" />
-</form>
-
+<a class="btn btn-primary" asp-page="/Accounts/Create">New account</a>
 <hr />
 
 <h3>Existing accounts</h3>

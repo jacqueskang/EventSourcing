@@ -1,0 +1,31 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Samples.Domain;
+
+namespace Samples.WebApp.Pages.Accounts
+{
+    public class CreateModel : PageModel
+    {
+        private readonly IAccountRepository _repository;
+
+        [BindProperty]
+        public string Name { get; set; }
+
+        public CreateModel(IAccountRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public async Task<IActionResult> OnPostAsync()
+        {
+            var accountId = Guid.NewGuid();
+            var account = new Account(accountId, Name);
+            await _repository.CreateAccountAsync(account);
+            return RedirectToPage("/Accounts/Details", new { id = accountId });
+        }
+    }
+}
