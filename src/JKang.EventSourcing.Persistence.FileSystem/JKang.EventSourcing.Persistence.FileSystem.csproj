@@ -6,9 +6,11 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\JKang.EventSourcing.Core\JKang.EventSourcing.Core.csproj" />
     <ProjectReference Include="..\JKang.EventSourcing.Persistence\JKang.EventSourcing.Persistence.csproj" />
   </ItemGroup>
 

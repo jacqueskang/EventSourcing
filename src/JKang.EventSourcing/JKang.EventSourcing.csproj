@@ -6,12 +6,12 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\JKang.EventSourcing.Abstractions\JKang.EventSourcing.Abstractions.csproj" />
     <ProjectReference Include="..\JKang.EventSourcing.Core\JKang.EventSourcing.Core.csproj" />
+    <ProjectReference Include="..\JKang.EventSourcing.Persistence.FileSystem\JKang.EventSourcing.Persistence.FileSystem.csproj" />
+    <ProjectReference Include="..\JKang.EventSourcing.Persistence\JKang.EventSourcing.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

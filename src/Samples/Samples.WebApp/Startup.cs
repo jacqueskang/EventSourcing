@@ -35,9 +35,11 @@ namespace Samples.WebApp
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services
-                .AddPersistence()
-                .AddEventSourcingPersistence()
-                .AddEventSourcingPersistenceFileSystem()
+                .AddPersistence();
+
+            services
+                .AddEventSourcing()
+                .UseFileSystemBinaryStore(x => x.Folder = "C:\\Temp\\EventSourcing")
                 ;
         }
 
