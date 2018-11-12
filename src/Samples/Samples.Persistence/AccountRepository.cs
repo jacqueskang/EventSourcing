@@ -11,9 +11,9 @@ namespace Samples.Persistence
             : base(eventStore)
         { }
 
-        public Task CreateAccountAsync(Account account)
+        public Task SaveAccountAsync(Account account)
         {
-            return CreateEntityAsync(account);
+            return SaveEntityAsync(account);
         }
 
         public Task<Account> FindAccountAsync(Guid id)

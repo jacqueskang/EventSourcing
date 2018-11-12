@@ -17,12 +17,38 @@ namespace Samples.Domain
         { }
 
         public string Name { get; private set; }
+        public decimal Balance { get; private set; }
+
+        public void Credit(decimal amout, string reason)
+        {
+            ReceiveEvent(new AccountCredited(amout, reason));
+        }
+
+        public void Debit(decimal amout, string reason)
+        {
+            ReceiveEvent(new AccountDebited(amout, reason));
+        }
 
         protected override void ProcessEvent(IEvent @event)
         {
             if (@event is AccountCreated accountCreated)
             {
                 Name = accountCreated.Name;
+            }
+            else if (@event is AccountCredited accountCredited)
+            {
+                Balance += accountCredited.Amount;
+            }
+            else if (@event is AccountDebited accountDebited)
+            {
+                if (Balance >= accountDebited.Amount)
+                {
+                    Balance -= accountDebited.Amount;
+                }
+                else
+                {
+                    throw new InvalidOperationException("Not enough credit");
+                }
             }
         }
     }

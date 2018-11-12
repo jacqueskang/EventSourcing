@@ -22,7 +22,7 @@ namespace JKang.EventSourcing.Persistence
             _entityType = entityType;
         }
 
-        protected async Task CreateEntityAsync(TEventSourcedEntity entity)
+        protected async Task SaveEntityAsync(TEventSourcedEntity entity)
         {
             EventSourcedEntity.Changeset changeset = entity.GetChangeset();
             foreach (IEvent @event in changeset.Events)
