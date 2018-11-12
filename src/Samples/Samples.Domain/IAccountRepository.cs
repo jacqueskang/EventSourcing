@@ -7,5 +7,6 @@ namespace Samples.Domain
     {
         Task CreateAccountAsync(Account account);
         Task<Account> FindAccountAsync(Guid id);
+        Task<Guid[]> GetAccountIdsAsync();
     }
 }

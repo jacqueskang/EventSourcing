@@ -20,5 +20,10 @@ namespace Samples.Persistence
         {
             return FindEntityAsync(id);
         }
+
+        public Task<Guid[]> GetAccountIdsAsync()
+        {
+            return GetEntityIdsAsync();
+        }
     }
 }

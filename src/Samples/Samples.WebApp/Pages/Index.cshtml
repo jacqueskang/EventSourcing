@@ -4,8 +4,18 @@
     ViewData["Title"] = "Home page";
 }
 
-
 <form asp-page-handler="CreateAccount">
-
     <input type="submit" class="btn btn-primary" value="CreateAccount" />
 </form>
+
+<hr />
+
+<h3>Existing accounts</h3>
+<ul>
+    @foreach (var accountId in Model.AccountIds)
+    {
+        <li>
+            <a asp-page="/Accounts/Details" asp-route-id="@accountId">@accountId</a>
+        </li>
+    }
+</ul>
