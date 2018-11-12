@@ -5,4 +5,8 @@
     <RootNamespace>JKang.EventSourcing</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Domain\Internals\" />
+  </ItemGroup>
+
 </Project>

@@ -15,17 +15,12 @@ namespace Samples.WebApp.Pages
             _store = store;
         }
 
-        public void OnGet()
-        {
+        public Guid[] AccountIds { get; private set; }
 
-        }
-
-        public async Task<IActionResult> OnPostCreateAccount()
+        public async Task<IActionResult> OnGetAsync()
         {
-            var accountId = Guid.NewGuid();
-            var account = new Account(accountId);
-            await _store.CreateAccountAsync(account);
-            return RedirectToPage("/Accounts/Details", new { id = accountId });
+            AccountIds = await _store.GetAccountIdsAsync();
+            return Page();
         }
     }
 }
