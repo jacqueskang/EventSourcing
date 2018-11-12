@@ -1,7 +1,7 @@
 language: csharp
 mono: none
 solution: EventSourcing.sln
-dotnet: 2.1.3
+dotnet: 2.1
 dist: trusty
 sudo: required
 script:
