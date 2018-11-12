@@ -135,8 +135,8 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement **Account** as 
         Task SaveAccountAsync(Account account);
         Task<Account> FindAccountAsync(Guid id);
     }
-	
-	public class AccountRepository : EventSourcedEntityRepository<Account>, IAccountRepository
+    
+    public class AccountRepository : EventSourcedEntityRepository<Account>, IAccountRepository
     {
         public AccountRepository(IEventStore eventStore)
             : base(eventStore)
@@ -154,7 +154,7 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement **Account** as 
     }
 ```
 
-### Step 4 - Setup dependency injection
+### Step 4 - Setup dependency injection and configure persisting system
 
 ```csharp
     services
@@ -170,15 +170,15 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement **Account** as 
 #### Create account
 
 ```asp
-	<form method="post">
-		<div class="form-group">
-			<label asp-for="Name"></label>
-			<input asp-for="Name" class="form-control" />
-			<span class="text-danger" asp-validation-for="Name"></span>
-		</div>
+    <form method="post">
+        <div class="form-group">
+            <label asp-for="Name"></label>
+            <input asp-for="Name" class="form-control" />
+            <span class="text-danger" asp-validation-for="Name"></span>
+        </div>
 
-		<input type="submit" class="btn btn-primary" value="Create" />
-	</form>
+        <input type="submit" class="btn btn-primary" value="Create" />
+    </form>
 ```
 
 ```csharp
@@ -206,26 +206,26 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement **Account** as 
 
 #### View account
 ```asp
-	<dl class="dl-horizontal">
-		<dt>Id</dt>
-		<dd>@Model.Account.Id</dd>
+    <dl class="dl-horizontal">
+        <dt>Id</dt>
+        <dd>@Model.Account.Id</dd>
 
-		<dt>Name</dt>
-		<dd>@Model.Account.Name</dd>
+        <dt>Name</dt>
+        <dd>@Model.Account.Name</dd>
 
-		<dt>Balance</dt>
-		<dd>@Model.Account.Balance.ToString("0.00") €</dd>
-	</dl>
+        <dt>Balance</dt>
+        <dd>@Model.Account.Balance.ToString("0.00") €</dd>
+    </dl>
 
-	<hr />
+    <hr />
 
-	<h3>History</h3>
-	<ol>
-		@foreach (var @e in Model.Account.Events)
-		{
-			<li>@e</li>
-		}
-	</ol>
+    <h3>History</h3>
+    <ol>
+        @foreach (var @e in Model.Account.Events)
+        {
+            <li>@e</li>
+        }
+    </ol>
 ```
 
 ```csharp
@@ -247,26 +247,26 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement **Account** as 
 
 #### Debit/Credit account
 ```asp
-	<h3>Operations</h3>
+    <h3>Operations</h3>
 
-	<form method="post" class="form">
-		<div class="text-danger" asp-validation-summary="ModelOnly"></div>
+    <form method="post" class="form">
+        <div class="text-danger" asp-validation-summary="ModelOnly"></div>
 
-		<div class="form-group">
-			<label asp-for="Amount"></label>
-			<input asp-for="Amount" class="form-control" />
-			<span class="text-danger" asp-validation-for="Amount"></span>
-		</div>
+        <div class="form-group">
+            <label asp-for="Amount"></label>
+            <input asp-for="Amount" class="form-control" />
+            <span class="text-danger" asp-validation-for="Amount"></span>
+        </div>
 
-		<div class="form-group">
-			<label asp-for="Reason"></label>
-			<input asp-for="Reason" class="form-control" />
-			<span class="text-danger" asp-validation-for="Reason"></span>
-		</div>
+        <div class="form-group">
+            <label asp-for="Reason"></label>
+            <input asp-for="Reason" class="form-control" />
+            <span class="text-danger" asp-validation-for="Reason"></span>
+        </div>
 
-		<input class="btn btn-success" type="submit" asp-page-handler="Credit" value="Credit" asp-route-id="@Model.Account.Id" />
-		<input class="btn btn-danger" type="submit" asp-page-handler="Debit" value="Debit" asp-route-id="@Model.Account.Id" />
-	</form>
+        <input class="btn btn-success" type="submit" asp-page-handler="Credit" value="Credit" asp-route-id="@Model.Account.Id" />
+        <input class="btn btn-danger" type="submit" asp-page-handler="Debit" value="Debit" asp-route-id="@Model.Account.Id" />
+    </form>
 ```
 
 ```csharp
