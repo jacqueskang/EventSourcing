@@ -7,8 +7,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Samples.WebApp.Data;
 
 namespace Samples.WebApp
 {
@@ -38,12 +40,20 @@ namespace Samples.WebApp
                 .AddPersistence();
 
             services
-                .AddEventSourcing()
-                .UseFileSystemBinaryStore(x =>
+                .AddDbContext<SampleDbContext>(x =>
                 {
-                    x.Folder = "C:\\Temp\\EventSourcing";
-                    x.Extension = ".json";
-                })
+                    x.UseInMemoryDatabase("events");
+                    x.EnableSensitiveDataLogging(true);
+                });
+
+            services
+                .AddEventSourcing()
+                .UseDatabaseBinaryStore<SampleDbContext>()
+                //.UseFileSystemBinaryStore(x =>
+                //{
+                //    x.Folder = "C:\\Temp\\EventSourcing";
+                //    x.Extension = ".json";
+                //})
                 ;
         }
 

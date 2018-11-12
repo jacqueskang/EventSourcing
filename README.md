@@ -4,7 +4,7 @@
 
 A .NET Core event sourcing framework.
 
-Easy to integrate in ASP.NET Core project to persist event-sourced domain entities in different storage: file system, data base (TODO), Azure blob (TODO), AWS cloud object storage (TODO).
+Easy to integrate in ASP.NET Core project to persist event-sourced domain entities in different storage: file system, data base (using Entity Framework Core), Azure blob (TODO), AWS cloud object storage (TODO).
 
 ## Usage
 TODO
@@ -159,10 +159,32 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement **Account** as 
 ```csharp
     services
         .AddScoped<IAccountRepository, AccountRepository>();
+```
+
+It's possible to configure different event persisting system:
+
+* Using file system (each event is saved as single json file)
+```csharp
+    services
+        .AddEventSourcing()
+        .UseFileSystemBinaryStore(x =>
+        {
+            x.Folder = "C:\\Temp\\EventSourcing";
+            x.Extension = ".json";
+        });
+```
+
+* Using database with EF Core (all events are store in the same table)
+```csharp
+    services
+        .AddDbContext<SampleDbContext>(x =>
+        {
+            x.UseInMemoryDatabase("events");
+        });
 
     services
         .AddEventSourcing()
-        .UseFileSystemBinaryStore(x => x.Folder = "C:\\Temp\\EventSourcing");
+        .UseDatabaseBinaryStore<SampleDbContext>();
 ```
 
 ### Step 5 - Implement UI
