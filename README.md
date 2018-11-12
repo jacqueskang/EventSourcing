@@ -19,15 +19,17 @@ Let's implement a really simple banking account management system, with which we
  * Credit the account
  * Debit the account
 
-I'm adopting DDD (Domain Driven Design) approach and implement *Account* as an *Rich Domain Entity* which encapsulates/protects its internal data/state, and contains itself business logics and ensures data integrity.
-For the simplcity I'm not implementing CQRS pattern, but only be implementing event sourcing: An account is thus persisted as a series of historical events, and is reconstructed by re-compiling all these events.
+I'm adopting *DDD (Domain Driven Design)* approach and implement **Account** as an **Rich Domain Entity** which encapsulates/protects its internal data/state, and contains itself business logics ensuring data integrity.
+
+**Notes**:
+ - To improve readability and I'm omitting some necessary codes (e.g. Json constructor). The complete sample project can be found in the solution.
 
 ### Step 1 - Define events
 
-3 events are needed for your use cases: 
- * AccountCreated
- * AccountCredited
- * AccountDebited
+3 events are needed for our use cases: 
+ * `AccountCreated`
+ * `AccountCredited`
+ * `AccountDebited`
 
 ```csharp
     public sealed class AccountCreated : Event
@@ -37,33 +39,12 @@ For the simplcity I'm not implementing CQRS pattern, but only be implementing ev
             Name = name;
         }
 
-        [JsonConstructor]
-        private AccountCreated(Guid id, DateTime dateTime, string name)
-            : base(id, dateTime)
-        {
-            Name = name;
-        }
-
         public string Name { get; }
-
-        public override string ToString()
-        {
-            return $"Created at {DateTime} with name '{Name}'";
-        }
     }
 
     public class AccountCredited : Event
     {
         public AccountCredited(decimal amount, string reason)
-            : base()
-        {
-            Amount = amount;
-            Reason = reason;
-        }
-
-        [JsonConstructor]
-        private AccountCredited(Guid id, DateTime dateTime, decimal amount, string reason)
-            : base(id, dateTime)
         {
             Amount = amount;
             Reason = reason;
@@ -71,25 +52,11 @@ For the simplcity I'm not implementing CQRS pattern, but only be implementing ev
 
         public decimal Amount { get; }
         public string Reason { get; }
-
-        public override string ToString()
-        {
-            return $"Credited {Amount:0.00} € at {DateTime} for reason: '{Reason}'";
-        }
     }
 
     public class AccountDebited : Event
     {
         public AccountDebited(decimal amount, string reason)
-            : base()
-        {
-            Amount = amount;
-            Reason = reason;
-        }
-
-        [JsonConstructor]
-        private AccountDebited(Guid id, DateTime dateTime, decimal amount, string reason)
-            : base(id, dateTime)
         {
             Amount = amount;
             Reason = reason;
@@ -97,11 +64,6 @@ For the simplcity I'm not implementing CQRS pattern, but only be implementing ev
 
         public decimal Amount { get; }
         public string Reason { get; }
-
-        public override string ToString()
-        {
-            return $"Debited -{Amount:0.00} € at {DateTime} for reason: '{Reason}'";
-        }
     }
 ```
 
@@ -172,7 +134,6 @@ For the simplcity I'm not implementing CQRS pattern, but only be implementing ev
     {
         Task SaveAccountAsync(Account account);
         Task<Account> FindAccountAsync(Guid id);
-        Task<Guid[]> GetAccountIdsAsync();
     }
 	
 	public class AccountRepository : EventSourcedEntityRepository<Account>, IAccountRepository
@@ -189,11 +150,6 @@ For the simplcity I'm not implementing CQRS pattern, but only be implementing ev
         public Task<Account> FindAccountAsync(Guid id)
         {
             return FindEntityAsync(id);
-        }
-
-        public Task<Guid[]> GetAccountIdsAsync()
-        {
-            return GetEntityIdsAsync();
         }
     }
 ```
@@ -233,11 +189,6 @@ For the simplcity I'm not implementing CQRS pattern, but only be implementing ev
         [Required]
         [BindProperty]
         public string Name { get; set; }
-
-        public CreateModel(IAccountRepository repository)
-        {
-            _repository = repository;
-        }
 
         public async Task<IActionResult> OnPostAsync()
         {
@@ -281,11 +232,6 @@ For the simplcity I'm not implementing CQRS pattern, but only be implementing ev
     public class DetailsModel : PageModel
     {
         private readonly IAccountRepository _repository;
-
-        public DetailsModel(IAccountRepository repository)
-        {
-            _repository = repository;
-        }
 
         public Account Account { get; private set; }
 
