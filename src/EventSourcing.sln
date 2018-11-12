@@ -19,9 +19,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Persist
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Persistence.FileSystem", "JKang.EventSourcing.Persistence.FileSystem\JKang.EventSourcing.Persistence.FileSystem.csproj", "{6D98F447-6ACD-40D6-AB47-A7C113ECBC1A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JKang.EventSourcing", "JKang.EventSourcing\JKang.EventSourcing.csproj", "{F4C9B447-EF12-47AA-82FE-8EB0FA48DDDF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing", "JKang.EventSourcing\JKang.EventSourcing.csproj", "{F4C9B447-EF12-47AA-82FE-8EB0FA48DDDF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JKang.EventSourcing.Core", "JKang.EventSourcing.Core\JKang.EventSourcing.Core.csproj", "{39D605FE-23A6-4BEB-8C5B-16DF77D5D6CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Core", "JKang.EventSourcing.Core\JKang.EventSourcing.Core.csproj", "{39D605FE-23A6-4BEB-8C5B-16DF77D5D6CD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3CE8F82A-51A6-46BC-9A78-590642AA5242}"
+	ProjectSection(SolutionItems) = preProject
+		..\.travis.yml = ..\.travis.yml
+		..\LICENSE = ..\LICENSE
+		..\README.md = ..\README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
