@@ -14,11 +14,11 @@ namespace JKang.EventSourcing.Persistence.FileSystem
         where TAggregate : Aggregate
     {
         private readonly IOptions<TextFileEventStoreOptions> _options;
-        private readonly IEventSerializer _eventSerializer;
+        private readonly IObjectSerializer _eventSerializer;
 
         public TextFileEventStore(
             IOptions<TextFileEventStoreOptions> options,
-            IEventSerializer eventSerializer)
+            IObjectSerializer eventSerializer)
         {
             _options = options;
             _eventSerializer = eventSerializer;
@@ -75,7 +75,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             }
 
             return text.Split(new[] { _options.Value.EventSeparator }, StringSplitOptions.None)
-                .Select(x => _eventSerializer.Deserialize(x) as AggregateEvent)
+                .Select(x => _eventSerializer.Deserialize<AggregateEvent>(x))
                 .ToArray();
         }
 

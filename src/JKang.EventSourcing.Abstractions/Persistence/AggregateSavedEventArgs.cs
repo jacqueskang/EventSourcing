@@ -7,11 +7,11 @@ namespace JKang.EventSourcing.Persistence
 {
     public class AggregateSavedEventArgs : EventArgs
     {
-        public AggregateSavedEventArgs(IEnumerable<IEvent> events)
+        public AggregateSavedEventArgs(IEnumerable<AggregateEvent> events)
         {
             Events = events.ToList().AsReadOnly();
         }
 
-        public IEnumerable<IEvent> Events { get; }
+        public IEnumerable<AggregateEvent> Events { get; }
     }
 }

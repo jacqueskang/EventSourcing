@@ -14,11 +14,11 @@ namespace JKang.EventSourcing.Persistence.EfCore
         where TAggregate : Aggregate
     {
         private readonly TDbContext _context;
-        private readonly IEventSerializer _eventSerializer;
+        private readonly IObjectSerializer _eventSerializer;
 
         public DatabaseEventStore(
             TDbContext context,
-            IEventSerializer eventSerializer)
+            IObjectSerializer eventSerializer)
         {
             _context = context;
             _eventSerializer = eventSerializer;
@@ -55,7 +55,7 @@ namespace JKang.EventSourcing.Persistence.EfCore
                 .ToListAsync();
 
             return serializedEvents
-                .Select(x => _eventSerializer.Deserialize(x) as AggregateEvent)
+                .Select(x => _eventSerializer.Deserialize<AggregateEvent>(x))
                 .ToArray();
         }
     }

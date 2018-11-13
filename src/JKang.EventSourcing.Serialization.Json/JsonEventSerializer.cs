@@ -1,11 +1,10 @@
-﻿using JKang.EventSourcing.Events;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
 namespace JKang.EventSourcing.Serialization.Json
 {
-    class JsonEventSerializer : IEventSerializer
+    class JsonEventSerializer : IObjectSerializer
     {
         private static readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings
         {
@@ -16,14 +15,14 @@ namespace JKang.EventSourcing.Serialization.Json
             Converters = new[] { new StringEnumConverter() },
         };
 
-        public IEvent Deserialize(string serialized)
+        public T Deserialize<T>(string serialized)
         {
-            return JsonConvert.DeserializeObject<IEvent>(serialized, _jsonSerializerSettings);
+            return JsonConvert.DeserializeObject<T>(serialized, _jsonSerializerSettings);
         }
 
-        public string Serialize(IEvent @event)
+        public string Serialize(object obj)
         {
-            return JsonConvert.SerializeObject(@event, _jsonSerializerSettings);
+            return JsonConvert.SerializeObject(obj, _jsonSerializerSettings);
         }
     }
 }
