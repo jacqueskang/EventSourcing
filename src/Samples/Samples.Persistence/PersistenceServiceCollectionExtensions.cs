@@ -8,7 +8,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddPersistence(this IServiceCollection services)
         {
             return services
-                .AddScoped<IAccountRepository, AccountRepository>()
+                .AddScoped<IGiftCardRepository, GiftCardRepository>()
                 ;
         }
     }

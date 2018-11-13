@@ -43,17 +43,16 @@ namespace Samples.WebApp
             services
                 .AddDbContext<SampleDbContext>(x =>
                 {
-                    x.UseInMemoryDatabase("events");
-                    x.EnableSensitiveDataLogging(true);
+                    x.UseInMemoryDatabase("eventstore");
                 });
 
             services
                 .AddEventSourcing()
-                .UseDbEventStore<SampleDbContext, Account>()
-                //.UseTextFileEventStore<Account>(x =>
-                //{
-                //    x.Folder = "C:\\Temp\\EventSourcing\\Accounts";
-                //})
+                //.UseDbEventStore<SampleDbContext, GiftCard>()
+                .UseTextFileEventStore<GiftCard>(x =>
+                {
+                    x.Folder = "C:\\Temp\\EventSourcing\\GiftCards";
+                })
                 ;
         }
 

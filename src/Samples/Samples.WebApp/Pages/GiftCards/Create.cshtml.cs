@@ -1,20 +1,18 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Samples.Domain;
-using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
-namespace Samples.WebApp.Pages.Accounts
+namespace Samples.WebApp.Pages.GiftCards
 {
     public class CreateModel : PageModel
     {
-        private readonly IAccountRepository _repository;
+        private readonly IGiftCardRepository _repository;
 
-        [Required]
         [BindProperty]
-        public string Name { get; set; }
+        public decimal InitialCredit { get; set; } = 100;
 
-        public CreateModel(IAccountRepository repository)
+        public CreateModel(IGiftCardRepository repository)
         {
             _repository = repository;
         }
@@ -26,9 +24,9 @@ namespace Samples.WebApp.Pages.Accounts
                 return Page();
             }
 
-            var account = new Account(Name);
-            await _repository.SaveAccountAsync(account);
-            return RedirectToPage("/Accounts/Details", new { id = account.Id });
+            var giftCard = new GiftCard(InitialCredit);
+            await _repository.SaveGiftCardAsync(giftCard);
+            return RedirectToPage("/GiftCards/Details", new { id = giftCard.Id });
         }
     }
 }
