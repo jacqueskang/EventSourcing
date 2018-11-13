@@ -12,11 +12,11 @@ namespace JKang.EventSourcing.Persistence.FileSystem
     public class TextFileEventStore : IEventStore
     {
         private readonly IOptions<TextFileEventStoreOptions> _options;
-        private readonly ITextEventSerializer _eventSerializer;
+        private readonly IEventSerializer _eventSerializer;
 
         public TextFileEventStore(
             IOptions<TextFileEventStoreOptions> options,
-            ITextEventSerializer eventSerializer)
+            IEventSerializer eventSerializer)
         {
             _options = options;
             _eventSerializer = eventSerializer;

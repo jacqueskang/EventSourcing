@@ -5,7 +5,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace JKang.EventSourcing.Serialization.Json
 {
-    class JsonEventSerializer : ITextEventSerializer
+    class JsonEventSerializer : IEventSerializer
     {
         private static readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings
         {

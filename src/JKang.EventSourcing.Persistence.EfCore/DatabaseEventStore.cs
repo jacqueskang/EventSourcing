@@ -12,11 +12,11 @@ namespace JKang.EventSourcing.Persistence.EfCore
         where TDbContext : DbContext, IEventSourcingDbContext
     {
         private readonly TDbContext _context;
-        private readonly ITextEventSerializer _eventSerializer;
+        private readonly IEventSerializer _eventSerializer;
 
         public DatabaseEventStore(
             TDbContext context,
-            ITextEventSerializer eventSerializer)
+            IEventSerializer eventSerializer)
         {
             _context = context;
             _eventSerializer = eventSerializer;
