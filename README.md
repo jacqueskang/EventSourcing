@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/jacqueskang/EventSourcing.svg?branch=develop)](https://travis-ci.org/jacqueskang/EventSourcing)
+[![Build Status](https://travis-ci.com/jacqueskang/EventSourcing.svg?branch=develop)](https://travis-ci.com/jacqueskang/EventSourcing)
 
 # EventSourcing
 
