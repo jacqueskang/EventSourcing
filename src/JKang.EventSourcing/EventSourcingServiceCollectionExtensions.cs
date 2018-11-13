@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JKang.EventSourcing.DependencyInjection;
+using System;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -11,7 +12,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(services));
             }
 
-            return new EventSourcingBuilder(services);
+            return new EventSourcingBuilder(services)
+                .UseJsonEventSerializer();
         }
     }
 }

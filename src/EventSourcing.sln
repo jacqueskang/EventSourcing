@@ -15,13 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples.WebApp", "Samples\S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples.Events", "Samples\Samples.Events\Samples.Events.csproj", "{5CCF644C-34A1-4B89-B3B5-49613575CCB8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Persistence.Abstractions", "JKang.EventSourcing.Persistence.Abstractions\JKang.EventSourcing.Persistence.Abstractions.csproj", "{7175123C-5D87-40A3-8208-6D5A62296292}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Persistence.FileSystem", "JKang.EventSourcing.Persistence.FileSystem\JKang.EventSourcing.Persistence.FileSystem.csproj", "{6D98F447-6ACD-40D6-AB47-A7C113ECBC1A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing", "JKang.EventSourcing\JKang.EventSourcing.csproj", "{F4C9B447-EF12-47AA-82FE-8EB0FA48DDDF}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Core", "JKang.EventSourcing.Core\JKang.EventSourcing.Core.csproj", "{39D605FE-23A6-4BEB-8C5B-16DF77D5D6CD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3CE8F82A-51A6-46BC-9A78-590642AA5242}"
 	ProjectSection(SolutionItems) = preProject
@@ -31,6 +27,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Persistence.EfCore", "JKang.EventSourcing.Persistence.EfCore\JKang.EventSourcing.Persistence.EfCore.csproj", "{5473865D-3737-4719-893B-9DD6A10E5A35}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JKang.EventSourcing.Serialization.Json", "JKang.EventSourcing.Serialization.Json\JKang.EventSourcing.Serialization.Json.csproj", "{A6001267-1D62-4FAF-8B63-847E68C0FCD4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -58,10 +56,6 @@ Global
 		{5CCF644C-34A1-4B89-B3B5-49613575CCB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CCF644C-34A1-4B89-B3B5-49613575CCB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5CCF644C-34A1-4B89-B3B5-49613575CCB8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7175123C-5D87-40A3-8208-6D5A62296292}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7175123C-5D87-40A3-8208-6D5A62296292}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7175123C-5D87-40A3-8208-6D5A62296292}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7175123C-5D87-40A3-8208-6D5A62296292}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6D98F447-6ACD-40D6-AB47-A7C113ECBC1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6D98F447-6ACD-40D6-AB47-A7C113ECBC1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D98F447-6ACD-40D6-AB47-A7C113ECBC1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -70,14 +64,14 @@ Global
 		{F4C9B447-EF12-47AA-82FE-8EB0FA48DDDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F4C9B447-EF12-47AA-82FE-8EB0FA48DDDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F4C9B447-EF12-47AA-82FE-8EB0FA48DDDF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{39D605FE-23A6-4BEB-8C5B-16DF77D5D6CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{39D605FE-23A6-4BEB-8C5B-16DF77D5D6CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{39D605FE-23A6-4BEB-8C5B-16DF77D5D6CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{39D605FE-23A6-4BEB-8C5B-16DF77D5D6CD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5473865D-3737-4719-893B-9DD6A10E5A35}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5473865D-3737-4719-893B-9DD6A10E5A35}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5473865D-3737-4719-893B-9DD6A10E5A35}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5473865D-3737-4719-893B-9DD6A10E5A35}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6001267-1D62-4FAF-8B63-847E68C0FCD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6001267-1D62-4FAF-8B63-847E68C0FCD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6001267-1D62-4FAF-8B63-847E68C0FCD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6001267-1D62-4FAF-8B63-847E68C0FCD4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

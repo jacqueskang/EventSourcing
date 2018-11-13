@@ -64,10 +64,10 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement **Account** as 
     }
 ```
 
-### Step 2 - Implement domain entity
+### Step 2 - Implement domain aggregate
 
 ```csharp
-    public class Account : EventSourcedEntity
+    public class Account : EventAggregateEntity
     {
         /// <summary>
         /// Constructor for creating an new account
@@ -133,7 +133,7 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement **Account** as 
         Task<Account> FindAccountAsync(Guid id);
     }
     
-    public class AccountRepository : EventSourcedEntityRepository<Account>, IAccountRepository
+    public class AccountRepository : EventSourcedAggregateRepository<Account>, IAccountRepository
     {
         public AccountRepository(IEventStore eventStore)
             : base(eventStore)
@@ -141,12 +141,12 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement **Account** as 
 
         public Task SaveAccountAsync(Account account)
         {
-            return SaveEntityAsync(account);
+            return SaveAggregateAsync(account);
         }
 
         public Task<Account> FindAccountAsync(Guid id)
         {
-            return FindEntityAsync(id);
+            return FindAggregateAsync(id);
         }
     }
 ```

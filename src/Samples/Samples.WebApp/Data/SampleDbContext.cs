@@ -9,11 +9,11 @@ namespace Samples.WebApp.Data
             : base(options)
         { }
 
-        public DbSet<EfEvent> Events { get; set; }
+        public DbSet<EventEntity> Events { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new EfEventConfiguration());
+            modelBuilder.ApplyConfiguration(new EventEntityConfiguration());
         }
     }
 }

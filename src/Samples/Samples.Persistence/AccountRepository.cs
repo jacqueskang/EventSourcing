@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Samples.Persistence
 {
-    public class AccountRepository : EventSourcedEntityRepository<Account>, IAccountRepository
+    public class AccountRepository : EventSourcedAggregateRepository<Account>, IAccountRepository
     {
         public AccountRepository(IEventStore eventStore)
             : base(eventStore)
@@ -13,17 +13,17 @@ namespace Samples.Persistence
 
         public Task SaveAccountAsync(Account account)
         {
-            return SaveEntityAsync(account);
+            return SaveAggregateAsync(account);
         }
 
         public Task<Account> FindAccountAsync(Guid id)
         {
-            return FindEntityAsync(id);
+            return FindAggregateAsync(id);
         }
 
         public Task<Guid[]> GetAccountIdsAsync()
         {
-            return GetEntityIdsAsync();
+            return GetAggregateIdsAsync();
         }
     }
 }
