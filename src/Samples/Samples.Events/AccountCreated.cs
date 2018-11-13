@@ -7,14 +7,14 @@ namespace Samples.Events
     public sealed class AccountCreated : AggregateEvent
     {
         public AccountCreated(Guid accountId, string name)
-            : base(accountId)
+            : base(accountId, 0)
         {
             Name = name;
         }
 
         [JsonConstructor]
-        private AccountCreated(Guid id, DateTime dateTime, Guid accountId, string name)
-            : base(id, dateTime, accountId)
+        private AccountCreated(Guid id, DateTime dateTime, Guid aggregateId, int version, string name)
+            : base(id, dateTime, aggregateId, version)
         {
             Name = name;
         }

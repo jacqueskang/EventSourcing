@@ -22,7 +22,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             _eventSerializer = eventSerializer;
         }
 
-        public async Task AddEventAsync(string aggregateType, Guid aggregateId, IEvent @event)
+        public async Task AddEventAsync(string aggregateType, Guid aggregateId, AggregateEvent @event)
         {
             string serialized = _eventSerializer.Serialize(@event);
             string filePath = GetAggregateFilePath(aggregateType, aggregateId, createFolderIfNotExist: true);
@@ -56,15 +56,15 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             });
         }
 
-        public async Task<IEvent[]> GetEventsAsync(string aggregateType, Guid aggregateId)
+        public async Task<AggregateEvent[]> GetEventsAsync(string aggregateType, Guid aggregateId)
         {
             string filePath = GetAggregateFilePath(aggregateType, aggregateId);
             if (!File.Exists(filePath))
             {
-                return new IEvent[0];
+                return new AggregateEvent[0];
             }
 
-            var events = new List<IEvent>();
+            var events = new List<AggregateEvent>();
             string text;
             using (FileStream fs = File.OpenRead(filePath))
             using (var sr = new StreamReader(fs))
@@ -73,7 +73,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             }
 
             return text.Split(new[] { _options.Value.EventSeparator }, StringSplitOptions.None)
-                .Select(x => _eventSerializer.Deserialize(x))
+                .Select(x => _eventSerializer.Deserialize(x) as AggregateEvent)
                 .ToArray();
         }
 

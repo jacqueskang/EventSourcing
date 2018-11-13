@@ -6,16 +6,16 @@ namespace Samples.Events
 {
     public class AccountDebited : AggregateEvent
     {
-        public AccountDebited(Guid accountId, decimal amount, string reason)
-            : base(accountId)
+        public AccountDebited(Guid accountId, int version, decimal amount, string reason)
+            : base(accountId, version)
         {
             Amount = amount;
             Reason = reason;
         }
 
         [JsonConstructor]
-        private AccountDebited(Guid id, DateTime dateTime, Guid accountId, decimal amount, string reason)
-            : base(id, dateTime, accountId)
+        private AccountDebited(Guid id, DateTime dateTime, Guid aggregateId, int version, decimal amount, string reason)
+            : base(id, dateTime, aggregateId, version)
         {
             Amount = amount;
             Reason = reason;

@@ -25,7 +25,7 @@ namespace Samples.Domain
         /// </summary>
         /// <param name="id">Account ID</param>
         /// <param name="history">Historical events</param>
-        public Account(Guid id, IEnumerable<IEvent> history)
+        public Account(Guid id, IEnumerable<AggregateEvent> history)
             : base(id, history)
         { }
 
@@ -34,15 +34,15 @@ namespace Samples.Domain
 
         public void Credit(decimal amout, string reason)
         {
-            ReceiveEvent(new AccountCredited(Id, amout, reason));
+            ReceiveEvent(new AccountCredited(Id, Version + 1, amout, reason));
         }
 
         public void Debit(decimal amout, string reason)
         {
-            ReceiveEvent(new AccountDebited(Id, amout, reason));
+            ReceiveEvent(new AccountDebited(Id, Version + 1, amout, reason));
         }
 
-        protected override void ProcessEvent(IEvent @event)
+        protected override void ProcessEvent(AggregateEvent @event)
         {
             if (@event is AccountCreated accountCreated)
             {
@@ -63,6 +63,7 @@ namespace Samples.Domain
                     throw new InvalidOperationException("Not enough credit");
                 }
             }
+            Version = @event.Version;
         }
     }
 }

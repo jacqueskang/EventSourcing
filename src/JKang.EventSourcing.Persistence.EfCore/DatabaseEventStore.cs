@@ -22,7 +22,7 @@ namespace JKang.EventSourcing.Persistence.EfCore
             _eventSerializer = eventSerializer;
         }
 
-        public async Task AddEventAsync(string aggregateType, Guid aggregateId, IEvent @event)
+        public async Task AddEventAsync(string aggregateType, Guid aggregateId, AggregateEvent @event)
         {
             string serialized = _eventSerializer.Serialize(@event);
             var entity = new EventEntity
@@ -45,7 +45,7 @@ namespace JKang.EventSourcing.Persistence.EfCore
                 .ToArrayAsync();
         }
 
-        public async Task<IEvent[]> GetEventsAsync(string aggregateType, Guid aggregateId)
+        public async Task<AggregateEvent[]> GetEventsAsync(string aggregateType, Guid aggregateId)
         {
             List<string> serializedEvents = await _context.Events
                 .Where(x => x.AggreagateType == aggregateType)
@@ -54,7 +54,7 @@ namespace JKang.EventSourcing.Persistence.EfCore
                 .ToListAsync();
 
             return serializedEvents
-                .Select(x => _eventSerializer.Deserialize(x))
+                .Select(x => _eventSerializer.Deserialize(x) as AggregateEvent)
                 .ToArray();
         }
     }
