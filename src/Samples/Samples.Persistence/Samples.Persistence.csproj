@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\JKang.EventSourcing.Abstractions\JKang.EventSourcing.Abstractions.csproj" />
-    <ProjectReference Include="..\..\JKang.EventSourcing.Persistence.Abstractions\JKang.EventSourcing.Persistence.Abstractions.csproj" />
     <ProjectReference Include="..\Samples.Domain\Samples.Domain.csproj" />
   </ItemGroup>
 

@@ -11,9 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\JKang.EventSourcing.Core\JKang.EventSourcing.Core.csproj" />
+    <ProjectReference Include="..\..\JKang.EventSourcing.Persistence.EfCore\JKang.EventSourcing.Persistence.EfCore.csproj" />
     <ProjectReference Include="..\..\JKang.EventSourcing.Persistence.FileSystem\JKang.EventSourcing.Persistence.FileSystem.csproj" />
-    <ProjectReference Include="..\..\JKang.EventSourcing.Persistence.Abstractions\JKang.EventSourcing.Persistence.Abstractions.csproj" />
     <ProjectReference Include="..\..\JKang.EventSourcing\JKang.EventSourcing.csproj" />
     <ProjectReference Include="..\Samples.Domain\Samples.Domain.csproj" />
     <ProjectReference Include="..\Samples.Events\Samples.Events.csproj" />

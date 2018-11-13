@@ -1,8 +1,6 @@
 ﻿using JKang.EventSourcing.Events;
+using JKang.EventSourcing.Serialization;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,30 +11,29 @@ namespace JKang.EventSourcing.Persistence.FileSystem
 {
     public class TextFileEventStore : IEventStore
     {
-        private static readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings
-        {
-            TypeNameHandling = TypeNameHandling.All,
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore,
-            Formatting = Formatting.None,
-            Converters = new[] { new StringEnumConverter() },
-        };
-
         private readonly IOptions<TextFileEventStoreOptions> _options;
+        private readonly ITextEventSerializer _eventSerializer;
 
-        public TextFileEventStore(IOptions<TextFileEventStoreOptions> options)
+        public TextFileEventStore(
+            IOptions<TextFileEventStoreOptions> options,
+            ITextEventSerializer eventSerializer)
         {
             _options = options;
+            _eventSerializer = eventSerializer;
         }
 
         public async Task AddEventAsync(string aggregateType, Guid aggregateId, IEvent @event)
         {
-            string serialized = JsonConvert.SerializeObject(@event, _jsonSerializerSettings);
+            string serialized = _eventSerializer.Serialize(@event);
             string filePath = GetAggregateFilePath(aggregateType, aggregateId, createFolderIfNotExist: true);
             using (var fs = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.None))
             using (var sw = new StreamWriter(fs))
             {
-                await sw.WriteLineAsync(serialized);
+                if (fs.Position > 0)
+                {
+                    await sw.WriteAsync(_options.Value.EventSeparator);
+                }
+                await sw.WriteAsync(serialized);
             }
         }
 
@@ -68,17 +65,16 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             }
 
             var events = new List<IEvent>();
+            string text;
             using (FileStream fs = File.OpenRead(filePath))
             using (var sr = new StreamReader(fs))
             {
-                while (!sr.EndOfStream)
-                {
-                    string serialized = await sr.ReadLineAsync();
-                    IEvent @event = JsonConvert.DeserializeObject<IEvent>(serialized, _jsonSerializerSettings);
-                    events.Add(@event);
-                }
+                text = await sr.ReadToEndAsync();
             }
-            return events.ToArray();
+
+            return text.Split(new[] { _options.Value.EventSeparator }, StringSplitOptions.None)
+                .Select(x => _eventSerializer.Deserialize(x))
+                .ToArray();
         }
 
         private string GetAggregateFilePath(string aggregateType, Guid aggregateId, bool createFolderIfNotExist = false)

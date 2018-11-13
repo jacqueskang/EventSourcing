@@ -1,4 +1,6 @@
-﻿namespace Microsoft.Extensions.DependencyInjection
+﻿using Microsoft.Extensions.DependencyInjection;
+
+namespace JKang.EventSourcing.DependencyInjection
 {
     public class EventSourcingBuilder : IEventSourcingBuilder
     {
