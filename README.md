@@ -6,8 +6,8 @@ A .NET Core event sourcing framework.
 
 Easy to integrate in ASP.NET Core project to persist event-sourced domain entities in file system (one text file per aggregate) or in database (using EF Core, one table per aggregate type).
 
-## Downloads
-TODO
+## NuGet packages
+ - [JKang.EventSourcing](https://www.nuget.org/packages/JKang.EventSourcing/)
 
 ## Quick Start:
 
