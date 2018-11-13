@@ -48,12 +48,11 @@ namespace Samples.WebApp
 
             services
                 .AddEventSourcing()
-                .UseDatabaseBinaryStore<SampleDbContext>()
-                //.UseFileSystemBinaryStore(x =>
-                //{
-                //    x.Folder = "C:\\Temp\\EventSourcing";
-                //    x.Extension = ".json";
-                //})
+                //.UseDatabaseBinaryStore<SampleDbContext>()
+                .UseTextFileEventStore(x =>
+                {
+                    x.Folder = "C:\\Temp\\EventSourcing";
+                })
                 ;
         }
 

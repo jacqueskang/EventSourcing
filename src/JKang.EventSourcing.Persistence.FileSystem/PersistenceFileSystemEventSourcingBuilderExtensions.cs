@@ -1,18 +1,17 @@
 ﻿using JKang.EventSourcing.Persistence;
 using JKang.EventSourcing.Persistence.FileSystem;
 using System;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class PersistenceFileSystemEventSourcingBuilderExtensions
     {
-        public static IEventSourcingBuilder UseFileSystemBinaryStore(
+        public static IEventSourcingBuilder UseTextFileEventStore(
             this IEventSourcingBuilder builder,
-            Action<FileSystemBinaryStoreOptions> setupAction)
+            Action<TextFileEventStoreOptions> setupAction)
         {
             builder.Services
-                .AddScoped<IBinaryStore, FileSystemBinaryStore>()
+                .AddScoped<IEventStore, TextFileEventStore>()
                 .Configure(setupAction)
                 ;
             return builder;

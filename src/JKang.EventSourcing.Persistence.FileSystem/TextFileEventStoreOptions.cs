@@ -1,8 +1,7 @@
 ﻿namespace JKang.EventSourcing.Persistence.FileSystem
 {
-    public class FileSystemBinaryStoreOptions
+    public class TextFileEventStoreOptions
     {
         public string Folder { get; set; }
-        public string Extension { get; set; } = ".bin";
     }
 }

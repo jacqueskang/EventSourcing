@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\JKang.EventSourcing.Persistence\JKang.EventSourcing.Persistence.csproj" />
+    <ProjectReference Include="..\JKang.EventSourcing.Persistence.Abstractions\JKang.EventSourcing.Persistence.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

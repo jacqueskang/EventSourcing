@@ -12,7 +12,7 @@
     <ProjectReference Include="..\JKang.EventSourcing.Core\JKang.EventSourcing.Core.csproj" />
     <ProjectReference Include="..\JKang.EventSourcing.Persistence.EfCore\JKang.EventSourcing.Persistence.EfCore.csproj" />
     <ProjectReference Include="..\JKang.EventSourcing.Persistence.FileSystem\JKang.EventSourcing.Persistence.FileSystem.csproj" />
-    <ProjectReference Include="..\JKang.EventSourcing.Persistence\JKang.EventSourcing.Persistence.csproj" />
+    <ProjectReference Include="..\JKang.EventSourcing.Persistence.Abstractions\JKang.EventSourcing.Persistence.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

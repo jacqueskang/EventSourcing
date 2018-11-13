@@ -11,9 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(services));
             }
 
-            return new EventSourcingBuilder(services)
-                .UseDefaultEventStore()
-                .UserDefaultEventSerializer();
+            return new EventSourcingBuilder(services);
         }
     }
 }
