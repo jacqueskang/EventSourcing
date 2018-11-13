@@ -11,52 +11,38 @@ Easy to integrate in ASP.NET Core project to persist event-sourced domain entiti
 
 ## Quick Start:
 
-Let's implement a really simple banking account management system, with which we can
- * Create an account
- * Credit the account
- * Debit the account
+Let's implement a simple gift card management system with the following use cases:
+ * Create gift cards with initial credit
+ * Debit the gift card specifying amount and reason
+   * Overpaying is not allowed
+   * Payment history should be persisted
 
-I'm adopting *DDD (Domain Driven Design)* approach and implement **Account** as an **Rich Domain Aggregate** which encapsulates/protects its internal data/state, and contains itself business logics ensuring data integrity.
+I'm adopting *DDD (Domain Driven Design)* approach and implement the *GiftCard* entity as an **Rich Domain Aggregate** which encapsulates/protects its internal data/state, and contains itself business logics ensuring data integrity.
 
 **Notes**:
  - To improve readability and I'm omitting some necessary codes (e.g. Json constructor). The complete sample project can be found in the solution.
 
 ### Step 1 - Define events
 
-3 events are needed for our use cases: 
+2 events are needed for our use cases: 
 
 ```csharp
-    public sealed class AccountCreated : AggregateCreatedEvent
+    public sealed class GiftCardCreated : AggregateCreatedEvent
     {
-        public AccountCreated(Guid aggregateId, string name)
+        public GiftCardCreated(Guid aggregateId, decimal initialCredit)
             : base(aggregateId)
         {
-            Name = name;
+            InitialCredit = initialCredit;
         }
 
-        public string Name { get; }
+        public decimal InitialCredit { get; }
     }
 ```
 
 ```csharp
-    public class AccountCredited : AggregateEvent
+    public class GiftCardDebited : AggregateEvent
     {
-        public AccountCredited(Guid aggregateId, int aggregateVersion, decimal amount, string reason)
-            : base(aggregateId, aggregateVersion)
-        {
-            Amount = amount;
-            Reason = reason;
-        }
-
-        public decimal Amount { get; }
-        public string Reason { get; }
-    }
-```
-
-```csharp
-    public class AccountDebited : AggregateEvent
-    {
-        public AccountDebited(Guid aggregateId, int aggregateVersion, decimal amount, string reason)
+        public GiftCardDebited(Guid aggregateId, int aggregateVersion, decimal amount, string reason)
             : base(aggregateId, aggregateVersion)
         {
             Amount = amount;
@@ -71,58 +57,46 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement **Account** as 
 ### Step 2 - Implement domain aggregate
 
 ```csharp
-    public class Account : Aggregate
+    public class GiftCard : Aggregate
     {
         /// <summary>
-        /// Constructor for creating an new account
+        /// Constructor for an new aggregate
         /// </summary>
-        /// <param name="name">Account name</param>
-        public Account(string name)
-            : this(Guid.NewGuid(), name)
+        public GiftCard(decimal initialCredit)
+            : this(Guid.NewGuid(), initialCredit)
         { }
 
-        private Account(Guid id, string name)
-            : base(id, new AccountCreated(id, name))
+        private GiftCard(Guid id, decimal initialCredit)
+            : base(id, new GiftCardCreated(id, initialCredit))
         { }
 
         /// <summary>
-        /// Constructor for rebuilding account from historical events
+        /// Constructor for rehydrate the aggregate from historical events
         /// </summary>
         /// <param name="id">Account ID</param>
         /// <param name="savedEvents">Historical events</param>
-        public Account(Guid id, IEnumerable<AggregateEvent> savedEvents)
+        public GiftCard(Guid id, IEnumerable<AggregateEvent> savedEvents)
             : base(id, savedEvents)
         { }
 
-        public string Name { get; private set; }
-
         public decimal Balance { get; private set; }
-
-        public void Credit(decimal amout, string reason)
-        {
-            ReceiveEvent(new AccountCredited(Id, NextVersion, amout, reason));
-        }
 
         public void Debit(decimal amout, string reason)
         {
-            ReceiveEvent(new AccountDebited(Id, NextVersion, amout, reason));
+            ReceiveEvent(new GiftCardDebited(Id, NextVersion, amout, reason));
         }
 
-        protected override void ProcessEvent(IEvent @event)
+        protected override void ApplyEvent(AggregateEvent @event)
         {
-            if (@event is AccountCreated accountCreated)
+            if (@event is GiftCardCreated created)
             {
-                Name = accountCreated.Name;
+                Balance = created.InitialCredit;
             }
-            else if (@event is AccountCredited accountCredited)
+            else if (@event is GiftCardDebited debited)
             {
-                Balance += accountCredited.Amount;
-            }
-            else if (@event is AccountDebited accountDebited)
-            {
-                if (Balance >= accountDebited.Amount)
+                if (Balance >= debited.Amount)
                 {
-                    Balance -= accountDebited.Amount;
+                    Balance -= debited.Amount;
                 }
                 else
                 {
@@ -136,21 +110,23 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement **Account** as 
 ### Step 3 - Implement repository
 
 ```csharp
-    public interface IAccountRepository
+    public interface IGiftCardRepository
     {
-        Task SaveAccountAsync(Account account);
-        Task<Account> FindAccountAsync(Guid id);
+        Task SaveGiftCardAsync(GiftCard giftCard);
+        Task<GiftCard> FindGiftCardAsync(Guid id);
     }
+```
     
-    public class AccountRepository : AggregateRepository<Account>, IAccountRepository
+```csharp
+    public class GiftCardRepository : AggregateRepository<GiftCard>, IGiftCardRepository
     {
-        public AccountRepository(IEventStore eventStore)
+        public GiftCardRepository(IEventStore<GiftCard> eventStore)
             : base(eventStore)
         { }
 
-        public Task SaveAccountAsync(Account account) => SaveAggregateAsync(account);
+        public Task SaveGiftCardAsync(GiftCard giftCard) => SaveAggregateAsync(giftCard);
 
-        public Task<Account> FindAccountAsync(Guid id) => FindAggregateAsync(id);
+        public Task<GiftCard> FindGiftCardAsync(Guid id) => FindAggregateAsync(id);
     }
 ```
 
@@ -158,39 +134,41 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement **Account** as 
 
 ```csharp
     services
-        .AddScoped<IAccountRepository, AccountRepository>();
+        .AddScoped<IGiftCardRepository, GiftCardRepository>()
 ```
 
-It's possible to use different event store for each type of aggregate:
+It's possible to configure different event store for aggregate type:
 
 1. File system event store
+
 ```csharp
     services
         .AddEventSourcing()
-        .UseTextFileEventStore<Account>(x =>
+        .UseTextFileEventStore<GiftCard>(x =>
         {
-            x.Folder = "C:\\Temp\\EventSourcing\\Accounts";
-        });
+            x.Folder = "C:\\Temp\\EventSourcing\\GiftCards";
+        })
 ```
 
 2. Database event store (using EF Core)
+
 ```csharp
-    public class SampleDbContext : DbContext, IEventSourcingDbContext<Account>
+    public class SampleDbContext : DbContext, IEventSourcingDbContext<GiftCard>
     {
         public SampleDbContext(DbContextOptions<SampleDbContext> options)
             : base(options)
         { }
 
-        public DbSet<EventEntity> AccountEvents { get; set; }
+        public DbSet<EventEntity> GiftCardEvents { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new EventEntityConfiguration());
         }
 
-        DbSet<EventEntity> IEventSourcingDbContext<Account>.GetDbSet()
+        DbSet<EventEntity> IEventSourcingDbContext<GiftCard>.GetDbSet()
         {
-            return AccountEvents;
+            return GiftCardEvents;
         }
     }
 ```
@@ -204,24 +182,26 @@ It's possible to use different event store for each type of aggregate:
 
     services
         .AddEventSourcing()
-        .UseDbEventStore<SampleDbContext, Account>();
+        .UseDbEventStore<SampleDbContext, GiftCard>();
 ```
 
-### Now it's possible to resolve IAccountRepository from DI to create and manage accounts.
+### Now it's possible to resolve IGiftCardRepository from DI to create and use gift cards.
 
-* Create and persist a new account
 
 ```csharp
-    var account = new Account(Name);
-    await _repository.SaveAccountAsync(account);
-```
+	// create a new gift card with initial credit 100
+    var giftCard = new GiftCard(100);
 
-* Rehydrate account, debit/credit and persist again
-```csharp
-    Account account = await _repository.FindAccountAsync(id);
-    account.Credit(100, "Initial saving");
-    account.Debit(50, "Credit card");
-    account.Debit(60, "Credit card"); // ==> invalid operation exception
+	// persist the gift card
+    await _repository.SaveGiftCardAsync(giftCard);
+
+	// rehydrate the giftcard
+    giftCard = await _repository.FindGiftCardAsync(giftCard.Id);
+
+	// payments
+    giftCard.Debit(40, "Credit card 1"); // ==> balance: 60
+    giftCard.Debit(50, "Credit card 2"); // ==> balance: 10
+    giftCard.Debit(20, "Credit card 3"); // ==> invalid operation exception
 ```
 
 __Please feel free to download, fork and/or provide any feedback!__

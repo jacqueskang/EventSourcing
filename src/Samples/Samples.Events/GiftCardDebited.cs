@@ -4,9 +4,9 @@ using System;
 
 namespace Samples.Events
 {
-    public class AccountDebited : AggregateEvent
+    public class GiftCardDebited : AggregateEvent
     {
-        public AccountDebited(Guid aggregateId, int aggregateVersion, decimal amount, string reason)
+        public GiftCardDebited(Guid aggregateId, int aggregateVersion, decimal amount, string reason)
             : base(aggregateId, aggregateVersion)
         {
             Amount = amount;
@@ -14,7 +14,7 @@ namespace Samples.Events
         }
 
         [JsonConstructor]
-        private AccountDebited(Guid id, DateTime dateTime, Guid aggregateId, int aggregateVersion, decimal amount, string reason)
+        private GiftCardDebited(Guid id, DateTime dateTime, Guid aggregateId, int aggregateVersion, decimal amount, string reason)
             : base(id, dateTime, aggregateId, aggregateVersion)
         {
             Amount = amount;

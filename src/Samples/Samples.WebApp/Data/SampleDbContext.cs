@@ -4,22 +4,22 @@ using Samples.Domain;
 
 namespace Samples.WebApp.Data
 {
-    public class SampleDbContext : DbContext, IEventSourcingDbContext<Account>
+    public class SampleDbContext : DbContext, IEventSourcingDbContext<GiftCard>
     {
         public SampleDbContext(DbContextOptions<SampleDbContext> options)
             : base(options)
         { }
 
-        public DbSet<EventEntity> AccountEvents { get; set; }
+        public DbSet<EventEntity> GiftCardEvents { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new EventEntityConfiguration());
         }
 
-        DbSet<EventEntity> IEventSourcingDbContext<Account>.GetDbSet()
+        DbSet<EventEntity> IEventSourcingDbContext<GiftCard>.GetDbSet()
         {
-            return AccountEvents;
+            return GiftCardEvents;
         }
     }
 }

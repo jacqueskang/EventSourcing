@@ -8,18 +8,18 @@ namespace Samples.WebApp.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly IAccountRepository _store;
+        private readonly IGiftCardRepository _repository;
 
-        public IndexModel(IAccountRepository store)
+        public IndexModel(IGiftCardRepository repository)
         {
-            _store = store;
+            _repository = repository;
         }
 
-        public Guid[] AccountIds { get; private set; }
+        public Guid[] GiftCardIds { get; private set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
-            AccountIds = await _store.GetAccountIdsAsync();
+            GiftCardIds = await _repository.GetGiftCardIdsAsync();
             return Page();
         }
     }
