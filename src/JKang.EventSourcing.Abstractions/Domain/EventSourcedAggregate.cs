@@ -25,16 +25,17 @@ namespace JKang.EventSourcing.Domain
         protected EventSourcedAggregate(Guid id, IEnumerable<AggregateEvent> savedEvents)
         {
             Id = id;
-            foreach (AggregateEvent @event in savedEvents)
+            foreach (AggregateEvent @event in savedEvents.OrderBy(x => x.AggregateVersion))
             {
-                ProcessEvent(@event);
+                ApplyEvent(@event);
+                Version = @event.AggregateVersion;
                 _savedEvents.Enqueue(@event);
             }
         }
 
         public Guid Id { get; }
 
-        public int Version { get; protected set; }
+        public int Version { get; private set; } = 0;
 
         public IEnumerable<AggregateEvent> Events { get => _savedEvents.Concat(_unsavedEvents); }
 
@@ -43,12 +44,29 @@ namespace JKang.EventSourcing.Domain
             return new Changeset(_unsavedEvents, this);
         }
 
-        protected abstract void ProcessEvent(AggregateEvent @event);
+        protected abstract void ApplyEvent(AggregateEvent @event);
 
         protected void ReceiveEvent(AggregateEvent @event)
         {
-            ProcessEvent(@event);
+            IntegrateEvent(@event);
             _unsavedEvents.Enqueue(@event);
+        }
+
+        private void IntegrateEvent(AggregateEvent @event)
+        {
+            if (@event.AggregateId != Id)
+            {
+                throw new InvalidOperationException($"Cannot integration event with aggregate id '{@event.AggregateId}' on an aggregate with ID '{Id}'");
+            }
+
+            if (@event.AggregateVersion != Version + 1)
+            {
+                throw new InvalidOperationException($"Cannot integrate event with version '{@event.AggregateVersion}' on an aggregate with version '{Version}'");
+            }
+
+            ApplyEvent(@event);
+
+            Version = @event.AggregateVersion;
         }
 
         public class Changeset

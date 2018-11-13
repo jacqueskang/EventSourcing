@@ -27,7 +27,7 @@ namespace Samples.Events
 
         public override string ToString()
         {
-            return $"Account {AggregateId} credited {Amount:0.00} € at {DateTime} for reason: '{Reason}'";
+            return $"{Amount:0.00} € credited with reason: '{Reason}'";
         }
     }
 }

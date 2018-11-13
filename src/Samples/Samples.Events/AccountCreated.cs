@@ -4,10 +4,10 @@ using Newtonsoft.Json;
 
 namespace Samples.Events
 {
-    public sealed class AccountCreated : AggregateEvent
+    public sealed class AccountCreated : AggregateCreatedEvent
     {
         public AccountCreated(Guid accountId, string name)
-            : base(accountId, 0)
+            : base(accountId)
         {
             Name = name;
         }
@@ -23,7 +23,7 @@ namespace Samples.Events
 
         public override string ToString()
         {
-            return $"Account {AggregateId} created at {DateTime} with name '{Name}'";
+            return $"Account '{Name}' created";
         }
     }
 }

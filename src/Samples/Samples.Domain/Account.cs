@@ -24,9 +24,9 @@ namespace Samples.Domain
         /// Constructor for rebuilding account from historical events
         /// </summary>
         /// <param name="id">Account ID</param>
-        /// <param name="history">Historical events</param>
-        public Account(Guid id, IEnumerable<AggregateEvent> history)
-            : base(id, history)
+        /// <param name="savedEvents">Historical events</param>
+        public Account(Guid id, IEnumerable<AggregateEvent> savedEvents)
+            : base(id, savedEvents)
         { }
 
         public string Name { get; private set; }
@@ -42,7 +42,7 @@ namespace Samples.Domain
             ReceiveEvent(new AccountDebited(Id, Version + 1, amout, reason));
         }
 
-        protected override void ProcessEvent(AggregateEvent @event)
+        protected override void ApplyEvent(AggregateEvent @event)
         {
             if (@event is AccountCreated accountCreated)
             {
@@ -63,7 +63,6 @@ namespace Samples.Domain
                     throw new InvalidOperationException("Not enough credit");
                 }
             }
-            Version = @event.AggregateVersion;
         }
     }
 }

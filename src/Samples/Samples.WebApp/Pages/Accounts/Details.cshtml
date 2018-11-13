@@ -45,9 +45,22 @@
 
 <h3>History</h3>
 
-<ol>
-    @foreach (var @e in Model.Account.Events)
-    {
-        <li>@e</li>
-    }
-</ol>
+<table class="table table-striped table-sm">
+    <thead>
+        <tr>
+            <th>Version</th>
+            <th>Time</th>
+            <th>Event</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var @e in Model.Account.Events)
+        {
+            <tr>
+                <td>@e.AggregateVersion</td>
+                <td>@e.DateTime</td>
+                <td>@e</td>
+            </tr>
+        }
+    </tbody>
+</table>
