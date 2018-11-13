@@ -7,13 +7,13 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class PersistenceFileSystemEventSourcingBuilderExtensions
     {
-        public static IEventSourcingBuilder UseTextFileEventStore<TEventSourcedAggregate>(
+        public static IEventSourcingBuilder UseTextFileEventStore<TAggregate>(
             this IEventSourcingBuilder builder,
             Action<TextFileEventStoreOptions> setupAction)
-            where TEventSourcedAggregate : EventSourcedAggregate
+            where TAggregate : Aggregate
         {
             builder.Services
-                .AddScoped<IEventStore<TEventSourcedAggregate>, TextFileEventStore<TEventSourcedAggregate>>()
+                .AddScoped<IEventStore<TAggregate>, TextFileEventStore<TAggregate>>()
                 .Configure(setupAction)
                 ;
             return builder;

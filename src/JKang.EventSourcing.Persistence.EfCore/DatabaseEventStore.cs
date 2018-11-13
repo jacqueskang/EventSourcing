@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace JKang.EventSourcing.Persistence.EfCore
 {
-    public class DatabaseEventStore<TDbContext, TEventSourcedAggregate> : IEventStore<TEventSourcedAggregate>
-        where TDbContext : DbContext, IEventSourcingDbContext<TEventSourcedAggregate>
-        where TEventSourcedAggregate : EventSourcedAggregate
+    public class DatabaseEventStore<TDbContext, TAggregate> : IEventStore<TAggregate>
+        where TDbContext : DbContext, IEventSourcingDbContext<TAggregate>
+        where TAggregate : Aggregate
     {
         private readonly TDbContext _context;
         private readonly IEventSerializer _eventSerializer;

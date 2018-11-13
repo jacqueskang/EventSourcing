@@ -6,21 +6,21 @@ using System.Threading.Tasks;
 
 namespace JKang.EventSourcing.Persistence
 {
-    public abstract class EventSourcedAggregateRepository<TEventSourcedAggregate>
-        where TEventSourcedAggregate : EventSourcedAggregate
+    public abstract class AggregateRepository<TAggregate>
+        where TAggregate : Aggregate
     {
-        private readonly IEventStore<TEventSourcedAggregate> _eventStore;
+        private readonly IEventStore<TAggregate> _eventStore;
 
         public event EventHandler<AggregateSavedEventArgs> AggregateSaved;
 
-        protected EventSourcedAggregateRepository(IEventStore<TEventSourcedAggregate> eventStore)
+        protected AggregateRepository(IEventStore<TAggregate> eventStore)
         {
             _eventStore = eventStore;
         }
 
-        protected async Task SaveAggregateAsync(TEventSourcedAggregate aggregate)
+        protected async Task SaveAggregateAsync(TAggregate aggregate)
         {
-            EventSourcedAggregate.Changeset changeset = aggregate.GetChangeset();
+            Aggregate.Changeset changeset = aggregate.GetChangeset();
             foreach (AggregateEvent @event in changeset.Events)
             {
                 await _eventStore.AddEventAsync(@event);
@@ -35,12 +35,12 @@ namespace JKang.EventSourcing.Persistence
             return _eventStore.GetAggregateIdsAsync();
         }
 
-        public async Task<TEventSourcedAggregate> FindAggregateAsync(Guid id)
+        public async Task<TAggregate> FindAggregateAsync(Guid id)
         {
             AggregateEvent[] events = await _eventStore.GetEventsAsync(id);
             return events.Length == 0
                 ? null
-                : Activator.CreateInstance(typeof(TEventSourcedAggregate), id, events as IEnumerable<AggregateEvent>) as TEventSourcedAggregate;
+                : Activator.CreateInstance(typeof(TAggregate), id, events as IEnumerable<AggregateEvent>) as TAggregate;
         }
     }
 }

@@ -6,8 +6,8 @@ namespace Samples.Events
 {
     public sealed class AccountCreated : AggregateCreatedEvent
     {
-        public AccountCreated(Guid accountId, string name)
-            : base(accountId)
+        public AccountCreated(Guid aggregateId, string name)
+            : base(aggregateId)
         {
             Name = name;
         }

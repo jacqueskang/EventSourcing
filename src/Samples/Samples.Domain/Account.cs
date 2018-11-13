@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Samples.Domain
 {
-    public class Account : EventSourcedAggregate
+    public class Account : Aggregate
     {
         /// <summary>
         /// Constructor for creating an new account
@@ -34,12 +34,12 @@ namespace Samples.Domain
 
         public void Credit(decimal amout, string reason)
         {
-            ReceiveEvent(new AccountCredited(Id, Version + 1, amout, reason));
+            ReceiveEvent(new AccountCredited(Id, NextVersion, amout, reason));
         }
 
         public void Debit(decimal amout, string reason)
         {
-            ReceiveEvent(new AccountDebited(Id, Version + 1, amout, reason));
+            ReceiveEvent(new AccountDebited(Id, NextVersion, amout, reason));
         }
 
         protected override void ApplyEvent(AggregateEvent @event)

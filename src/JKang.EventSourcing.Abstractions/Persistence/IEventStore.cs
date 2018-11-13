@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace JKang.EventSourcing.Persistence
 {
     public interface IEventStore<TEventSourcedAggregate>
-        where TEventSourcedAggregate : EventSourcedAggregate
+        where TEventSourcedAggregate : Aggregate
     {
         Task AddEventAsync(AggregateEvent @event);
         Task<AggregateEvent[]> GetEventsAsync(Guid aggregateId);

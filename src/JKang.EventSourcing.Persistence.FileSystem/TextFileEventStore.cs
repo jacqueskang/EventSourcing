@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 
 namespace JKang.EventSourcing.Persistence.FileSystem
 {
-    public class TextFileEventStore<TEventSourcedAggregate> : IEventStore<TEventSourcedAggregate>
-        where TEventSourcedAggregate : EventSourcedAggregate
+    public class TextFileEventStore<TAggregate> : IEventStore<TAggregate>
+        where TAggregate : Aggregate
     {
         private readonly IOptions<TextFileEventStoreOptions> _options;
         private readonly IEventSerializer _eventSerializer;

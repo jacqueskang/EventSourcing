@@ -49,8 +49,7 @@ namespace Samples.WebApp
 
             services
                 .AddEventSourcing()
-                .UseDatabaseBinaryStore<SampleDbContext, Account>()
-                //.UseDatabaseBinaryStore<SampleDbContext>()
+                .UseDbEventStore<SampleDbContext, Account>()
                 //.UseTextFileEventStore<Account>(x =>
                 //{
                 //    x.Folder = "C:\\Temp\\EventSourcing\\Accounts";

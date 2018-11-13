@@ -7,13 +7,13 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class PersistenceEfCoreEventSourcingBuilderExtensions
     {
-        public static IEventSourcingBuilder UseDatabaseBinaryStore<TEventSourcingDbContext, TEventSourcedAggregate>(
+        public static IEventSourcingBuilder UseDbEventStore<TEventSourcingDbContext, TAggregate>(
             this IEventSourcingBuilder builder)
-            where TEventSourcingDbContext : DbContext, IEventSourcingDbContext<TEventSourcedAggregate>
-            where TEventSourcedAggregate : EventSourcedAggregate
+            where TEventSourcingDbContext : DbContext, IEventSourcingDbContext<TAggregate>
+            where TAggregate : Aggregate
         {
             builder.Services
-                .AddScoped<IEventStore<TEventSourcedAggregate>, DatabaseEventStore<TEventSourcingDbContext, TEventSourcedAggregate>>()
+                .AddScoped<IEventStore<TAggregate>, DatabaseEventStore<TEventSourcingDbContext, TAggregate>>()
                 ;
             return builder;
         }

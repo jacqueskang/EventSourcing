@@ -6,8 +6,8 @@ namespace Samples.Events
 {
     public class AccountCredited : AggregateEvent
     {
-        public AccountCredited(Guid accountId, int version, decimal amount, string reason)
-            : base(accountId, version)
+        public AccountCredited(Guid aggregateId, int aggregateVersion, decimal amount, string reason)
+            : base(aggregateId, aggregateVersion)
         {
             Amount = amount;
             Reason = reason;

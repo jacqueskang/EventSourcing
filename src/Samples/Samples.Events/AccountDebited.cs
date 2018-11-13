@@ -6,8 +6,8 @@ namespace Samples.Events
 {
     public class AccountDebited : AggregateEvent
     {
-        public AccountDebited(Guid accountId, int version, decimal amount, string reason)
-            : base(accountId, version)
+        public AccountDebited(Guid aggregateId, int aggregateVersion, decimal amount, string reason)
+            : base(aggregateId, aggregateVersion)
         {
             Amount = amount;
             Reason = reason;
