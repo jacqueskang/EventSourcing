@@ -29,10 +29,10 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             _options = options;
         }
 
-        public async Task AddEventAsync(string entityType, Guid entityId, IEvent @event)
+        public async Task AddEventAsync(string aggregateType, Guid aggregateId, IEvent @event)
         {
             string serialized = JsonConvert.SerializeObject(@event, _jsonSerializerSettings);
-            string filePath = GetAggregateFilePath(entityType, entityId, createFolderIfNotExist: true);
+            string filePath = GetAggregateFilePath(aggregateType, aggregateId, createFolderIfNotExist: true);
             using (var fs = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.None))
             using (var sw = new StreamWriter(fs))
             {
@@ -40,11 +40,11 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             }
         }
 
-        public Task<Guid[]> GetEntityIdsAsync(string entityType)
+        public Task<Guid[]> GetAggregateIdsAsync(string aggregateType)
         {
             return Task.Run(() =>
             {
-                string folder = GetAggregateFolder(entityType);
+                string folder = GetAggregateFolder(aggregateType);
                 var di = new DirectoryInfo(folder);
                 if (!di.Exists)
                 {
@@ -59,9 +59,9 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             });
         }
 
-        public async Task<IEvent[]> GetEventsAsync(string entityType, Guid entityId)
+        public async Task<IEvent[]> GetEventsAsync(string aggregateType, Guid aggregateId)
         {
-            string filePath = GetAggregateFilePath(entityType, entityId);
+            string filePath = GetAggregateFilePath(aggregateType, aggregateId);
             if (!File.Exists(filePath))
             {
                 return new IEvent[0];
@@ -81,15 +81,15 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             return events.ToArray();
         }
 
-        private string GetAggregateFilePath(string entityType, Guid entityId, bool createFolderIfNotExist = false)
+        private string GetAggregateFilePath(string aggregateType, Guid aggregateId, bool createFolderIfNotExist = false)
         {
-            string folder = GetAggregateFolder(entityType, createFolderIfNotExist);
-            return Path.Combine(folder, $"{entityId}.txt");
+            string folder = GetAggregateFolder(aggregateType, createFolderIfNotExist);
+            return Path.Combine(folder, $"{aggregateId}.txt");
         }
 
-        private string GetAggregateFolder(string entityType, bool createIfNotExist = false)
+        private string GetAggregateFolder(string aggregateType, bool createIfNotExist = false)
         {
-            string folder = Path.Combine(_options.Value.Folder, entityType);
+            string folder = Path.Combine(_options.Value.Folder, aggregateType);
             if (createIfNotExist)
             {
                 Directory.CreateDirectory(folder);

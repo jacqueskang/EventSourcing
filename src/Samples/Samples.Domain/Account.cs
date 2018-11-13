@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Samples.Domain
 {
-    public class Account : EventSourcedEntity
+    public class Account : EventSourcedAggregate
     {
         /// <summary>
         /// Constructor for creating an new account
