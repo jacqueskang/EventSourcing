@@ -4,21 +4,21 @@ namespace JKang.EventSourcing.Events
 {
     public abstract class AggregateEvent : Event
     {
-        protected AggregateEvent(Guid aggregateId, int version)
+        protected AggregateEvent(Guid aggregateId, int aggregateVersion)
         {
             AggregateId = aggregateId;
-            Version = version;
+            AggregateVersion = aggregateVersion;
         }
 
-        protected AggregateEvent(Guid id, DateTime dateTime, Guid aggregateId, int version)
+        protected AggregateEvent(Guid id, DateTime dateTime, Guid aggregateId, int aggregateVersion)
             : base(id, dateTime)
         {
             AggregateId = aggregateId;
-            Version = version;
+            AggregateVersion = aggregateVersion;
         }
 
         public Guid AggregateId { get; }
 
-        public int Version { get; }
+        public int AggregateVersion { get; }
     }
 }

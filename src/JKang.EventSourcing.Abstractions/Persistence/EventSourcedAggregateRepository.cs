@@ -29,7 +29,7 @@ namespace JKang.EventSourcing.Persistence
             EventSourcedAggregate.Changeset changeset = aggregate.GetChangeset();
             foreach (AggregateEvent @event in changeset.Events)
             {
-                await _eventStore.AddEventAsync(_aggregateType, aggregate.Id, @event);
+                await _eventStore.AddEventAsync(_aggregateType, @event);
             }
             changeset.Commit();
 

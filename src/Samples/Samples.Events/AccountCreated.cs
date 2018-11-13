@@ -13,8 +13,8 @@ namespace Samples.Events
         }
 
         [JsonConstructor]
-        private AccountCreated(Guid id, DateTime dateTime, Guid aggregateId, int version, string name)
-            : base(id, dateTime, aggregateId, version)
+        private AccountCreated(Guid id, DateTime dateTime, Guid aggregateId, int aggregateVersion, string name)
+            : base(id, dateTime, aggregateId, aggregateVersion)
         {
             Name = name;
         }

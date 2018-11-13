@@ -14,8 +14,8 @@ namespace Samples.Events
         }
 
         [JsonConstructor]
-        private AccountDebited(Guid id, DateTime dateTime, Guid aggregateId, int version, decimal amount, string reason)
-            : base(id, dateTime, aggregateId, version)
+        private AccountDebited(Guid id, DateTime dateTime, Guid aggregateId, int aggregateVersion, decimal amount, string reason)
+            : base(id, dateTime, aggregateId, aggregateVersion)
         {
             Amount = amount;
             Reason = reason;

@@ -22,10 +22,10 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             _eventSerializer = eventSerializer;
         }
 
-        public async Task AddEventAsync(string aggregateType, Guid aggregateId, AggregateEvent @event)
+        public async Task AddEventAsync(string aggregateType, AggregateEvent @event)
         {
             string serialized = _eventSerializer.Serialize(@event);
-            string filePath = GetAggregateFilePath(aggregateType, aggregateId, createFolderIfNotExist: true);
+            string filePath = GetAggregateFilePath(aggregateType, @event.AggregateId, createFolderIfNotExist: true);
             using (var fs = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.None))
             using (var sw = new StreamWriter(fs))
             {

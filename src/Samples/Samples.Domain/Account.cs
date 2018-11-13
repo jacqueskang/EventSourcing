@@ -63,7 +63,7 @@ namespace Samples.Domain
                     throw new InvalidOperationException("Not enough credit");
                 }
             }
-            Version = @event.Version;
+            Version = @event.AggregateVersion;
         }
     }
 }

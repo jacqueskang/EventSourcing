@@ -7,6 +7,7 @@ namespace JKang.EventSourcing.Persistence.EfCore
         public Guid Id { get; set; }
         public string AggreagateType { get; set; }
         public Guid AggregateId { get; set; }
+        public int AggregateVersion { get; set; }
         public string Serialized { get; set; }
     }
 }
