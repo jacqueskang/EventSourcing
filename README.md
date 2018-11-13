@@ -4,10 +4,7 @@
 
 A .NET Core event sourcing framework.
 
-Easy to integrate in ASP.NET Core project to persist event-sourced domain entities in different storage: file system, data base (using Entity Framework Core), Azure blob (TODO), AWS cloud object storage (TODO).
-
-## Usage
-TODO
+Easy to integrate in ASP.NET Core project to persist event-sourced domain entities in different storage: file system, database (using Entity Framework Core), Azure Table Storage (TODO).
 
 ## Downloads
 TODO
@@ -19,7 +16,7 @@ Let's implement a really simple banking account management system, with which we
  * Credit the account
  * Debit the account
 
-I'm adopting *DDD (Domain Driven Design)* approach and implement **Account** as an **Rich Domain Entity** which encapsulates/protects its internal data/state, and contains itself business logics ensuring data integrity.
+I'm adopting *DDD (Domain Driven Design)* approach and implement **Account** as an **Rich Domain Aggregate** which encapsulates/protects its internal data/state, and contains itself business logics ensuring data integrity.
 
 **Notes**:
  - To improve readability and I'm omitting some necessary codes (e.g. Json constructor). The complete sample project can be found in the solution.
@@ -163,15 +160,14 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement **Account** as 
 
 It's possible to configure different event persisting system:
 
-* Using file system (each event is saved as single json file)
+* Using file system (one file per aggregate)
 ```csharp
     services
         .AddEventSourcing()
-        .UseFileSystemBinaryStore(x =>
+        .UseTextFileEventStore(x =>
         {
             x.Folder = "C:\\Temp\\EventSourcing";
-            x.Extension = ".json";
-        });
+        })
 ```
 
 * Using database with EF Core (all events are store in the same table)

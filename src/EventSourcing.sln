@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples.WebApp", "Samples\S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples.Events", "Samples\Samples.Events\Samples.Events.csproj", "{5CCF644C-34A1-4B89-B3B5-49613575CCB8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Persistence", "JKang.EventSourcing.Persistence\JKang.EventSourcing.Persistence.csproj", "{7175123C-5D87-40A3-8208-6D5A62296292}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Persistence.Abstractions", "JKang.EventSourcing.Persistence.Abstractions\JKang.EventSourcing.Persistence.Abstractions.csproj", "{7175123C-5D87-40A3-8208-6D5A62296292}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Persistence.FileSystem", "JKang.EventSourcing.Persistence.FileSystem\JKang.EventSourcing.Persistence.FileSystem.csproj", "{6D98F447-6ACD-40D6-AB47-A7C113ECBC1A}"
 EndProject
@@ -30,7 +30,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JKang.EventSourcing.Persistence.EfCore", "JKang.EventSourcing.Persistence.EfCore\JKang.EventSourcing.Persistence.EfCore.csproj", "{5473865D-3737-4719-893B-9DD6A10E5A35}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Persistence.EfCore", "JKang.EventSourcing.Persistence.EfCore\JKang.EventSourcing.Persistence.EfCore.csproj", "{5473865D-3737-4719-893B-9DD6A10E5A35}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
