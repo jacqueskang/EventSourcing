@@ -12,6 +12,8 @@ namespace JKang.EventSourcing.Persistence
         private readonly IEventStore _eventStore;
         private readonly string _aggregateType;
 
+        public event EventHandler<AggregateSavedEventArgs> AggregateSaved;
+
         protected EventSourcedAggregateRepository(IEventStore eventStore)
             : this(eventStore, typeof(TEventSourcedAggregate).FullName)
         { }
@@ -30,6 +32,8 @@ namespace JKang.EventSourcing.Persistence
                 await _eventStore.AddEventAsync(_aggregateType, aggregate.Id, @event);
             }
             changeset.Commit();
+
+            AggregateSaved?.Invoke(this, new AggregateSavedEventArgs(changeset.Events));
         }
 
         public Task<Guid[]> GetAggregateIdsAsync()

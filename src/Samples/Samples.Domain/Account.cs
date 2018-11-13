@@ -13,7 +13,11 @@ namespace Samples.Domain
         /// </summary>
         /// <param name="name">Account name</param>
         public Account(string name)
-            : base(Guid.NewGuid(), new AccountCreated(name))
+            : this(Guid.NewGuid(), name)
+        { }
+
+        private Account(Guid id, string name)
+            : base(id, new AccountCreated(id, name))
         { }
 
         /// <summary>
@@ -30,12 +34,12 @@ namespace Samples.Domain
 
         public void Credit(decimal amout, string reason)
         {
-            ReceiveEvent(new AccountCredited(amout, reason));
+            ReceiveEvent(new AccountCredited(Id, amout, reason));
         }
 
         public void Debit(decimal amout, string reason)
         {
-            ReceiveEvent(new AccountDebited(amout, reason));
+            ReceiveEvent(new AccountDebited(Id, amout, reason));
         }
 
         protected override void ProcessEvent(IEvent @event)
