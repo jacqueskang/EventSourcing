@@ -13,7 +13,7 @@ Easy to integrate in ASP.NET Core project to persist event-sourced domain entiti
 
 Let's implement a simple gift card management system with the following use cases:
  * Create gift cards with initial credit
- * Debit the gift card specifying amount and reason
+ * Debit the gift card specifying amount
    * Overpaying is not allowed
    * Payment history should be persisted
 
@@ -42,15 +42,13 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement the *GiftCard* 
 ```csharp
     public class GiftCardDebited : AggregateEvent
     {
-        public GiftCardDebited(Guid aggregateId, int aggregateVersion, decimal amount, string reason)
+        public GiftCardDebited(Guid aggregateId, int aggregateVersion, decimal amount)
             : base(aggregateId, aggregateVersion)
         {
             Amount = amount;
-            Reason = reason;
         }
 
         public decimal Amount { get; }
-        public string Reason { get; }
     }
 ```
 
@@ -81,9 +79,9 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement the *GiftCard* 
 
         public decimal Balance { get; private set; }
 
-        public void Debit(decimal amout, string reason)
+        public void Debit(decimal amout)
         {
-            ReceiveEvent(new GiftCardDebited(Id, NextVersion, amout, reason));
+            ReceiveEvent(new GiftCardDebited(Id, NextVersion, amout));
         }
 
         protected override void ApplyEvent(AggregateEvent @event)
@@ -199,9 +197,9 @@ It's possible to configure different event store for aggregate type:
     giftCard = await _repository.FindGiftCardAsync(giftCard.Id);
 
 	// payments
-    giftCard.Debit(40, "Credit card 1"); // ==> balance: 60
-    giftCard.Debit(50, "Credit card 2"); // ==> balance: 10
-    giftCard.Debit(20, "Credit card 3"); // ==> invalid operation exception
+    giftCard.Debit(40); // ==> balance: 60
+    giftCard.Debit(50); // ==> balance: 10
+    giftCard.Debit(20); // ==> invalid operation exception
 ```
 
 __Please feel free to download, fork and/or provide any feedback!__

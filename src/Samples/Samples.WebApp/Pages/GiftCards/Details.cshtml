@@ -23,12 +23,6 @@
                 <span class="text-danger" asp-validation-for="Amount"></span>
             </div>
 
-            <div class="form-group">
-                <label asp-for="Reason"></label>
-                <input asp-for="Reason" class="form-control" />
-                <span class="text-danger" asp-validation-for="Reason"></span>
-            </div>
-
             <input class="btn btn-danger" type="submit" asp-page-handler="Debit" value="Pay!" asp-route-id="@Model.GiftCard.Id" />
         </form>
     </div>

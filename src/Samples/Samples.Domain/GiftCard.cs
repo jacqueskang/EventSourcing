@@ -30,9 +30,9 @@ namespace Samples.Domain
 
         public decimal Balance { get; private set; }
 
-        public void Debit(decimal amout, string reason)
+        public void Debit(decimal amout)
         {
-            ReceiveEvent(new GiftCardDebited(Id, NextVersion, amout, reason));
+            ReceiveEvent(new GiftCardDebited(Id, NextVersion, amout));
         }
 
         protected override void ApplyEvent(AggregateEvent @event)

@@ -23,10 +23,6 @@ namespace Samples.WebApp.Pages.GiftCards
         [BindProperty]
         public decimal Amount { get; set; }
 
-        [Required]
-        [BindProperty]
-        public string Reason { get; set; }
-
         public async Task<IActionResult> OnGetAsync(Guid id)
         {
             GiftCard = await _repository.FindGiftCardAsync(id)
@@ -47,7 +43,7 @@ namespace Samples.WebApp.Pages.GiftCards
 
             try
             {
-                GiftCard.Debit(Amount, Reason);
+                GiftCard.Debit(Amount);
                 await _repository.SaveGiftCardAsync(GiftCard);
                 return RedirectToPage(new { id });
             }
