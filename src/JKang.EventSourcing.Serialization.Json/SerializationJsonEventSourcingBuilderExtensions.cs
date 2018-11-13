@@ -9,7 +9,7 @@ namespace Microsoft.Extensions.DependencyInjection
             this IEventSourcingBuilder builder)
         {
             builder.Services
-                .AddScoped<ITextEventSerializer, JsonEventSerializer>()
+                .AddScoped<IEventSerializer, JsonEventSerializer>()
                 ;
             return builder;
         }

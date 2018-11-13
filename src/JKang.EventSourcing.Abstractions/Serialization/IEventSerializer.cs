@@ -2,7 +2,7 @@
 
 namespace JKang.EventSourcing.Serialization
 {
-    public interface ITextEventSerializer
+    public interface IEventSerializer
     {
         string Serialize(IEvent @event);
         IEvent Deserialize(string serialized);

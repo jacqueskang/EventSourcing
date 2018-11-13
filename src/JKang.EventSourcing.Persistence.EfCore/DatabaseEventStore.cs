@@ -12,24 +12,25 @@ namespace JKang.EventSourcing.Persistence.EfCore
         where TDbContext : DbContext, IEventSourcingDbContext
     {
         private readonly TDbContext _context;
-        private readonly ITextEventSerializer _eventSerializer;
+        private readonly IEventSerializer _eventSerializer;
 
         public DatabaseEventStore(
             TDbContext context,
-            ITextEventSerializer eventSerializer)
+            IEventSerializer eventSerializer)
         {
             _context = context;
             _eventSerializer = eventSerializer;
         }
 
-        public async Task AddEventAsync(string aggregateType, Guid aggregateId, IEvent @event)
+        public async Task AddEventAsync(string aggregateType, AggregateEvent @event)
         {
             string serialized = _eventSerializer.Serialize(@event);
             var entity = new EventEntity
             {
-                AggreagateType = aggregateType,
-                AggregateId = aggregateId,
                 Id = @event.Id,
+                AggreagateType = aggregateType,
+                AggregateId = @event.AggregateId,
+                AggregateVersion = @event.AggregateVersion,
                 Serialized = serialized
             };
             await _context.Events.AddAsync(entity);
@@ -45,16 +46,17 @@ namespace JKang.EventSourcing.Persistence.EfCore
                 .ToArrayAsync();
         }
 
-        public async Task<IEvent[]> GetEventsAsync(string aggregateType, Guid aggregateId)
+        public async Task<AggregateEvent[]> GetEventsAsync(string aggregateType, Guid aggregateId)
         {
             List<string> serializedEvents = await _context.Events
                 .Where(x => x.AggreagateType == aggregateType)
                 .Where(x => x.AggregateId == aggregateId)
+                .OrderBy(x => x.AggregateVersion)
                 .Select(x => x.Serialized)
                 .ToListAsync();
 
             return serializedEvents
-                .Select(x => _eventSerializer.Deserialize(x))
+                .Select(x => _eventSerializer.Deserialize(x) as AggregateEvent)
                 .ToArray();
         }
     }

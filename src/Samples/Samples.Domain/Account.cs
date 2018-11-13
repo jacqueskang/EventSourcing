@@ -13,16 +13,20 @@ namespace Samples.Domain
         /// </summary>
         /// <param name="name">Account name</param>
         public Account(string name)
-            : base(Guid.NewGuid(), new AccountCreated(name))
+            : this(Guid.NewGuid(), name)
+        { }
+
+        private Account(Guid id, string name)
+            : base(id, new AccountCreated(id, name))
         { }
 
         /// <summary>
         /// Constructor for rebuilding account from historical events
         /// </summary>
         /// <param name="id">Account ID</param>
-        /// <param name="history">Historical events</param>
-        public Account(Guid id, IEnumerable<IEvent> history)
-            : base(id, history)
+        /// <param name="savedEvents">Historical events</param>
+        public Account(Guid id, IEnumerable<AggregateEvent> savedEvents)
+            : base(id, savedEvents)
         { }
 
         public string Name { get; private set; }
@@ -30,15 +34,15 @@ namespace Samples.Domain
 
         public void Credit(decimal amout, string reason)
         {
-            ReceiveEvent(new AccountCredited(amout, reason));
+            ReceiveEvent(new AccountCredited(Id, Version + 1, amout, reason));
         }
 
         public void Debit(decimal amout, string reason)
         {
-            ReceiveEvent(new AccountDebited(amout, reason));
+            ReceiveEvent(new AccountDebited(Id, Version + 1, amout, reason));
         }
 
-        protected override void ProcessEvent(IEvent @event)
+        protected override void ApplyEvent(AggregateEvent @event)
         {
             if (@event is AccountCreated accountCreated)
             {

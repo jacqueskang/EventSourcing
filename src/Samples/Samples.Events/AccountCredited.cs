@@ -4,18 +4,19 @@ using System;
 
 namespace Samples.Events
 {
-    public class AccountCredited : Event
+    public class AccountCredited : AggregateEvent
     {
-        public AccountCredited(decimal amount, string reason)
-            : base()
+        public AccountCredited(Guid accountId, int version, decimal amount, string reason)
+            : base(accountId, version)
         {
             Amount = amount;
             Reason = reason;
         }
 
         [JsonConstructor]
-        private AccountCredited(Guid id, DateTime dateTime, decimal amount, string reason)
-            : base(id, dateTime)
+        private AccountCredited(Guid id, DateTime dateTime, Guid aggregateId, int aggregateVersion,
+            decimal amount, string reason)
+            : base(id, dateTime, aggregateId, aggregateVersion)
         {
             Amount = amount;
             Reason = reason;
@@ -26,7 +27,7 @@ namespace Samples.Events
 
         public override string ToString()
         {
-            return $"Credited {Amount:0.00} € at {DateTime} for reason: '{Reason}'";
+            return $"{Amount:0.00} € credited with reason: '{Reason}'";
         }
     }
 }

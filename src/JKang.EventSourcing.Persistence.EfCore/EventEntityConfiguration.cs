@@ -11,6 +11,7 @@ namespace JKang.EventSourcing.Persistence.EfCore
             {
                 x.AggreagateType,
                 x.AggregateId,
+                x.AggregateVersion,
             });
         }
     }

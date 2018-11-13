@@ -8,63 +8,83 @@ namespace JKang.EventSourcing.Domain
 {
     public abstract class EventSourcedAggregate
     {
-        private readonly Queue<IEvent> _savedEvents = new Queue<IEvent>();
-        private readonly Queue<IEvent> _unsavedEvents = new Queue<IEvent>();
+        private readonly Queue<AggregateEvent> _savedEvents = new Queue<AggregateEvent>();
+        private readonly Queue<AggregateEvent> _unsavedEvents = new Queue<AggregateEvent>();
 
         /// <summary>
         /// Use this constructor to create a new aggregate
         /// </summary>
         /// <param name="id">Aggregate ID</param>
         /// <param name="created">The creation event</param>
-        protected EventSourcedAggregate(Guid id, IEvent created)
+        protected EventSourcedAggregate(Guid id, AggregateEvent created)
         {
             Id = id;
             ReceiveEvent(created);
         }
 
-        protected EventSourcedAggregate(Guid id, IEnumerable<IEvent> savedEvents)
+        protected EventSourcedAggregate(Guid id, IEnumerable<AggregateEvent> savedEvents)
         {
             Id = id;
-            foreach (IEvent @event in savedEvents)
+            foreach (AggregateEvent @event in savedEvents.OrderBy(x => x.AggregateVersion))
             {
-                ProcessEvent(@event);
+                ApplyEvent(@event);
+                Version = @event.AggregateVersion;
                 _savedEvents.Enqueue(@event);
             }
         }
 
         public Guid Id { get; }
 
-        public IEnumerable<IEvent> Events { get => _savedEvents.Concat(_unsavedEvents); }
+        public int Version { get; private set; } = 0;
+
+        public IEnumerable<AggregateEvent> Events { get => _savedEvents.Concat(_unsavedEvents); }
 
         public Changeset GetChangeset()
         {
             return new Changeset(_unsavedEvents, this);
         }
 
-        protected abstract void ProcessEvent(IEvent @event);
+        protected abstract void ApplyEvent(AggregateEvent @event);
 
-        protected void ReceiveEvent(IEvent @event)
+        protected void ReceiveEvent(AggregateEvent @event)
         {
-            ProcessEvent(@event);
+            IntegrateEvent(@event);
             _unsavedEvents.Enqueue(@event);
+        }
+
+        private void IntegrateEvent(AggregateEvent @event)
+        {
+            if (@event.AggregateId != Id)
+            {
+                throw new InvalidOperationException($"Cannot integration event with aggregate id '{@event.AggregateId}' on an aggregate with ID '{Id}'");
+            }
+
+            if (@event.AggregateVersion != Version + 1)
+            {
+                throw new InvalidOperationException($"Cannot integrate event with version '{@event.AggregateVersion}' on an aggregate with version '{Version}'");
+            }
+
+            ApplyEvent(@event);
+
+            Version = @event.AggregateVersion;
         }
 
         public class Changeset
         {
             private readonly EventSourcedAggregate _aggregate;
-            public Changeset(IEnumerable<IEvent> events, EventSourcedAggregate aggregate)
+            public Changeset(IEnumerable<AggregateEvent> events, EventSourcedAggregate aggregate)
             {
                 Events = events.ToList().AsReadOnly();
                 _aggregate = aggregate;
             }
 
-            public ReadOnlyCollection<IEvent> Events { get; }
+            public ReadOnlyCollection<AggregateEvent> Events { get; }
 
             public void Commit()
             {
                 for (int i = 0; i < Events.Count; i++)
                 {
-                    IEvent @evt = _aggregate._unsavedEvents.Dequeue();
+                    AggregateEvent @evt = _aggregate._unsavedEvents.Dequeue();
                     _aggregate._savedEvents.Enqueue(@evt);
                 }
             }
