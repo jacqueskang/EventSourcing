@@ -24,9 +24,6 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement **Account** as 
 ### Step 1 - Define events
 
 3 events are needed for our use cases: 
- * `AccountCreated`
- * `AccountCredited`
- * `AccountDebited`
 
 ```csharp
     public sealed class AccountCreated : AggregateCreatedEvent
@@ -39,7 +36,9 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement **Account** as 
 
         public string Name { get; }
     }
+```
 
+```csharp
     public class AccountCredited : AggregateEvent
     {
         public AccountCredited(Guid aggregateId, int aggregateVersion, decimal amount, string reason)
@@ -52,8 +51,10 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement **Account** as 
         public decimal Amount { get; }
         public string Reason { get; }
     }
+```
 
-    public class AccountDebited : Event
+```csharp
+    public class AccountDebited : AggregateEvent
     {
         public AccountDebited(Guid aggregateId, int aggregateVersion, decimal amount, string reason)
             : base(aggregateId, aggregateVersion)
@@ -153,16 +154,16 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement **Account** as 
     }
 ```
 
-### Step 4 - Setup dependency injection and configure persisting system
+### Step 4 - Setup dependency injection and configure event store
 
 ```csharp
     services
         .AddScoped<IAccountRepository, AccountRepository>();
 ```
 
-It's possible to configure different event persisting system:
+It's possible to use different event store for each type of aggregate:
 
-* Using file system (one file per aggregate)
+1. File system event store
 ```csharp
     services
         .AddEventSourcing()
@@ -172,12 +173,33 @@ It's possible to configure different event persisting system:
         });
 ```
 
-* Using database with EF Core (all events are store in the same table)
+2. Database event store (using EF Core)
+```csharp
+    public class SampleDbContext : DbContext, IEventSourcingDbContext<Account>
+    {
+        public SampleDbContext(DbContextOptions<SampleDbContext> options)
+            : base(options)
+        { }
+
+        public DbSet<EventEntity> AccountEvents { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration(new EventEntityConfiguration());
+        }
+
+        DbSet<EventEntity> IEventSourcingDbContext<Account>.GetDbSet()
+        {
+            return AccountEvents;
+        }
+    }
+```
+
 ```csharp
     services
         .AddDbContext<SampleDbContext>(x =>
         {
-            x.UseInMemoryDatabase("events");
+            x.UseInMemoryDatabase("eventstore");
         });
 
     services
@@ -185,170 +207,21 @@ It's possible to configure different event persisting system:
         .UseDbEventStore<SampleDbContext, Account>();
 ```
 
-### Step 5 - Implement UI
+### Now it's possible to resolve IAccountRepository from DI to create and manage accounts.
 
-#### Create account
-
-```asp
-    <form method="post">
-        <div class="form-group">
-            <label asp-for="Name"></label>
-            <input asp-for="Name" class="form-control" />
-            <span class="text-danger" asp-validation-for="Name"></span>
-        </div>
-
-        <input type="submit" class="btn btn-primary" value="Create" />
-    </form>
-```
+* Create and persist a new account
 
 ```csharp
-    public class CreateModel : PageModel
-    {
-        private readonly IAccountRepository _repository;
-
-        [Required]
-        [BindProperty]
-        public string Name { get; set; }
-
-        public async Task<IActionResult> OnPostAsync()
-        {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
-            var account = new Account(Name);
-            await _repository.SaveAccountAsync(account);
-            return RedirectToPage("/Accounts/Details", new { id = account.Id });
-        }
-    }
+    var account = new Account(Name);
+    await _repository.SaveAccountAsync(account);
 ```
 
-#### View account
-```asp
-    <dl class="dl-horizontal">
-        <dt>Id</dt>
-        <dd>@Model.Account.Id</dd>
-
-        <dt>Name</dt>
-        <dd>@Model.Account.Name</dd>
-
-        <dt>Balance</dt>
-        <dd>@Model.Account.Balance.ToString("0.00") €</dd>
-    </dl>
-
-    <hr />
-
-    <h3>History</h3>
-    <table class="table table-striped table-sm">
-        <thead>
-            <tr>
-                <th>Version</th>
-                <th>Time</th>
-                <th>Event</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var @e in Model.Account.Events)
-            {
-                <tr>
-                    <td>@e.AggregateVersion</td>
-                    <td>@e.DateTime</td>
-                    <td>@e</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-```
-
+* Rehydrate account, debit/credit and persist again
 ```csharp
-    public class DetailsModel : PageModel
-    {
-        private readonly IAccountRepository _repository;
-
-        public Account Account { get; private set; }
-
-        public async Task<IActionResult> OnGetAsync(Guid id)
-        {
-            Account = await _repository.FindAccountAsync(id)
-                ?? throw new InvalidOperationException("Account not found");
-
-            return Page();
-        }
-    }
-```
-
-#### Debit/Credit account
-```asp
-    <h3>Operations</h3>
-
-    <form method="post" class="form">
-        <div class="text-danger" asp-validation-summary="ModelOnly"></div>
-
-        <div class="form-group">
-            <label asp-for="Amount"></label>
-            <input asp-for="Amount" class="form-control" />
-            <span class="text-danger" asp-validation-for="Amount"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="Reason"></label>
-            <input asp-for="Reason" class="form-control" />
-            <span class="text-danger" asp-validation-for="Reason"></span>
-        </div>
-
-        <input class="btn btn-success" type="submit" asp-page-handler="Credit" value="Credit" asp-route-id="@Model.Account.Id" />
-        <input class="btn btn-danger" type="submit" asp-page-handler="Debit" value="Debit" asp-route-id="@Model.Account.Id" />
-    </form>
-```
-
-```csharp
-        public async Task<IActionResult> OnPostCreditAsync(Guid id)
-        {
-            Account = await _repository.FindAccountAsync(id)
-                ?? throw new InvalidOperationException("Account not found");
-
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
-            try
-            {
-                Account.Credit(Amount, Reason);
-                await _repository.SaveAccountAsync(Account);
-                return RedirectToPage(new { id });
-            }
-            catch (InvalidOperationException ex)
-            {
-                ModelState.AddModelError("", ex.Message);
-                return Page();
-            }
-        }
-
-
-        public async Task<IActionResult> OnPostDebitAsync(Guid id)
-        {
-            Account = await _repository.FindAccountAsync(id)
-                ?? throw new InvalidOperationException("Account not found");
-
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
-            try
-            {
-                Account.Debit(Amount, Reason);
-                await _repository.SaveAccountAsync(Account);
-                return RedirectToPage(new { id });
-            }
-            catch (InvalidOperationException ex)
-            {
-                ModelState.AddModelError("", ex.Message);
-                return Page();
-            }
-        }
+    Account account = await _repository.FindAccountAsync(id);
+    account.Credit(100, "Initial saving");
+    account.Debit(50, "Credit card");
+    account.Debit(60, "Credit card"); // ==> invalid operation exception
 ```
 
 __Please feel free to download, fork and/or provide any feedback!__
