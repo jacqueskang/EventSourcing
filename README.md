@@ -92,14 +92,11 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement the *GiftCard* 
             }
             else if (@event is GiftCardDebited debited)
             {
-                if (Balance >= debited.Amount)
-                {
-                    Balance -= debited.Amount;
-                }
-                else
+                if (Balance < debited.Amount)
                 {
                     throw new InvalidOperationException("Not enough credit");
                 }
+                Balance -= debited.Amount;
             }
         }
     }
@@ -135,9 +132,9 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement the *GiftCard* 
         .AddScoped<IGiftCardRepository, GiftCardRepository>()
 ```
 
-It's possible to configure different event store for aggregate type:
+Note: It's possible to configure different event store for each aggregate type:
 
-1. File system event store
+* File system event store
 
 ```csharp
     services
@@ -148,7 +145,7 @@ It's possible to configure different event store for aggregate type:
         })
 ```
 
-2. Database event store (using EF Core)
+* Database event store (using EF Core)
 
 ```csharp
     public class SampleDbContext : DbContext, IEventSourcingDbContext<GiftCard>
@@ -187,16 +184,16 @@ It's possible to configure different event store for aggregate type:
 
 
 ```csharp
-	// create a new gift card with initial credit 100
+    // create a new gift card with initial credit 100
     var giftCard = new GiftCard(100);
 
-	// persist the gift card
+    // persist the gift card
     await _repository.SaveGiftCardAsync(giftCard);
 
-	// rehydrate the giftcard
+    // rehydrate the giftcard
     giftCard = await _repository.FindGiftCardAsync(giftCard.Id);
 
-	// payments
+    // payments
     giftCard.Debit(40); // ==> balance: 60
     giftCard.Debit(50); // ==> balance: 10
     giftCard.Debit(20); // ==> invalid operation exception
