@@ -17,6 +17,10 @@ Let's implement a simple gift card management system with the following use case
    * Overpaying is not allowed
    * Payment history should be persisted
 
+>
+> A demostration web application can be find [__HERE__](https://jkang-event-sourcing.azurewebsites.net/)
+>
+
 I'm adopting *DDD (Domain Driven Design)* approach and implement the *GiftCard* entity as an **Rich Domain Aggregate** which encapsulates/protects its internal data/state, and contains itself business logics ensuring data integrity.
 
 **Notes**:
