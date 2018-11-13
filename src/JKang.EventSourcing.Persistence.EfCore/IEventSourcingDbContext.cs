@@ -2,8 +2,8 @@
 
 namespace JKang.EventSourcing.Persistence.EfCore
 {
-    public interface IEventSourcingDbContext
+    public interface IEventSourcingDbContext<TEventSourcedAggregate>
     {
-        DbSet<EventEntity> Events { get; set; }
+        DbSet<EventEntity> GetDbSet();
     }
 }

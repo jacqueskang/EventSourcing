@@ -1,4 +1,5 @@
-﻿using JKang.EventSourcing.Events;
+﻿using JKang.EventSourcing.Domain;
+using JKang.EventSourcing.Events;
 using JKang.EventSourcing.Serialization;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -8,8 +9,9 @@ using System.Threading.Tasks;
 
 namespace JKang.EventSourcing.Persistence.EfCore
 {
-    public class DatabaseEventStore<TDbContext> : IEventStore
-        where TDbContext : DbContext, IEventSourcingDbContext
+    public class DatabaseEventStore<TDbContext, TEventSourcedAggregate> : IEventStore<TEventSourcedAggregate>
+        where TDbContext : DbContext, IEventSourcingDbContext<TEventSourcedAggregate>
+        where TEventSourcedAggregate : EventSourcedAggregate
     {
         private readonly TDbContext _context;
         private readonly IEventSerializer _eventSerializer;
@@ -22,34 +24,31 @@ namespace JKang.EventSourcing.Persistence.EfCore
             _eventSerializer = eventSerializer;
         }
 
-        public async Task AddEventAsync(string aggregateType, AggregateEvent @event)
+        public async Task AddEventAsync(AggregateEvent @event)
         {
             string serialized = _eventSerializer.Serialize(@event);
             var entity = new EventEntity
             {
                 Id = @event.Id,
-                AggreagateType = aggregateType,
                 AggregateId = @event.AggregateId,
                 AggregateVersion = @event.AggregateVersion,
                 Serialized = serialized
             };
-            await _context.Events.AddAsync(entity);
+            await _context.GetDbSet().AddAsync(entity);
             await _context.SaveChangesAsync();
         }
 
-        public Task<Guid[]> GetAggregateIdsAsync(string aggregateType)
+        public Task<Guid[]> GetAggregateIdsAsync()
         {
-            return _context.Events
-                .Where(x => x.AggreagateType == aggregateType)
+            return _context.GetDbSet()
                 .Select(x => x.AggregateId)
                 .Distinct()
                 .ToArrayAsync();
         }
 
-        public async Task<AggregateEvent[]> GetEventsAsync(string aggregateType, Guid aggregateId)
+        public async Task<AggregateEvent[]> GetEventsAsync(Guid aggregateId)
         {
-            List<string> serializedEvents = await _context.Events
-                .Where(x => x.AggreagateType == aggregateType)
+            List<string> serializedEvents = await _context.GetDbSet()
                 .Where(x => x.AggregateId == aggregateId)
                 .OrderBy(x => x.AggregateVersion)
                 .Select(x => x.Serialized)

@@ -7,7 +7,7 @@ namespace Samples.Persistence
 {
     public class AccountRepository : EventSourcedAggregateRepository<Account>, IAccountRepository
     {
-        public AccountRepository(IEventStore eventStore)
+        public AccountRepository(IEventStore<Account> eventStore)
             : base(eventStore)
         { }
 

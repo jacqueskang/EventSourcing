@@ -9,19 +9,13 @@ namespace JKang.EventSourcing.Persistence
     public abstract class EventSourcedAggregateRepository<TEventSourcedAggregate>
         where TEventSourcedAggregate : EventSourcedAggregate
     {
-        private readonly IEventStore _eventStore;
-        private readonly string _aggregateType;
+        private readonly IEventStore<TEventSourcedAggregate> _eventStore;
 
         public event EventHandler<AggregateSavedEventArgs> AggregateSaved;
 
-        protected EventSourcedAggregateRepository(IEventStore eventStore)
-            : this(eventStore, typeof(TEventSourcedAggregate).FullName)
-        { }
-
-        protected EventSourcedAggregateRepository(IEventStore eventStore, string aggregateType)
+        protected EventSourcedAggregateRepository(IEventStore<TEventSourcedAggregate> eventStore)
         {
             _eventStore = eventStore;
-            _aggregateType = aggregateType;
         }
 
         protected async Task SaveAggregateAsync(TEventSourcedAggregate aggregate)
@@ -29,7 +23,7 @@ namespace JKang.EventSourcing.Persistence
             EventSourcedAggregate.Changeset changeset = aggregate.GetChangeset();
             foreach (AggregateEvent @event in changeset.Events)
             {
-                await _eventStore.AddEventAsync(_aggregateType, @event);
+                await _eventStore.AddEventAsync(@event);
             }
             changeset.Commit();
 
@@ -38,12 +32,12 @@ namespace JKang.EventSourcing.Persistence
 
         public Task<Guid[]> GetAggregateIdsAsync()
         {
-            return _eventStore.GetAggregateIdsAsync(_aggregateType);
+            return _eventStore.GetAggregateIdsAsync();
         }
 
         public async Task<TEventSourcedAggregate> FindAggregateAsync(Guid id)
         {
-            AggregateEvent[] events = await _eventStore.GetEventsAsync(_aggregateType, id);
+            AggregateEvent[] events = await _eventStore.GetEventsAsync(id);
             return events.Length == 0
                 ? null
                 : Activator.CreateInstance(typeof(TEventSourcedAggregate), id, events as IEnumerable<AggregateEvent>) as TEventSourcedAggregate;

@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Samples.Domain;
 using Samples.WebApp.Data;
 
 namespace Samples.WebApp
@@ -48,11 +49,12 @@ namespace Samples.WebApp
 
             services
                 .AddEventSourcing()
+                .UseDatabaseBinaryStore<SampleDbContext, Account>()
                 //.UseDatabaseBinaryStore<SampleDbContext>()
-                .UseTextFileEventStore(x =>
-                {
-                    x.Folder = "C:\\Temp\\EventSourcing";
-                })
+                //.UseTextFileEventStore<Account>(x =>
+                //{
+                //    x.Folder = "C:\\Temp\\EventSourcing\\Accounts";
+                //})
                 ;
         }
 
