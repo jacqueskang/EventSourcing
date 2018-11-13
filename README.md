@@ -4,7 +4,7 @@
 
 A .NET Core event sourcing framework.
 
-Easy to integrate in ASP.NET Core project to persist event-sourced domain entities in different storage: file system, database (using Entity Framework Core), Azure Table Storage (TODO).
+Easy to integrate in ASP.NET Core project to persist event-sourced domain entities in file system (one text file per aggregate) or in database (using EF Core, one table per aggregate type).
 
 ## Downloads
 TODO
@@ -29,9 +29,10 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement **Account** as 
  * `AccountDebited`
 
 ```csharp
-    public sealed class AccountCreated : Event
+    public sealed class AccountCreated : AggregateCreatedEvent
     {
-        public AccountCreated(string name)
+        public AccountCreated(Guid aggregateId, string name)
+            : base(aggregateId)
         {
             Name = name;
         }
@@ -39,9 +40,10 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement **Account** as 
         public string Name { get; }
     }
 
-    public class AccountCredited : Event
+    public class AccountCredited : AggregateEvent
     {
-        public AccountCredited(decimal amount, string reason)
+        public AccountCredited(Guid aggregateId, int aggregateVersion, decimal amount, string reason)
+            : base(aggregateId, aggregateVersion)
         {
             Amount = amount;
             Reason = reason;
@@ -53,7 +55,8 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement **Account** as 
 
     public class AccountDebited : Event
     {
-        public AccountDebited(decimal amount, string reason)
+        public AccountDebited(Guid aggregateId, int aggregateVersion, decimal amount, string reason)
+            : base(aggregateId, aggregateVersion)
         {
             Amount = amount;
             Reason = reason;
@@ -67,36 +70,41 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement **Account** as 
 ### Step 2 - Implement domain aggregate
 
 ```csharp
-    public class Account : EventAggregateEntity
+    public class Account : Aggregate
     {
         /// <summary>
         /// Constructor for creating an new account
         /// </summary>
         /// <param name="name">Account name</param>
         public Account(string name)
-            : base(Guid.NewGuid(), new AccountCreated(name))
+            : this(Guid.NewGuid(), name)
+        { }
+
+        private Account(Guid id, string name)
+            : base(id, new AccountCreated(id, name))
         { }
 
         /// <summary>
         /// Constructor for rebuilding account from historical events
         /// </summary>
         /// <param name="id">Account ID</param>
-        /// <param name="history">Historical events</param>
-        public Account(Guid id, IEnumerable<IEvent> history)
-            : base(id, history)
+        /// <param name="savedEvents">Historical events</param>
+        public Account(Guid id, IEnumerable<AggregateEvent> savedEvents)
+            : base(id, savedEvents)
         { }
 
         public string Name { get; private set; }
+
         public decimal Balance { get; private set; }
 
         public void Credit(decimal amout, string reason)
         {
-            ReceiveEvent(new AccountCredited(amout, reason));
+            ReceiveEvent(new AccountCredited(Id, NextVersion, amout, reason));
         }
 
         public void Debit(decimal amout, string reason)
         {
-            ReceiveEvent(new AccountDebited(amout, reason));
+            ReceiveEvent(new AccountDebited(Id, NextVersion, amout, reason));
         }
 
         protected override void ProcessEvent(IEvent @event)
@@ -133,21 +141,15 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement **Account** as 
         Task<Account> FindAccountAsync(Guid id);
     }
     
-    public class AccountRepository : EventSourcedAggregateRepository<Account>, IAccountRepository
+    public class AccountRepository : AggregateRepository<Account>, IAccountRepository
     {
         public AccountRepository(IEventStore eventStore)
             : base(eventStore)
         { }
 
-        public Task SaveAccountAsync(Account account)
-        {
-            return SaveAggregateAsync(account);
-        }
+        public Task SaveAccountAsync(Account account) => SaveAggregateAsync(account);
 
-        public Task<Account> FindAccountAsync(Guid id)
-        {
-            return FindAggregateAsync(id);
-        }
+        public Task<Account> FindAccountAsync(Guid id) => FindAggregateAsync(id);
     }
 ```
 
@@ -164,10 +166,10 @@ It's possible to configure different event persisting system:
 ```csharp
     services
         .AddEventSourcing()
-        .UseTextFileEventStore(x =>
+        .UseTextFileEventStore<Account>(x =>
         {
-            x.Folder = "C:\\Temp\\EventSourcing";
-        })
+            x.Folder = "C:\\Temp\\EventSourcing\\Accounts";
+        });
 ```
 
 * Using database with EF Core (all events are store in the same table)
@@ -180,7 +182,7 @@ It's possible to configure different event persisting system:
 
     services
         .AddEventSourcing()
-        .UseDatabaseBinaryStore<SampleDbContext>();
+        .UseDbEventStore<SampleDbContext, Account>();
 ```
 
 ### Step 5 - Implement UI
@@ -238,12 +240,25 @@ It's possible to configure different event persisting system:
     <hr />
 
     <h3>History</h3>
-    <ol>
-        @foreach (var @e in Model.Account.Events)
-        {
-            <li>@e</li>
-        }
-    </ol>
+    <table class="table table-striped table-sm">
+        <thead>
+            <tr>
+                <th>Version</th>
+                <th>Time</th>
+                <th>Event</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var @e in Model.Account.Events)
+            {
+                <tr>
+                    <td>@e.AggregateVersion</td>
+                    <td>@e.DateTime</td>
+                    <td>@e</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 ```
 
 ```csharp

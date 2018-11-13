@@ -9,7 +9,6 @@ namespace JKang.EventSourcing.Persistence.EfCore
         {
             builder.HasIndex(x => new
             {
-                x.AggreagateType,
                 x.AggregateId,
                 x.AggregateVersion,
             });

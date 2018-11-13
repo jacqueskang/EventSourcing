@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using JKang.EventSourcing.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace JKang.EventSourcing.Persistence.EfCore
 {
-    public interface IEventSourcingDbContext
+    public interface IEventSourcingDbContext<TAggregate>
+        where TAggregate : Aggregate
     {
-        DbSet<EventEntity> Events { get; set; }
+        DbSet<EventEntity> GetDbSet();
     }
 }

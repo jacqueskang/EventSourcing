@@ -1,13 +1,15 @@
-﻿using JKang.EventSourcing.Events;
+﻿using JKang.EventSourcing.Domain;
+using JKang.EventSourcing.Events;
 using System;
 using System.Threading.Tasks;
 
 namespace JKang.EventSourcing.Persistence
 {
-    public interface IEventStore
+    public interface IEventStore<TEventSourcedAggregate>
+        where TEventSourcedAggregate : Aggregate
     {
-        Task AddEventAsync(string aggregateType, AggregateEvent @event);
-        Task<AggregateEvent[]> GetEventsAsync(string aggregateType, Guid aggregateId);
-        Task<Guid[]> GetAggregateIdsAsync(string aggregateType);
+        Task AddEventAsync(AggregateEvent @event);
+        Task<AggregateEvent[]> GetEventsAsync(Guid aggregateId);
+        Task<Guid[]> GetAggregateIdsAsync();
     }
 }

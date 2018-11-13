@@ -1,4 +1,5 @@
-﻿using JKang.EventSourcing.Persistence;
+﻿using JKang.EventSourcing.Domain;
+using JKang.EventSourcing.Persistence;
 using JKang.EventSourcing.Persistence.FileSystem;
 using System;
 
@@ -6,12 +7,13 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class PersistenceFileSystemEventSourcingBuilderExtensions
     {
-        public static IEventSourcingBuilder UseTextFileEventStore(
+        public static IEventSourcingBuilder UseTextFileEventStore<TAggregate>(
             this IEventSourcingBuilder builder,
             Action<TextFileEventStoreOptions> setupAction)
+            where TAggregate : Aggregate
         {
             builder.Services
-                .AddScoped<IEventStore, TextFileEventStore>()
+                .AddScoped<IEventStore<TAggregate>, TextFileEventStore<TAggregate>>()
                 .Configure(setupAction)
                 ;
             return builder;

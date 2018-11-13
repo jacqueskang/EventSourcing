@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace JKang.EventSourcing.Domain
 {
-    public abstract class EventSourcedAggregate
+    public abstract class Aggregate
     {
         private readonly Queue<AggregateEvent> _savedEvents = new Queue<AggregateEvent>();
         private readonly Queue<AggregateEvent> _unsavedEvents = new Queue<AggregateEvent>();
@@ -16,13 +16,13 @@ namespace JKang.EventSourcing.Domain
         /// </summary>
         /// <param name="id">Aggregate ID</param>
         /// <param name="created">The creation event</param>
-        protected EventSourcedAggregate(Guid id, AggregateEvent created)
+        protected Aggregate(Guid id, AggregateEvent created)
         {
             Id = id;
             ReceiveEvent(created);
         }
 
-        protected EventSourcedAggregate(Guid id, IEnumerable<AggregateEvent> savedEvents)
+        protected Aggregate(Guid id, IEnumerable<AggregateEvent> savedEvents)
         {
             Id = id;
             foreach (AggregateEvent @event in savedEvents.OrderBy(x => x.AggregateVersion))
@@ -36,6 +36,8 @@ namespace JKang.EventSourcing.Domain
         public Guid Id { get; }
 
         public int Version { get; private set; } = 0;
+
+        protected int NextVersion { get => Version + 1; }
 
         public IEnumerable<AggregateEvent> Events { get => _savedEvents.Concat(_unsavedEvents); }
 
@@ -71,8 +73,8 @@ namespace JKang.EventSourcing.Domain
 
         public class Changeset
         {
-            private readonly EventSourcedAggregate _aggregate;
-            public Changeset(IEnumerable<AggregateEvent> events, EventSourcedAggregate aggregate)
+            private readonly Aggregate _aggregate;
+            public Changeset(IEnumerable<AggregateEvent> events, Aggregate aggregate)
             {
                 Events = events.ToList().AsReadOnly();
                 _aggregate = aggregate;

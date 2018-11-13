@@ -1,4 +1,5 @@
-﻿using JKang.EventSourcing.Events;
+﻿using JKang.EventSourcing.Domain;
+using JKang.EventSourcing.Events;
 using JKang.EventSourcing.Serialization;
 using Microsoft.Extensions.Options;
 using System;
@@ -9,23 +10,24 @@ using System.Threading.Tasks;
 
 namespace JKang.EventSourcing.Persistence.FileSystem
 {
-    public class TextFileEventStore : IEventStore
+    public class TextFileEventStore<TAggregate> : IEventStore<TAggregate>
+        where TAggregate : Aggregate
     {
         private readonly IOptions<TextFileEventStoreOptions> _options;
-        private readonly IEventSerializer _eventSerializer;
+        private readonly IObjectSerializer _eventSerializer;
 
         public TextFileEventStore(
             IOptions<TextFileEventStoreOptions> options,
-            IEventSerializer eventSerializer)
+            IObjectSerializer eventSerializer)
         {
             _options = options;
             _eventSerializer = eventSerializer;
         }
 
-        public async Task AddEventAsync(string aggregateType, AggregateEvent @event)
+        public async Task AddEventAsync(AggregateEvent @event)
         {
             string serialized = _eventSerializer.Serialize(@event);
-            string filePath = GetAggregateFilePath(aggregateType, @event.AggregateId, createFolderIfNotExist: true);
+            string filePath = GetAggregateFilePath(@event.AggregateId, createFolderIfNotExist: true);
             using (var fs = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.None))
             using (var sw = new StreamWriter(fs))
             {
@@ -37,11 +39,11 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             }
         }
 
-        public Task<Guid[]> GetAggregateIdsAsync(string aggregateType)
+        public Task<Guid[]> GetAggregateIdsAsync()
         {
             return Task.Run(() =>
             {
-                string folder = GetAggregateFolder(aggregateType);
+                string folder = GetAggregateFolder();
                 var di = new DirectoryInfo(folder);
                 if (!di.Exists)
                 {
@@ -56,9 +58,9 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             });
         }
 
-        public async Task<AggregateEvent[]> GetEventsAsync(string aggregateType, Guid aggregateId)
+        public async Task<AggregateEvent[]> GetEventsAsync(Guid aggregateId)
         {
-            string filePath = GetAggregateFilePath(aggregateType, aggregateId);
+            string filePath = GetAggregateFilePath(aggregateId);
             if (!File.Exists(filePath))
             {
                 return new AggregateEvent[0];
@@ -73,24 +75,23 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             }
 
             return text.Split(new[] { _options.Value.EventSeparator }, StringSplitOptions.None)
-                .Select(x => _eventSerializer.Deserialize(x) as AggregateEvent)
+                .Select(x => _eventSerializer.Deserialize<AggregateEvent>(x))
                 .ToArray();
         }
 
-        private string GetAggregateFilePath(string aggregateType, Guid aggregateId, bool createFolderIfNotExist = false)
+        private string GetAggregateFilePath(Guid aggregateId, bool createFolderIfNotExist = false)
         {
-            string folder = GetAggregateFolder(aggregateType, createFolderIfNotExist);
+            string folder = GetAggregateFolder(createFolderIfNotExist);
             return Path.Combine(folder, $"{aggregateId}.txt");
         }
 
-        private string GetAggregateFolder(string aggregateType, bool createIfNotExist = false)
+        private string GetAggregateFolder(bool createIfNotExist = false)
         {
-            string folder = Path.Combine(_options.Value.Folder, aggregateType);
             if (createIfNotExist)
             {
-                Directory.CreateDirectory(folder);
+                Directory.CreateDirectory(_options.Value.Folder);
             }
-            return folder;
+            return _options.Value.Folder;
         }
     }
 }
