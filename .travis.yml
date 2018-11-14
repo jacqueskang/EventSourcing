@@ -8,3 +8,4 @@ script:
  - cd ./src
  - dotnet restore
  - dotnet build --configuration Release
+ - dotnet test JKang.EventSourcing.Serialization.Json.Tests
