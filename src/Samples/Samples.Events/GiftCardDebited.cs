@@ -1,4 +1,5 @@
 ﻿using JKang.EventSourcing.Events;
+using Newtonsoft.Json;
 using System;
 
 namespace Samples.Events
@@ -6,11 +7,10 @@ namespace Samples.Events
     public class GiftCardDebited : AggregateEvent
     {
         public static GiftCardDebited New(Guid aggregateId, int aggregateVersion, decimal amount)
-        {
-            return new GiftCardDebited(Guid.NewGuid(), DateTime.UtcNow, aggregateId, aggregateVersion, amount);
-        }
+            => new GiftCardDebited(Guid.NewGuid(), DateTime.UtcNow, aggregateId, aggregateVersion, amount);
 
-        public GiftCardDebited(Guid id, DateTime dateTime, Guid aggregateId, int aggregateVersion, decimal amount)
+        [JsonConstructor]
+        private GiftCardDebited(Guid id, DateTime dateTime, Guid aggregateId, int aggregateVersion, decimal amount)
             : base(id, dateTime, aggregateId, aggregateVersion)
         {
             Amount = amount;
@@ -18,9 +18,6 @@ namespace Samples.Events
 
         public decimal Amount { get; }
 
-        public override string ToString()
-        {
-            return $"{Amount:0.00} € debited.";
-        }
+        public override string ToString() => $"{Amount:0.00} € debited.";
     }
 }

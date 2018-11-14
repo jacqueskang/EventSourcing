@@ -32,12 +32,11 @@ __NOTE__: Event must be **immutable** but should support serialization/deseriali
 ```csharp
     public sealed class GiftCardCreated : AggregateCreatedEvent
     {
-        public static GiftCardCreated New(Guid giftCardId, decimal initialCredit)
-        {
-            return new GiftCardCreated(Guid.NewGuid(), DateTime.UtcNow, giftCardId, initialCredit);
-        }
+        public static GiftCardCreated New(decimal initialCredit)
+            => new GiftCardCreated(Guid.NewGuid(), DateTime.UtcNow, Guid.NewGuid(), initialCredit);
 
-        public GiftCardCreated(Guid id, DateTime dateTime, Guid aggregateId, decimal initialCredit)
+        [JsonConstructor]
+        private GiftCardCreated(Guid id, DateTime dateTime, Guid aggregateId, decimal initialCredit)
             : base(id, dateTime, aggregateId)
         {
             InitialCredit = initialCredit;
@@ -50,7 +49,11 @@ __NOTE__: Event must be **immutable** but should support serialization/deseriali
 ```csharp
     public class GiftCardDebited : AggregateEvent
     {
-        public GiftCardDebited(Guid id, DateTime dateTime, Guid aggregateId, int aggregateVersion, decimal amount)
+        public static GiftCardDebited New(Guid aggregateId, int aggregateVersion, decimal amount)
+            => new GiftCardDebited(Guid.NewGuid(), DateTime.UtcNow, aggregateId, aggregateVersion, amount);
+
+        [JsonConstructor]
+        private GiftCardDebited(Guid id, DateTime dateTime, Guid aggregateId, int aggregateVersion, decimal amount)
             : base(id, dateTime, aggregateId, aggregateVersion)
         {
             Amount = amount;
@@ -82,9 +85,7 @@ __NOTE__: Event must be **immutable** but should support serialization/deseriali
         public decimal Balance { get; private set; }
 
         public void Debit(decimal amout)
-        {
-            ReceiveEvent(GiftCardDebited.New(Id, GetNextVersion(), amout));
-        }
+            => ReceiveEvent(GiftCardDebited.New(Id, GetNextVersion(), amout));
 
         protected override void ApplyEvent(AggregateEvent @event)
         {
