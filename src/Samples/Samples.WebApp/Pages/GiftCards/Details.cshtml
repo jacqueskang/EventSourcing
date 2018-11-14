@@ -13,7 +13,7 @@
 
 <div class="row">
     <div class="col-md-6">
-        <h3>Operation</h3>
+        <h3>Payment</h3>
 
         <form method="post" class="form">
             <div class="text-danger" asp-validation-summary="ModelOnly"></div>
@@ -24,7 +24,8 @@
                 <span class="text-danger" asp-validation-for="Amount"></span>
             </div>
 
-            <input class="btn btn-danger" type="submit" asp-page-handler="Debit" value="Pay!" asp-route-id="@Model.GiftCard.Id" />
+            <input class="btn btn-danger" type="submit" asp-page-handler="Debit" value="Pay!" asp-route-id="@Model.GiftCard.Id"
+                   onclick="return confirm('Are you sure?')" />
         </form>
     </div>
 

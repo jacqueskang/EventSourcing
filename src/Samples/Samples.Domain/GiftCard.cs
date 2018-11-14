@@ -12,7 +12,7 @@ namespace Samples.Domain
         /// Constructor for an new aggregate
         /// </summary>
         public GiftCard(decimal initialCredit)
-            : base(GiftCardCreated.New(Guid.NewGuid(), initialCredit))
+            : base(GiftCardCreated.New(initialCredit))
         { }
 
         /// <summary>
@@ -25,9 +25,7 @@ namespace Samples.Domain
         public decimal Balance { get; private set; }
 
         public void Debit(decimal amout)
-        {
-            ReceiveEvent(GiftCardDebited.New(Id, GetNextVersion(), amout));
-        }
+            => ReceiveEvent(GiftCardDebited.New(Id, GetNextVersion(), amout));
 
         protected override void ApplyEvent(AggregateEvent @event)
         {

@@ -1,16 +1,16 @@
 ﻿using JKang.EventSourcing.Events;
+using Newtonsoft.Json;
 using System;
 
 namespace Samples.Events
 {
     public sealed class GiftCardCreated : AggregateCreatedEvent
     {
-        public static GiftCardCreated New(Guid giftCardId, decimal initialCredit)
-        {
-            return new GiftCardCreated(Guid.NewGuid(), DateTime.UtcNow, giftCardId, initialCredit);
-        }
+        public static GiftCardCreated New(decimal initialCredit)
+            => new GiftCardCreated(Guid.NewGuid(), DateTime.UtcNow, Guid.NewGuid(), initialCredit);
 
-        public GiftCardCreated(Guid id, DateTime dateTime, Guid aggregateId, decimal initialCredit)
+        [JsonConstructor]
+        private GiftCardCreated(Guid id, DateTime dateTime, Guid aggregateId, decimal initialCredit)
             : base(id, dateTime, aggregateId)
         {
             InitialCredit = initialCredit;
@@ -18,9 +18,6 @@ namespace Samples.Events
 
         public decimal InitialCredit { get; }
 
-        public override string ToString()
-        {
-            return $"Gift card created with initial credit: {InitialCredit:0.00} €";
-        }
+        public override string ToString() => $"Gift card created with initial credit: {InitialCredit:0.00} €";
     }
 }
