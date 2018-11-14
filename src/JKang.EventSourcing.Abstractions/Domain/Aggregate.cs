@@ -16,9 +16,9 @@ namespace JKang.EventSourcing.Domain
         /// </summary>
         /// <param name="id">Aggregate ID</param>
         /// <param name="created">The creation event</param>
-        protected Aggregate(Guid id, AggregateEvent created)
+        protected Aggregate(AggregateCreatedEvent created)
         {
-            Id = id;
+            Id = created.AggregateId;
             ReceiveEvent(created);
         }
 
@@ -27,8 +27,7 @@ namespace JKang.EventSourcing.Domain
             Id = id;
             foreach (AggregateEvent @event in savedEvents.OrderBy(x => x.AggregateVersion))
             {
-                ApplyEvent(@event);
-                Version = @event.AggregateVersion;
+                IntegrateEvent(@event);
                 _savedEvents.Enqueue(@event);
             }
         }
@@ -58,12 +57,12 @@ namespace JKang.EventSourcing.Domain
         {
             if (@event.AggregateId != Id)
             {
-                throw new InvalidOperationException($"Cannot integration event with aggregate id '{@event.AggregateId}' on an aggregate with ID '{Id}'");
+                throw new InvalidOperationException($"Cannot integrate event with {nameof(@event.AggregateId)} '{@event.AggregateId}' on an aggregate with {nameof(Id)} '{Id}'");
             }
 
-            if (@event.AggregateVersion != Version + 1)
+            if (@event.AggregateVersion != GetNextVersion())
             {
-                throw new InvalidOperationException($"Cannot integrate event with version '{@event.AggregateVersion}' on an aggregate with version '{Version}'");
+                throw new InvalidOperationException($"Cannot integrate event with {nameof(@event.AggregateVersion)} '{@event.AggregateVersion}' on an aggregate with {nameof(Version)} '{Version}'");
             }
 
             ApplyEvent(@event);

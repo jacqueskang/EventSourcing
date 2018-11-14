@@ -27,7 +27,7 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement the *GiftCard* 
 
 2 events are needed for our use cases: 
 
-__NOTE__: Event must be implemented in a way that ensures successful serialization/deserialization. The default serialization uses JSON.NET
+__NOTE__: Event must be **immutable** but should support serialization/deserialization (Default serialization uses JSON.NET)
 
 ```csharp
     public sealed class GiftCardCreated : AggregateCreatedEvent
@@ -66,21 +66,15 @@ __NOTE__: Event must be implemented in a way that ensures successful serializati
     public class GiftCard : Aggregate
     {
         /// <summary>
-        /// Constructor for an new aggregate
+        /// Creating an new aggregate from scratch
         /// </summary>
         public GiftCard(decimal initialCredit)
-            : this(Guid.NewGuid(), initialCredit)
-        { }
-
-        private GiftCard(Guid id, decimal initialCredit)
-            : base(id, GiftCardCreated.New(id, initialCredit))
+            : base(GiftCardCreated.New(Guid.NewGuid(), initialCredit))
         { }
 
         /// <summary>
-        /// Constructor for rehydrate the aggregate from historical events
+        /// Rehydrate an aggregate from historical events
         /// </summary>
-        /// <param name="id">Account ID</param>
-        /// <param name="savedEvents">Historical events</param>
         public GiftCard(Guid id, IEnumerable<AggregateEvent> savedEvents)
             : base(id, savedEvents)
         { }

@@ -12,18 +12,12 @@ namespace Samples.Domain
         /// Constructor for an new aggregate
         /// </summary>
         public GiftCard(decimal initialCredit)
-            : this(Guid.NewGuid(), initialCredit)
-        { }
-
-        private GiftCard(Guid id, decimal initialCredit)
-            : base(id, GiftCardCreated.New(id, initialCredit))
+            : base(GiftCardCreated.New(Guid.NewGuid(), initialCredit))
         { }
 
         /// <summary>
         /// Constructor for rehydrate the aggregate from historical events
         /// </summary>
-        /// <param name="id">Account ID</param>
-        /// <param name="savedEvents">Historical events</param>
         public GiftCard(Guid id, IEnumerable<AggregateEvent> savedEvents)
             : base(id, savedEvents)
         { }
