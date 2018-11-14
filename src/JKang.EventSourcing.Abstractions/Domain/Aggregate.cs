@@ -37,7 +37,7 @@ namespace JKang.EventSourcing.Domain
 
         public int Version { get; private set; } = 0;
 
-        protected int NextVersion { get => Version + 1; }
+        protected int GetNextVersion() => Version + 1;
 
         public IEnumerable<AggregateEvent> Events { get => _savedEvents.Concat(_unsavedEvents); }
 

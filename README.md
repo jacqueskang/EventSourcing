@@ -23,36 +23,40 @@ Let's implement a simple gift card management system with the following use case
 
 I'm adopting *DDD (Domain Driven Design)* approach and implement the *GiftCard* entity as an **Rich Domain Aggregate** which encapsulates/protects its internal data/state, and contains itself business logics ensuring data integrity.
 
-**Notes**:
- - To improve readability and I'm omitting some necessary codes (e.g. Json constructor). The complete sample project can be found in the solution.
-
 ### Step 1 - Define events
 
 2 events are needed for our use cases: 
 
+__NOTE__: Event must be implemented in a way that ensures successful serialization/deserialization. The default serialization uses JSON.NET
+
 ```csharp
     public sealed class GiftCardCreated : AggregateCreatedEvent
     {
-        public GiftCardCreated(Guid aggregateId, decimal initialCredit)
-            : base(aggregateId)
+        public static GiftCardCreated New(Guid giftCardId, decimal initialCredit)
+        {
+            return new GiftCardCreated(Guid.NewGuid(), DateTime.UtcNow, giftCardId, initialCredit);
+        }
+
+        public GiftCardCreated(Guid id, DateTime dateTime, Guid aggregateId, decimal initialCredit)
+            : base(id, dateTime, aggregateId)
         {
             InitialCredit = initialCredit;
         }
 
-        public decimal InitialCredit { get; }
+        public decimal InitialCredit { get; private set; }
     }
 ```
 
 ```csharp
     public class GiftCardDebited : AggregateEvent
     {
-        public GiftCardDebited(Guid aggregateId, int aggregateVersion, decimal amount)
-            : base(aggregateId, aggregateVersion)
+        public GiftCardDebited(Guid id, DateTime dateTime, Guid aggregateId, int aggregateVersion, decimal amount)
+            : base(id, dateTime, aggregateId, aggregateVersion)
         {
             Amount = amount;
         }
 
-        public decimal Amount { get; }
+        public decimal Amount { get; private set; }
     }
 ```
 
@@ -69,7 +73,7 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement the *GiftCard* 
         { }
 
         private GiftCard(Guid id, decimal initialCredit)
-            : base(id, new GiftCardCreated(id, initialCredit))
+            : base(id, GiftCardCreated.New(id, initialCredit))
         { }
 
         /// <summary>
@@ -85,7 +89,7 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement the *GiftCard* 
 
         public void Debit(decimal amout)
         {
-            ReceiveEvent(new GiftCardDebited(Id, NextVersion, amout));
+            ReceiveEvent(GiftCardDebited.New(Id, GetNextVersion(), amout));
         }
 
         protected override void ApplyEvent(AggregateEvent @event)
@@ -96,10 +100,16 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement the *GiftCard* 
             }
             else if (@event is GiftCardDebited debited)
             {
+                if (debited.Amount < 0)
+                {
+                    throw new InvalidOperationException("Negative debit amout is not allowed.");
+                }
+
                 if (Balance < debited.Amount)
                 {
                     throw new InvalidOperationException("Not enough credit");
                 }
+
                 Balance -= debited.Amount;
             }
         }

@@ -16,7 +16,7 @@ namespace Samples.Domain
         { }
 
         private GiftCard(Guid id, decimal initialCredit)
-            : base(id, new GiftCardCreated(id, initialCredit))
+            : base(id, GiftCardCreated.New(id, initialCredit))
         { }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace Samples.Domain
 
         public void Debit(decimal amout)
         {
-            ReceiveEvent(new GiftCardDebited(Id, NextVersion, amout));
+            ReceiveEvent(GiftCardDebited.New(Id, GetNextVersion(), amout));
         }
 
         protected override void ApplyEvent(AggregateEvent @event)
@@ -43,14 +43,17 @@ namespace Samples.Domain
             }
             else if (@event is GiftCardDebited debited)
             {
-                if (Balance >= debited.Amount)
+                if (debited.Amount < 0)
                 {
-                    Balance -= debited.Amount;
+                    throw new InvalidOperationException("Negative debit amout is not allowed.");
                 }
-                else
+
+                if (Balance < debited.Amount)
                 {
                     throw new InvalidOperationException("Not enough credit");
                 }
+
+                Balance -= debited.Amount;
             }
         }
     }
