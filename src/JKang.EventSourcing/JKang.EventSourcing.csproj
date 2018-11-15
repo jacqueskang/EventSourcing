@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\JKang.EventSourcing.Abstractions\JKang.EventSourcing.Abstractions.csproj" />
-    <ProjectReference Include="..\JKang.EventSourcing.Persistence.EfCore\JKang.EventSourcing.Persistence.EfCore.csproj" />
     <ProjectReference Include="..\JKang.EventSourcing.Persistence.FileSystem\JKang.EventSourcing.Persistence.FileSystem.csproj" />
     <ProjectReference Include="..\JKang.EventSourcing.Serialization.Json\JKang.EventSourcing.Serialization.Json.csproj" />
   </ItemGroup>

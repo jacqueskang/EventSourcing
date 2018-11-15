@@ -24,8 +24,7 @@
                 <span class="text-danger" asp-validation-for="Amount"></span>
             </div>
 
-            <input class="btn btn-danger" type="submit" asp-page-handler="Debit" value="Pay!" asp-route-id="@Model.GiftCard.Id"
-                   onclick="return confirm('Are you sure?')" />
+            <input class="btn btn-danger" type="submit" asp-page-handler="Debit" value="Pay!" asp-route-id="@Model.GiftCard.Id" />
         </form>
     </div>
 

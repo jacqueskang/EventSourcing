@@ -18,7 +18,7 @@ namespace Samples.Domain
         /// <summary>
         /// Constructor for rehydrate the aggregate from historical events
         /// </summary>
-        public GiftCard(Guid id, IEnumerable<AggregateEvent> savedEvents)
+        public GiftCard(Guid id, IEnumerable<IAggregateEvent> savedEvents)
             : base(id, savedEvents)
         { }
 
@@ -27,7 +27,7 @@ namespace Samples.Domain
         public void Debit(decimal amout)
             => ReceiveEvent(GiftCardDebited.New(Id, GetNextVersion(), amout));
 
-        protected override void ApplyEvent(AggregateEvent @event)
+        protected override void ApplyEvent(IAggregateEvent @event)
         {
             if (@event is GiftCardCreated created)
             {

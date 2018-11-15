@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace JKang.EventSourcing.Persistence.FileSystem
 {
     public class TextFileEventStore<TAggregate> : IEventStore<TAggregate>
-        where TAggregate : Aggregate
+        where TAggregate : IAggregate
     {
         private readonly IOptions<TextFileEventStoreOptions> _options;
         private readonly IObjectSerializer _eventSerializer;
@@ -24,7 +24,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             _eventSerializer = eventSerializer;
         }
 
-        public async Task AddEventAsync(AggregateEvent @event)
+        public async Task AddEventAsync(IAggregateEvent @event)
         {
             string serialized = _eventSerializer.Serialize(@event);
             string filePath = GetAggregateFilePath(@event.AggregateId, createFolderIfNotExist: true);
@@ -58,15 +58,15 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             });
         }
 
-        public async Task<AggregateEvent[]> GetEventsAsync(Guid aggregateId)
+        public async Task<IAggregateEvent[]> GetEventsAsync(Guid aggregateId)
         {
             string filePath = GetAggregateFilePath(aggregateId);
             if (!File.Exists(filePath))
             {
-                return new AggregateEvent[0];
+                return new IAggregateEvent[0];
             }
 
-            var events = new List<AggregateEvent>();
+            var events = new List<IAggregateEvent>();
             string text;
             using (FileStream fs = File.OpenRead(filePath))
             using (var sr = new StreamReader(fs))
@@ -75,7 +75,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             }
 
             return text.Split(new[] { _options.Value.EventSeparator }, StringSplitOptions.None)
-                .Select(x => _eventSerializer.Deserialize<AggregateEvent>(x))
+                .Select(x => _eventSerializer.Deserialize<IAggregateEvent>(x))
                 .ToArray();
         }
 

@@ -1,4 +1,5 @@
-﻿using JKang.EventSourcing.Domain;
+﻿using JKang.EventSourcing.DependencyInjection;
+using JKang.EventSourcing.Domain;
 using JKang.EventSourcing.Persistence;
 using JKang.EventSourcing.Persistence.FileSystem;
 using System;
@@ -10,7 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IEventSourcingBuilder UseTextFileEventStore<TAggregate>(
             this IEventSourcingBuilder builder,
             Action<TextFileEventStoreOptions> setupAction)
-            where TAggregate : Aggregate
+            where TAggregate : IAggregate
         {
             builder.Services
                 .AddScoped<IEventStore<TAggregate>, TextFileEventStore<TAggregate>>()
