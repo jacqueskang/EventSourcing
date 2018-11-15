@@ -10,7 +10,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IEventSourcingBuilder UseDbEventStore<TEventSourcingDbContext, TAggregate>(
             this IEventSourcingBuilder builder)
             where TEventSourcingDbContext : DbContext, IEventSourcingDbContext<TAggregate>
-            where TAggregate : Aggregate
+            where TAggregate : IAggregate
         {
             builder.Services
                 .AddScoped<IEventStore<TAggregate>, DatabaseEventStore<TEventSourcingDbContext, TAggregate>>()

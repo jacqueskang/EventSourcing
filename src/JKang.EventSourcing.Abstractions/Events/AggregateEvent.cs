@@ -2,7 +2,7 @@
 
 namespace JKang.EventSourcing.Events
 {
-    public abstract class AggregateEvent : IEvent
+    public abstract class AggregateEvent : IAggregateEvent
     {
         protected AggregateEvent(Guid id, DateTime dateTime, Guid aggregateId, int aggregateVersion)
         {

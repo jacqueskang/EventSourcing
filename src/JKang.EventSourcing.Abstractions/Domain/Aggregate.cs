@@ -1,15 +1,14 @@
 ﻿using JKang.EventSourcing.Events;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace JKang.EventSourcing.Domain
 {
-    public abstract class Aggregate
+    public abstract class Aggregate: IAggregate
     {
-        private readonly Queue<AggregateEvent> _savedEvents = new Queue<AggregateEvent>();
-        private readonly Queue<AggregateEvent> _unsavedEvents = new Queue<AggregateEvent>();
+        private readonly Queue<IAggregateEvent> _savedEvents = new Queue<IAggregateEvent>();
+        private readonly Queue<IAggregateEvent> _unsavedEvents = new Queue<IAggregateEvent>();
 
         /// <summary>
         /// Use this constructor to create a new aggregate
@@ -22,10 +21,10 @@ namespace JKang.EventSourcing.Domain
             ReceiveEvent(created);
         }
 
-        protected Aggregate(Guid id, IEnumerable<AggregateEvent> savedEvents)
+        protected Aggregate(Guid id, IEnumerable<IAggregateEvent> savedEvents)
         {
             Id = id;
-            foreach (AggregateEvent @event in savedEvents.OrderBy(x => x.AggregateVersion))
+            foreach (IAggregateEvent @event in savedEvents.OrderBy(x => x.AggregateVersion))
             {
                 IntegrateEvent(@event);
                 _savedEvents.Enqueue(@event);
@@ -38,22 +37,22 @@ namespace JKang.EventSourcing.Domain
 
         protected int GetNextVersion() => Version + 1;
 
-        public IEnumerable<AggregateEvent> Events { get => _savedEvents.Concat(_unsavedEvents); }
+        public IEnumerable<IAggregateEvent> Events { get => _savedEvents.Concat(_unsavedEvents); }
 
-        public Changeset GetChangeset()
+        public IAggregateChangeset GetChangeset()
         {
             return new Changeset(_unsavedEvents, this);
         }
 
-        protected abstract void ApplyEvent(AggregateEvent @event);
+        protected abstract void ApplyEvent(IAggregateEvent @event);
 
-        protected void ReceiveEvent(AggregateEvent @event)
+        protected void ReceiveEvent(IAggregateEvent @event)
         {
             IntegrateEvent(@event);
             _unsavedEvents.Enqueue(@event);
         }
 
-        private void IntegrateEvent(AggregateEvent @event)
+        private void IntegrateEvent(IAggregateEvent @event)
         {
             if (@event.AggregateId != Id)
             {
@@ -70,22 +69,22 @@ namespace JKang.EventSourcing.Domain
             Version = @event.AggregateVersion;
         }
 
-        public class Changeset
+        public class Changeset: IAggregateChangeset
         {
             private readonly Aggregate _aggregate;
-            public Changeset(IEnumerable<AggregateEvent> events, Aggregate aggregate)
+            public Changeset(IEnumerable<IAggregateEvent> events, Aggregate aggregate)
             {
                 Events = events.ToList().AsReadOnly();
                 _aggregate = aggregate;
             }
 
-            public ReadOnlyCollection<AggregateEvent> Events { get; }
+            public IEnumerable<IAggregateEvent> Events { get; }
 
             public void Commit()
             {
-                for (int i = 0; i < Events.Count; i++)
+                for (int i = 0; i < Events.Count(); i++)
                 {
-                    AggregateEvent @evt = _aggregate._unsavedEvents.Dequeue();
+                    IAggregateEvent @evt = _aggregate._unsavedEvents.Dequeue();
                     _aggregate._savedEvents.Enqueue(@evt);
                 }
             }

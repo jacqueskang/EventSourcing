@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace JKang.EventSourcing.Persistence
 {
     public abstract class AggregateRepository<TAggregate>
-        where TAggregate : Aggregate
+        where TAggregate : class, IAggregate
     {
         private readonly IEventStore<TAggregate> _eventStore;
 
@@ -20,8 +20,8 @@ namespace JKang.EventSourcing.Persistence
 
         protected async Task SaveAggregateAsync(TAggregate aggregate)
         {
-            Aggregate.Changeset changeset = aggregate.GetChangeset();
-            foreach (AggregateEvent @event in changeset.Events)
+            IAggregateChangeset changeset = aggregate.GetChangeset();
+            foreach (IAggregateEvent @event in changeset.Events)
             {
                 await _eventStore.AddEventAsync(@event);
             }
@@ -37,10 +37,10 @@ namespace JKang.EventSourcing.Persistence
 
         public async Task<TAggregate> FindAggregateAsync(Guid id)
         {
-            AggregateEvent[] events = await _eventStore.GetEventsAsync(id);
+            IAggregateEvent[] events = await _eventStore.GetEventsAsync(id);
             return events.Length == 0
                 ? null
-                : Activator.CreateInstance(typeof(TAggregate), id, events as IEnumerable<AggregateEvent>) as TAggregate;
+                : Activator.CreateInstance(typeof(TAggregate), id, events as IEnumerable<IAggregateEvent>) as TAggregate;
         }
     }
 }

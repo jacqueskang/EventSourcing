@@ -10,7 +10,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IEventSourcingBuilder UseTextFileEventStore<TAggregate>(
             this IEventSourcingBuilder builder,
             Action<TextFileEventStoreOptions> setupAction)
-            where TAggregate : Aggregate
+            where TAggregate : IAggregate
         {
             builder.Services
                 .AddScoped<IEventStore<TAggregate>, TextFileEventStore<TAggregate>>()
