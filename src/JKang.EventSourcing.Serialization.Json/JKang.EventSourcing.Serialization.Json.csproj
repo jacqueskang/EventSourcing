@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\JKang.EventSourcing.Abstractions\JKang.EventSourcing.Abstractions.csproj" />
+    <ProjectReference Include="..\JKang.EventSourcing.Core\JKang.EventSourcing.Core.csproj" />
   </ItemGroup>
 
 </Project>
