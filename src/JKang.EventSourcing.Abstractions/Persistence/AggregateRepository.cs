@@ -11,8 +11,6 @@ namespace JKang.EventSourcing.Persistence
     {
         private readonly IEventStore<TAggregate> _eventStore;
 
-        public event EventHandler<AggregateSavedEventArgs> AggregateSaved;
-
         protected AggregateRepository(IEventStore<TAggregate> eventStore)
         {
             _eventStore = eventStore;
@@ -24,10 +22,14 @@ namespace JKang.EventSourcing.Persistence
             foreach (IAggregateEvent @event in changeset.Events)
             {
                 await _eventStore.AddEventAsync(@event);
+                await OnEventSavedAsync(@event);
             }
             changeset.Commit();
+        }
 
-            AggregateSaved?.Invoke(this, new AggregateSavedEventArgs(changeset.Events));
+        protected virtual Task OnEventSavedAsync(IAggregateEvent @event)
+        {
+            return Task.CompletedTask;
         }
 
         public Task<Guid[]> GetAggregateIdsAsync()
