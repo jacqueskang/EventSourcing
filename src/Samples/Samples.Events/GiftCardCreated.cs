@@ -4,14 +4,14 @@ using System;
 
 namespace Samples.Events
 {
-    public sealed class GiftCardCreated : AggregateCreatedEvent
+    public sealed class GiftCardCreated : AggregateCreatedEvent<Guid>
     {
         public static GiftCardCreated New(decimal initialCredit)
-            => new GiftCardCreated(Guid.NewGuid(), DateTime.UtcNow, Guid.NewGuid(), initialCredit);
+            => new GiftCardCreated(Guid.NewGuid(), initialCredit);
 
         [JsonConstructor]
-        private GiftCardCreated(Guid id, DateTime dateTime, Guid aggregateId, decimal initialCredit)
-            : base(id, dateTime, aggregateId)
+        private GiftCardCreated(Guid aggregateId, decimal initialCredit)
+            : base(aggregateId)
         {
             InitialCredit = initialCredit;
         }

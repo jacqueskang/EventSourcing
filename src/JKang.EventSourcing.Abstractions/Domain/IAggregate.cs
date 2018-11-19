@@ -1,14 +1,13 @@
 ﻿using JKang.EventSourcing.Events;
-using System;
 using System.Collections.Generic;
 
 namespace JKang.EventSourcing.Domain
 {
-    public interface IAggregate
+    public interface IAggregate<TKey>
     {
-        Guid Id { get; }
+        TKey Id { get; }
         int Version { get; }
-        IEnumerable<IAggregateEvent> Events { get; }
-        IAggregateChangeset GetChangeset();
+        IEnumerable<IAggregateEvent<TKey>> Events { get; }
+        IAggregateChangeset<TKey> GetChangeset();
     }
 }

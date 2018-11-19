@@ -1,11 +1,9 @@
-﻿using System;
-
-namespace JKang.EventSourcing.Events
+﻿namespace JKang.EventSourcing.Events
 {
-    public abstract class AggregateCreatedEvent : AggregateEvent
+    public abstract class AggregateCreatedEvent<TAggregateKey> : AggregateEvent<TAggregateKey>
     {
-        protected AggregateCreatedEvent(Guid id, DateTime dateTime, Guid aggregateId)
-            : base(id, dateTime, aggregateId, aggregateVersion: 1)
+        protected AggregateCreatedEvent(TAggregateKey aggregateId)
+            : base(aggregateId, aggregateVersion: 1)
         { }
     }
 }

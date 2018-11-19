@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Samples.Domain
 {
-    public class GiftCard : Aggregate
+    public class GiftCard : Aggregate<Guid>
     {
         /// <summary>
         /// Constructor for an new aggregate
@@ -18,7 +18,7 @@ namespace Samples.Domain
         /// <summary>
         /// Constructor for rehydrate the aggregate from historical events
         /// </summary>
-        public GiftCard(Guid id, IEnumerable<IAggregateEvent> savedEvents)
+        public GiftCard(Guid id, IEnumerable<IAggregateEvent<Guid>> savedEvents)
             : base(id, savedEvents)
         { }
 
@@ -27,7 +27,7 @@ namespace Samples.Domain
         public void Debit(decimal amout)
             => ReceiveEvent(GiftCardDebited.New(Id, GetNextVersion(), amout));
 
-        protected override void ApplyEvent(IAggregateEvent @event)
+        protected override void ApplyEvent(IAggregateEvent<Guid> @event)
         {
             if (@event is GiftCardCreated created)
             {
