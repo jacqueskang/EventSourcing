@@ -15,7 +15,7 @@ namespace JKang.EventSourcing.Domain
         /// </summary>
         /// <param name="id">Aggregate ID</param>
         /// <param name="created">The creation event</param>
-        protected Aggregate(AggregateCreatedEvent<TKey> created)
+        protected Aggregate(IAggregateEvent<TKey> created)
         {
             Id = created.AggregateId;
             ReceiveEvent(created);
