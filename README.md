@@ -169,11 +169,13 @@ Note: It's possible to configure different event store for each aggregate type:
 
 ```csharp
     services
-        .AddEventSourcing()
-        .UseTextFileEventStore<GiftCard, Guid>(x =>
+        .AddEventSourcing(builder =>
         {
-            x.Folder = "C:\\Temp\\EventSourcing\\GiftCards";
-        })
+            builder.UseTextFileEventStore<GiftCard, Guid>(x =>
+            {
+                x.Folder = "C:\\Temp\\EventSourcing\\GiftCards";
+            });
+		});
 ```
 
 * Database event store (using EF Core)
@@ -203,8 +205,10 @@ Note: It's possible to configure different event store for each aggregate type:
         });
 
     services
-        .AddEventSourcing()
-        .UseDbEventStore<SampleDbContext, GiftCard, Guid>();
+        .AddEventSourcing(builder =>
+        {
+            builder.UseDbEventStore<SampleDbContext, GiftCard, Guid>();
+		});
 ```
 
 ### Now it's possible to resolve IGiftCardRepository from DI to create and use gift cards.

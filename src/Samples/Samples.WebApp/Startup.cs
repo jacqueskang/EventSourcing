@@ -45,13 +45,16 @@ namespace Samples.WebApp
                 });
 
             services
-                .AddEventSourcing()
-                .UseDbEventStore<SampleDbContext, GiftCard, Guid>()
-                //.UseTextFileEventStore<GiftCard, Guid>(x =>
-                //{
-                //    x.Folder = "C:\\Temp\\EventSourcing\\GiftCards";
-                //})
-                ;
+                .AddEventSourcing(builder =>
+                {
+                    builder
+                        .UseJsonEventSerializer()
+                        //.UseTextFileEventStore<GiftCard, Guid>(x =>
+                        //{
+                        //    x.Folder = "C:\\Temp\\EventSourcing\\GiftCards";
+                        //})
+                        .UseDbEventStore<SampleDbContext, GiftCard, Guid>();
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
