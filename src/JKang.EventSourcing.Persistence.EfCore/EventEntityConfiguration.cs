@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace JKang.EventSourcing.Persistence.EfCore
 {
-    public class EventEntityConfiguration : IEntityTypeConfiguration<EventEntity>
+    public class EventEntityConfiguration<TAggregateKey> : IEntityTypeConfiguration<EventEntity<TAggregateKey>>
     {
-        public void Configure(EntityTypeBuilder<EventEntity> builder)
+        public void Configure(EntityTypeBuilder<EventEntity<TAggregateKey>> builder)
         {
             builder.HasIndex(x => new
             {

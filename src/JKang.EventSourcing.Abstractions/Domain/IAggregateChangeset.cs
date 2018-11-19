@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace JKang.EventSourcing.Domain
 {
-    public interface IAggregateChangeset
+    public interface IAggregateChangeset<TKey>
     {
-        IEnumerable<IAggregateEvent> Events { get; }
+        IEnumerable<IAggregateEvent<TKey>> Events { get; }
         void Commit();
     }
 }

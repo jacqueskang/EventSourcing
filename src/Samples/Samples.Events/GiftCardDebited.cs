@@ -4,7 +4,7 @@ using System;
 
 namespace Samples.Events
 {
-    public class GiftCardDebited : AggregateEvent
+    public class GiftCardDebited : AggregateEvent<Guid>
     {
         public static GiftCardDebited New(Guid aggregateId, int aggregateVersion, decimal amount)
             => new GiftCardDebited(Guid.NewGuid(), DateTime.UtcNow, aggregateId, aggregateVersion, amount);

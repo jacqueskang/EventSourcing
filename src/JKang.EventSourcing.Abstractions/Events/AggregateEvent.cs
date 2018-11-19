@@ -2,9 +2,9 @@
 
 namespace JKang.EventSourcing.Events
 {
-    public abstract class AggregateEvent : IAggregateEvent
+    public abstract class AggregateEvent<TAggregateKey> : IAggregateEvent<TAggregateKey>
     {
-        protected AggregateEvent(Guid id, DateTime dateTime, Guid aggregateId, int aggregateVersion)
+        protected AggregateEvent(Guid id, DateTime dateTime, TAggregateKey aggregateId, int aggregateVersion)
         {
             Id = id;
             DateTime = dateTime;
@@ -14,7 +14,7 @@ namespace JKang.EventSourcing.Events
 
         public Guid Id { get; }
         public DateTime DateTime { get; }
-        public Guid AggregateId { get; }
+        public TAggregateKey AggregateId { get; }
         public int AggregateVersion { get; }
     }
 }

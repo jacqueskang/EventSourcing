@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace JKang.EventSourcing.Persistence.EfCore
 {
-    public interface IEventSourcingDbContext<TAggregate>
-        where TAggregate : IAggregate
+    public interface IEventSourcingDbContext<TAggregate, TAggregateKey>
+        where TAggregate : IAggregate<TAggregateKey>
     {
-        DbSet<EventEntity> GetDbSet();
+        DbSet<EventEntity<TAggregateKey>> GetDbSet();
     }
 }

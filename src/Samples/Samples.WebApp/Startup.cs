@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Samples.Domain;
 using Samples.Persistence;
 using Samples.WebApp.Data;
+using System;
 
 namespace Samples.WebApp
 {
@@ -45,11 +46,11 @@ namespace Samples.WebApp
 
             services
                 .AddEventSourcing()
-                //.UseDbEventStore<SampleDbContext, GiftCard>()
-                .UseTextFileEventStore<GiftCard>(x =>
-                {
-                    x.Folder = "C:\\Temp\\EventSourcing\\GiftCards";
-                })
+                .UseDbEventStore<SampleDbContext, GiftCard, Guid>()
+                //.UseTextFileEventStore<GiftCard, Guid>(x =>
+                //{
+                //    x.Folder = "C:\\Temp\\EventSourcing\\GiftCards";
+                //})
                 ;
         }
 

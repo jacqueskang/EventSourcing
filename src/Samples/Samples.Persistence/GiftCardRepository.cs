@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace Samples.Persistence
 {
-    public class GiftCardRepository : AggregateRepository<GiftCard>, IGiftCardRepository
+    public class GiftCardRepository : AggregateRepository<GiftCard, Guid>, IGiftCardRepository
     {
-        public GiftCardRepository(IEventStore<GiftCard> eventStore)
+        public GiftCardRepository(IEventStore<GiftCard, Guid> eventStore)
             : base(eventStore)
         { }
 

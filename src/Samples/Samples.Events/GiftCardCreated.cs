@@ -4,7 +4,7 @@ using System;
 
 namespace Samples.Events
 {
-    public sealed class GiftCardCreated : AggregateCreatedEvent
+    public sealed class GiftCardCreated : AggregateCreatedEvent<Guid>
     {
         public static GiftCardCreated New(decimal initialCredit)
             => new GiftCardCreated(Guid.NewGuid(), DateTime.UtcNow, Guid.NewGuid(), initialCredit);

@@ -2,11 +2,11 @@
 
 namespace JKang.EventSourcing.Events
 {
-    public interface IAggregateEvent
+    public interface IAggregateEvent<TAggregateKey>
     {
         Guid Id { get; }
         DateTime DateTime { get; }
-        Guid AggregateId { get; }
+        TAggregateKey AggregateId { get; }
         int AggregateVersion { get; }
     }
 }
