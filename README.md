@@ -30,55 +30,55 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement the *GiftCard* 
 __NOTE__: Event must be **immutable** but should support serialization/deserialization (Default serialization uses JSON.NET)
 
 ```csharp
-    public sealed class GiftCardCreated : AggregateCreatedEvent
+    public sealed class GiftCardCreated : AggregateCreatedEvent<Guid>
     {
         public static GiftCardCreated New(decimal initialCredit)
-            => new GiftCardCreated(Guid.NewGuid(), DateTime.UtcNow, Guid.NewGuid(), initialCredit);
+            => new GiftCardCreated(Guid.NewGuid(), initialCredit);
 
         [JsonConstructor]
-        private GiftCardCreated(Guid id, DateTime dateTime, Guid aggregateId, decimal initialCredit)
-            : base(id, dateTime, aggregateId)
+        private GiftCardCreated(Guid aggregateId, decimal initialCredit)
+            : base(aggregateId)
         {
             InitialCredit = initialCredit;
         }
 
-        public decimal InitialCredit { get; private set; }
+        public decimal InitialCredit { get; }
     }
 ```
 
 ```csharp
-    public class GiftCardDebited : AggregateEvent
+    public class GiftCardDebited : AggregateEvent<Guid>
     {
         public static GiftCardDebited New(Guid aggregateId, int aggregateVersion, decimal amount)
-            => new GiftCardDebited(Guid.NewGuid(), DateTime.UtcNow, aggregateId, aggregateVersion, amount);
+            => new GiftCardDebited(aggregateId, aggregateVersion, amount);
 
         [JsonConstructor]
-        private GiftCardDebited(Guid id, DateTime dateTime, Guid aggregateId, int aggregateVersion, decimal amount)
-            : base(id, dateTime, aggregateId, aggregateVersion)
+        private GiftCardDebited(Guid aggregateId, int aggregateVersion, decimal amount)
+            : base(aggregateId, aggregateVersion)
         {
             Amount = amount;
         }
 
-        public decimal Amount { get; private set; }
+        public decimal Amount { get; }
     }
 ```
 
 ### Step 2 - Implement domain aggregate
 
 ```csharp
-    public class GiftCard : Aggregate
+    public class GiftCard : Aggregate<Guid>
     {
         /// <summary>
-        /// Creating an new aggregate from scratch
+        /// Constructor for an new aggregate
         /// </summary>
         public GiftCard(decimal initialCredit)
-            : base(GiftCardCreated.New(Guid.NewGuid(), initialCredit))
+            : base(GiftCardCreated.New(initialCredit))
         { }
 
         /// <summary>
-        /// Rehydrate an aggregate from historical events
+        /// Constructor for rehydrate the aggregate from historical events
         /// </summary>
-        public GiftCard(Guid id, IEnumerable<AggregateEvent> savedEvents)
+        public GiftCard(Guid id, IEnumerable<IAggregateEvent<Guid>> savedEvents)
             : base(id, savedEvents)
         { }
 
@@ -87,7 +87,7 @@ __NOTE__: Event must be **immutable** but should support serialization/deseriali
         public void Debit(decimal amout)
             => ReceiveEvent(GiftCardDebited.New(Id, GetNextVersion(), amout));
 
-        protected override void ApplyEvent(AggregateEvent @event)
+        protected override void ApplyEvent(IAggregateEvent<Guid> @event)
         {
             if (@event is GiftCardCreated created)
             {
@@ -122,9 +122,9 @@ __NOTE__: Event must be **immutable** but should support serialization/deseriali
 ```
     
 ```csharp
-    public class GiftCardRepository : AggregateRepository<GiftCard>, IGiftCardRepository
+    public class GiftCardRepository : AggregateRepository<GiftCard, Guid>, IGiftCardRepository
     {
-        public GiftCardRepository(IEventStore<GiftCard> eventStore)
+        public GiftCardRepository(IEventStore<GiftCard, Guid> eventStore)
             : base(eventStore)
         { }
 
@@ -148,7 +148,7 @@ Note: It's possible to configure different event store for each aggregate type:
 ```csharp
     services
         .AddEventSourcing()
-        .UseTextFileEventStore<GiftCard>(x =>
+        .UseTextFileEventStore<GiftCard, Guid>(x =>
         {
             x.Folder = "C:\\Temp\\EventSourcing\\GiftCards";
         })
@@ -157,23 +157,19 @@ Note: It's possible to configure different event store for each aggregate type:
 * Database event store (using EF Core)
 
 ```csharp
-    public class SampleDbContext : DbContext, IEventSourcingDbContext<GiftCard>
+    public class SampleDbContext : DbContext, IEventSourcingDbContext<GiftCard, Guid>
     {
         public SampleDbContext(DbContextOptions<SampleDbContext> options)
             : base(options)
         { }
 
-        public DbSet<EventEntity> GiftCardEvents { get; set; }
+        public DbSet<EventEntity<Guid>> GiftCardEvents { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.ApplyConfiguration(new EventEntityConfiguration());
-        }
+            => modelBuilder.ApplyConfiguration(new EventEntityConfiguration<Guid>());
 
-        DbSet<EventEntity> IEventSourcingDbContext<GiftCard>.GetDbSet()
-        {
-            return GiftCardEvents;
-        }
+        DbSet<EventEntity<Guid>> IEventSourcingDbContext<GiftCard, Guid>.GetDbSet()
+            => GiftCardEvents;
     }
 ```
 
@@ -186,7 +182,7 @@ Note: It's possible to configure different event store for each aggregate type:
 
     services
         .AddEventSourcing()
-        .UseDbEventStore<SampleDbContext, GiftCard>();
+        .UseDbEventStore<SampleDbContext, GiftCard, Guid>();
 ```
 
 ### Now it's possible to resolve IGiftCardRepository from DI to create and use gift cards.

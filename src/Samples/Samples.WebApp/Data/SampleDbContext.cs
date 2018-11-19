@@ -14,13 +14,9 @@ namespace Samples.WebApp.Data
         public DbSet<EventEntity<Guid>> GiftCardEvents { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.ApplyConfiguration(new EventEntityConfiguration<Guid>());
-        }
+            => modelBuilder.ApplyConfiguration(new EventEntityConfiguration<Guid>());
 
         DbSet<EventEntity<Guid>> IEventSourcingDbContext<GiftCard, Guid>.GetDbSet()
-        {
-            return GiftCardEvents;
-        }
+            => GiftCardEvents;
     }
 }
