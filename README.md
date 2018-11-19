@@ -202,13 +202,12 @@ Note: It's possible to configure different event store for each aggregate type:
         .AddDbContext<SampleDbContext>(x =>
         {
             x.UseInMemoryDatabase("eventstore");
-        });
-
-    services
+        })
         .AddEventSourcing(builder =>
         {
             builder.UseDbEventStore<SampleDbContext, GiftCard, Guid>();
-        });
+        })
+        ;
 ```
 
 ### Now it's possible to resolve IGiftCardRepository from DI to create and use gift cards.
