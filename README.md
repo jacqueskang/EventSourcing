@@ -25,9 +25,22 @@ I'm adopting *DDD (Domain Driven Design)* approach and implement the *GiftCard* 
 
 ### Step 1 - Define events
 
-2 events are needed for our use cases: 
+The minimum requirement for an user defined event is to implement the following interface:
+```csharp
+    public interface IAggregateEvent<TAggregateKey>
+    {
+        TAggregateKey AggregateId { get; }
+        int AggregateVersion { get; }
+    }
+```
+It's recommended that to implement an event in an **immutable** way.
 
-__NOTE__: Event must be **immutable** but should support serialization/deserialization (Default serialization uses JSON.NET)
+Serialization/deserialization must be supported and the framework uses Json.NET by default. You can also customize the serialization by providing your own implementation of `IObjectSerializer` interface. (e.g., with Protobuf)
+
+You can optionally inherit from the abstract classes `AggregateEvent<TAggregateKey>` or `AggregateCreatedEvent<TAggregateKey>` provided by the framework to save several lines of code.
+
+
+For our use cases I'm defining 2 events as following: 
 
 ```csharp
     public sealed class GiftCardCreated : AggregateCreatedEvent<Guid>
@@ -64,6 +77,12 @@ __NOTE__: Event must be **immutable** but should support serialization/deseriali
 ```
 
 ### Step 2 - Implement domain aggregate
+
+The minimum requirements of a domain aggregate are:
+ 1. Implement `IAggregate<TKey>` interface
+ 2. Have a public constructor with signature: `public YourCustomAggregate(TKey id, IEnumerable<IAggregateEvent<TKey>> savedEvents)`
+
+You can inherit from the abstract class `Aggregate<TKey>` provided by the framework.
 
 ```csharp
     public class GiftCard : Aggregate<Guid>
@@ -112,6 +131,9 @@ __NOTE__: Event must be **immutable** but should support serialization/deseriali
 ```
 
 ### Step 3 - Implement repository
+
+By definition of Event Sourcing, persisting an aggregate insists on persisting all historical events which is done by IEventStore implementation.
+The framework provides 2 IEventStore implementations (TextFileEventStore & DatabaseEventStore) and an abstract class `AggregateRepository<TAggregate, TAggregateKey>` to help implementing your aggregate repository.
 
 ```csharp
     public interface IGiftCardRepository
