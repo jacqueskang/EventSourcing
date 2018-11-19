@@ -13,8 +13,6 @@ namespace JKang.EventSourcing.Serialization.Json.Tests
             string serialized = _sut.Serialize(expected);
             TestEvent actual = _sut.Deserialize<TestEvent>(serialized);
             Assert.NotNull(actual);
-            Assert.Equal(expected.Id, actual.Id);
-            Assert.Equal(expected.DateTime, actual.DateTime);
             Assert.Equal(expected.AggregateId, actual.AggregateId);
             Assert.Equal(expected.AggregateVersion, actual.AggregateVersion);
             Assert.Equal(expected.CustomProperty, actual.CustomProperty);

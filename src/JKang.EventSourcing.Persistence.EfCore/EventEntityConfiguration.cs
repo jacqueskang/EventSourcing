@@ -7,11 +7,11 @@ namespace JKang.EventSourcing.Persistence.EfCore
     {
         public void Configure(EntityTypeBuilder<EventEntity<TAggregateKey>> builder)
         {
-            builder.HasIndex(x => new
+            builder.HasKey(x => new
             {
                 x.AggregateId,
                 x.AggregateVersion,
-            }).IsUnique();
+            });
         }
     }
 }

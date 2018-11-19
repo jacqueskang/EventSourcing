@@ -28,7 +28,6 @@ namespace JKang.EventSourcing.Persistence.EfCore
             string serialized = _eventSerializer.Serialize(@event);
             var entity = new EventEntity<TAggregateKey>
             {
-                Id = @event.Id,
                 AggregateId = @event.AggregateId,
                 AggregateVersion = @event.AggregateVersion,
                 Serialized = serialized
