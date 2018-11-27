@@ -21,7 +21,7 @@ namespace Samples.WebApp.Pages.GiftCards
         public GiftCard GiftCard { get; private set; }
 
         [BindProperty]
-        public decimal Amount { get; set; }
+        public decimal Amount { get; set; } = 30;
 
         public async Task<IActionResult> OnGetAsync(Guid id)
         {

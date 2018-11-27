@@ -30,6 +30,7 @@ namespace JKang.EventSourcing.Persistence.EfCore
             {
                 AggregateId = @event.AggregateId,
                 AggregateVersion = @event.AggregateVersion,
+                Timestamp = @event.Timestamp,
                 Serialized = serialized
             };
             await _context.GetDbSet().AddAsync(entity);

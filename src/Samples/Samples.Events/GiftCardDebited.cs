@@ -1,17 +1,12 @@
 ﻿using JKang.EventSourcing.Events;
-using Newtonsoft.Json;
 using System;
 
 namespace Samples.Events
 {
     public class GiftCardDebited : AggregateEvent<Guid>
     {
-        public static GiftCardDebited New(Guid aggregateId, int aggregateVersion, decimal amount)
-            => new GiftCardDebited(aggregateId, aggregateVersion, amount);
-
-        [JsonConstructor]
-        private GiftCardDebited(Guid aggregateId, int aggregateVersion, decimal amount)
-            : base(aggregateId, aggregateVersion)
+        public GiftCardDebited(Guid aggregateId, int aggregateVersion, DateTime timestamp, decimal amount)
+            : base(aggregateId, aggregateVersion, timestamp)
         {
             Amount = amount;
         }

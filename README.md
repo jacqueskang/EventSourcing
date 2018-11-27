@@ -29,13 +29,19 @@ The minimum requirement for an user defined event is to implement the following 
 ```csharp
     public interface IAggregateEvent<TAggregateKey>
     {
+        // ID of domain aggregate
         TAggregateKey AggregateId { get; }
+
+        // Version of domain aggregate after event occurred
         int AggregateVersion { get; }
+
+        // Timestamp of event
+        DateTime Timestamp { get; }
     }
 ```
 It's recommended that to implement an event in an **immutable** way.
 
-Serialization/deserialization must be supported and the framework uses Json.NET by default. You can also customize the serialization by providing your own implementation of `IObjectSerializer` interface. (e.g., with Protobuf)
+Event must be serializable. The framework uses Json.NET by default but you can customize the serialization by providing your own implementation of `IObjectSerializer` interface. (e.g., with Protobuf)
 
 You can optionally inherit from the abstract classes `AggregateEvent<TAggregateKey>` or `AggregateCreatedEvent<TAggregateKey>` provided by the framework to save several lines of code.
 
@@ -45,12 +51,8 @@ For our use cases I'm defining 2 events as following:
 ```csharp
     public sealed class GiftCardCreated : AggregateCreatedEvent<Guid>
     {
-        public static GiftCardCreated New(decimal initialCredit)
-            => new GiftCardCreated(Guid.NewGuid(), initialCredit);
-
-        [JsonConstructor]
-        private GiftCardCreated(Guid aggregateId, decimal initialCredit)
-            : base(aggregateId)
+        public GiftCardCreated(Guid aggregateId, DateTime timestamp, decimal initialCredit)
+            : base(aggregateId, timestamp)
         {
             InitialCredit = initialCredit;
         }
@@ -62,12 +64,8 @@ For our use cases I'm defining 2 events as following:
 ```csharp
     public class GiftCardDebited : AggregateEvent<Guid>
     {
-        public static GiftCardDebited New(Guid aggregateId, int aggregateVersion, decimal amount)
-            => new GiftCardDebited(aggregateId, aggregateVersion, amount);
-
-        [JsonConstructor]
-        private GiftCardDebited(Guid aggregateId, int aggregateVersion, decimal amount)
-            : base(aggregateId, aggregateVersion)
+        public GiftCardDebited(Guid aggregateId, int aggregateVersion, DateTime timestamp, decimal amount)
+            : base(aggregateId, aggregateVersion, timestamp)
         {
             Amount = amount;
         }
@@ -91,7 +89,7 @@ You can inherit from the abstract class `Aggregate<TKey>` provided by the framew
         /// Constructor for an new aggregate
         /// </summary>
         public GiftCard(decimal initialCredit)
-            : base(GiftCardCreated.New(initialCredit))
+            : base(new GiftCardCreated(Guid.NewGuid(), DateTime.UtcNow, initialCredit))
         { }
 
         /// <summary>
@@ -104,7 +102,7 @@ You can inherit from the abstract class `Aggregate<TKey>` provided by the framew
         public decimal Balance { get; private set; }
 
         public void Debit(decimal amout)
-            => ReceiveEvent(GiftCardDebited.New(Id, GetNextVersion(), amout));
+            => ReceiveEvent(new GiftCardDebited(Id, GetNextVersion(), DateTime.UtcNow, amout));
 
         protected override void ApplyEvent(IAggregateEvent<Guid> @event)
         {

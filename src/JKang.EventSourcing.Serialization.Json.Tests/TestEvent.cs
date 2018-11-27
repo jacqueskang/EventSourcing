@@ -7,9 +7,9 @@ namespace JKang.EventSourcing.Serialization.Json.Tests
 {
     public class TestEvent : AggregateEvent<Guid>
     {
-        public TestEvent(Guid aggregateId, int aggregateVersion,
+        public TestEvent(Guid aggregateId, int aggregateVersion, DateTime timestamp,
             string customProperty1, IEnumerable<string> customProperty2)
-            : base(aggregateId, aggregateVersion)
+            : base(aggregateId, aggregateVersion, timestamp)
         {
             CustomProperty1 = customProperty1;
             CustomProperty2 = customProperty2.ToList().AsReadOnly();
