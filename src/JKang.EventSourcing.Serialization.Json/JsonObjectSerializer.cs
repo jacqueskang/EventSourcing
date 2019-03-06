@@ -13,6 +13,7 @@ namespace JKang.EventSourcing.Serialization.Json
             NullValueHandling = NullValueHandling.Ignore,
             Formatting = Formatting.None,
             Converters = new[] { new StringEnumConverter() },
+            MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead,
         };
 
         public T Deserialize<T>(string serialized)
