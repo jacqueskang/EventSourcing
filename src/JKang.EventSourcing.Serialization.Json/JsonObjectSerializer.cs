@@ -4,7 +4,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace JKang.EventSourcing.Serialization.Json
 {
-    public class JsonObjectSerializer : IObjectSerializer
+    public class JsonObjectSerializer : IJsonObjectSerializer
     {
         private static readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings
         {

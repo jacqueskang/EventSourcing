@@ -53,7 +53,12 @@ namespace Samples.WebApp
                         //{
                         //    x.Folder = "C:\\Temp\\EventSourcing\\GiftCards";
                         //})
-                        .UseDbEventStore<SampleDbContext, GiftCard, Guid>();
+                        //.UseDbEventStore<SampleDbContext, GiftCard, Guid>();
+                        .UseDynamoDBEventStore<GiftCard, Guid>(Configuration, x =>
+                        {
+                            x.TableName = "GiftCards";
+                        })
+                        ;
                 });
         }
 

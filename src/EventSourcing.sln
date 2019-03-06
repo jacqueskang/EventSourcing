@@ -33,6 +33,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Seriali
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Serialization.Json.Tests", "JKang.EventSourcing.Serialization.Json.Tests\JKang.EventSourcing.Serialization.Json.Tests.csproj", "{8ABC9B5B-7257-427B-BE62-58FCD4428DEB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JKang.EventSourcing.Persistence.DynamoDB", "JKang.EventSourcing.DynamoDB\JKang.EventSourcing.Persistence.DynamoDB.csproj", "{C174A0E0-ABD9-4FC9-AF05-3A4F4259AE49}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,10 @@ Global
 		{8ABC9B5B-7257-427B-BE62-58FCD4428DEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8ABC9B5B-7257-427B-BE62-58FCD4428DEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8ABC9B5B-7257-427B-BE62-58FCD4428DEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C174A0E0-ABD9-4FC9-AF05-3A4F4259AE49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C174A0E0-ABD9-4FC9-AF05-3A4F4259AE49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C174A0E0-ABD9-4FC9-AF05-3A4F4259AE49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C174A0E0-ABD9-4FC9-AF05-3A4F4259AE49}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
