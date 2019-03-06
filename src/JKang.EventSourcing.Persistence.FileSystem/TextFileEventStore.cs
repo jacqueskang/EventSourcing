@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace JKang.EventSourcing.Persistence.FileSystem
@@ -14,18 +15,19 @@ namespace JKang.EventSourcing.Persistence.FileSystem
     public class TextFileEventStore<TAggregate, TAggregateKey> : IEventStore<TAggregate, TAggregateKey>
         where TAggregate : IAggregate<TAggregateKey>
     {
-        private readonly IOptions<TextFileEventStoreOptions> _options;
+        private readonly TextFileEventStoreOptions _options;
         private readonly IObjectSerializer _eventSerializer;
 
         public TextFileEventStore(
-            IOptions<TextFileEventStoreOptions> options,
+            IOptionsMonitor<TextFileEventStoreOptions> options,
             IObjectSerializer eventSerializer)
         {
-            _options = options;
+            _options = options.CurrentValue;
             _eventSerializer = eventSerializer;
         }
 
-        public async Task AddEventAsync(IAggregateEvent<TAggregateKey> @event)
+        public async Task AddEventAsync(IAggregateEvent<TAggregateKey> @event,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             string serialized = _eventSerializer.Serialize(@event);
             string filePath = GetAggregateFilePath(@event.AggregateId, createFolderIfNotExist: true);
@@ -34,13 +36,14 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             {
                 if (fs.Position > 0)
                 {
-                    await sw.WriteAsync(_options.Value.EventSeparator);
+                    await sw.WriteAsync(_options.EventSeparator);
                 }
                 await sw.WriteAsync(serialized);
             }
         }
 
-        public Task<TAggregateKey[]> GetAggregateIdsAsync()
+        public Task<TAggregateKey[]> GetAggregateIdsAsync(
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.Run(() =>
             {
@@ -67,7 +70,8 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             });
         }
 
-        public async Task<IAggregateEvent<TAggregateKey>[]> GetEventsAsync(TAggregateKey aggregateId)
+        public async Task<IAggregateEvent<TAggregateKey>[]> GetEventsAsync(TAggregateKey aggregateId,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             string filePath = GetAggregateFilePath(aggregateId);
             if (!File.Exists(filePath))
@@ -83,7 +87,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem
                 text = await sr.ReadToEndAsync();
             }
 
-            return text.Split(new[] { _options.Value.EventSeparator }, StringSplitOptions.None)
+            return text.Split(new[] { _options.EventSeparator }, StringSplitOptions.None)
                 .Select(x => _eventSerializer.Deserialize<IAggregateEvent<TAggregateKey>>(x))
                 .ToArray();
         }
@@ -98,9 +102,9 @@ namespace JKang.EventSourcing.Persistence.FileSystem
         {
             if (createIfNotExist)
             {
-                Directory.CreateDirectory(_options.Value.Folder);
+                Directory.CreateDirectory(_options.Folder);
             }
-            return _options.Value.Folder;
+            return _options.Folder;
         }
     }
 }

@@ -4,7 +4,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace JKang.EventSourcing.Serialization.Json
 {
-    public class JsonObjectSerializer : IObjectSerializer
+    public class JsonObjectSerializer : IJsonObjectSerializer
     {
         private static readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings
         {
@@ -13,6 +13,7 @@ namespace JKang.EventSourcing.Serialization.Json
             NullValueHandling = NullValueHandling.Ignore,
             Formatting = Formatting.None,
             Converters = new[] { new StringEnumConverter() },
+            MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead,
         };
 
         public T Deserialize<T>(string serialized)

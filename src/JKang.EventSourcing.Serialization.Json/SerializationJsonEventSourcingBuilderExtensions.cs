@@ -10,6 +10,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.Services
                 .AddScoped<IObjectSerializer, JsonObjectSerializer>()
+                .AddScoped<IJsonObjectSerializer, JsonObjectSerializer>()
                 ;
             return builder;
         }

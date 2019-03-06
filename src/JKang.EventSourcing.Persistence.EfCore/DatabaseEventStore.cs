@@ -4,6 +4,7 @@ using JKang.EventSourcing.Serialization;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace JKang.EventSourcing.Persistence.EfCore
@@ -23,7 +24,8 @@ namespace JKang.EventSourcing.Persistence.EfCore
             _eventSerializer = eventSerializer;
         }
 
-        public async Task AddEventAsync(IAggregateEvent<TAggregateKey> @event)
+        public async Task AddEventAsync(IAggregateEvent<TAggregateKey> @event,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             string serialized = _eventSerializer.Serialize(@event);
             var entity = new EventEntity<TAggregateKey>
@@ -33,25 +35,27 @@ namespace JKang.EventSourcing.Persistence.EfCore
                 Timestamp = @event.Timestamp,
                 Serialized = serialized
             };
-            await _context.GetDbSet().AddAsync(entity);
-            await _context.SaveChangesAsync();
+            await _context.GetDbSet().AddAsync(entity, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
-        public Task<TAggregateKey[]> GetAggregateIdsAsync()
+        public Task<TAggregateKey[]> GetAggregateIdsAsync(
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             return _context.GetDbSet()
                 .Select(x => x.AggregateId)
                 .Distinct()
-                .ToArrayAsync();
+                .ToArrayAsync(cancellationToken);
         }
 
-        public async Task<IAggregateEvent<TAggregateKey>[]> GetEventsAsync(TAggregateKey aggregateId)
+        public async Task<IAggregateEvent<TAggregateKey>[]> GetEventsAsync(TAggregateKey aggregateId,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             List<string> serializedEvents = await _context.GetDbSet()
                 .Where(x => x.AggregateId.Equals(aggregateId))
                 .OrderBy(x => x.AggregateVersion)
                 .Select(x => x.Serialized)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             return serializedEvents
                 .Select(x => _eventSerializer.Deserialize<IAggregateEvent<TAggregateKey>>(x))
