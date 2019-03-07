@@ -51,7 +51,7 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
             TAggregateKey aggregateId,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Search search = _table.Query(aggregateId.ToString(), new QueryFilter());
+            Search search = _table.Query(_serializer.Serialize(aggregateId), new QueryFilter());
 
             var events = new List<IAggregateEvent<TAggregateKey>>();
             do
