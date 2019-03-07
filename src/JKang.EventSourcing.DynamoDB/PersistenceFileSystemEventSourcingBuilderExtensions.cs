@@ -14,7 +14,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where TAggregate : IAggregate<TAggregateKey>
         {
             builder.Services
-                .Configure<DynamoDBEventStoreOptions>(configuration)
+                .Configure<DynamoDBEventStoreOptions>(typeof(TAggregate).FullName, configuration)
                 .AddAWSService<IAmazonDynamoDB>()
                 .AddScoped<IEventStore<TAggregate, TAggregateKey>, DynamoDBEventStore<TAggregate, TAggregateKey>>()
                 ;
