@@ -45,6 +45,9 @@ namespace Samples.WebApp
                 });
 
             services
+                .AddDefaultAWSOptions(Configuration.GetAWSOptions());
+
+            services
                 .AddEventSourcing(builder =>
                 {
                     builder
@@ -54,11 +57,7 @@ namespace Samples.WebApp
                         //    x.Folder = "C:\\Temp\\EventSourcing\\GiftCards";
                         //})
                         //.UseDbEventStore<SampleDbContext, GiftCard, Guid>()
-                        .UseDynamoDBEventStore<GiftCard, Guid>(Configuration, x =>
-                        {
-                            x.TableName = "GiftCards";
-                        })
-                        ;
+                        .UseDynamoDBEventStore<GiftCard, Guid>(Configuration.GetSection("GiftCardEventStore"));
                 });
         }
 
