@@ -4,8 +4,6 @@ using JKang.EventSourcing.Domain;
 using JKang.EventSourcing.Events;
 using JKang.EventSourcing.Serialization.Json;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -27,7 +25,7 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
             IAmazonDynamoDB client)
         {
             _serializer = serializer;
-            _options = options.CurrentValue;
+            _options = options.Get(typeof(TAggregate).FullName);
             _client = client;
             _table = Table.LoadTable(_client, _options.TableName);
         }
@@ -51,7 +49,7 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
             TAggregateKey aggregateId,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Search search = _table.Query(_serializer.Serialize(aggregateId), new QueryFilter());
+            Search search = _table.Query(aggregateId as dynamic, new QueryFilter());
 
             var events = new List<IAggregateEvent<TAggregateKey>>();
             do
