@@ -15,19 +15,20 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
         where TAggregate : IAggregate<TAggregateKey>
     {
         private readonly IJsonObjectSerializer _serializer;
-        private readonly DynamoDBEventStoreOptions _options;
-        private readonly IAmazonDynamoDB _client;
         private readonly Table _table;
 
         public DynamoDBEventStore(
             IJsonObjectSerializer serializer,
-            IOptionsMonitor<DynamoDBEventStoreOptions> options,
+            IOptionsMonitor<DynamoDBEventStoreOptions> monitor,
             IAmazonDynamoDB client)
         {
             _serializer = serializer;
-            _options = options.Get(typeof(TAggregate).FullName);
-            _client = client;
-            _table = Table.LoadTable(_client, _options.TableName);
+            DynamoDBEventStoreOptions options = monitor.Get(typeof(TAggregate).FullName);
+            if (options.UseLocalDB)
+            {
+                client = options.CreateLocalDBClient();
+            }
+            _table = Table.LoadTable(client, options.TableName);
         }
 
         public async Task AddEventAsync(

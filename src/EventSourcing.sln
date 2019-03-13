@@ -23,6 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		..\.travis.yml = ..\.travis.yml
 		Directory.Build.props = Directory.Build.props
+		DynamoDBSetup.md = DynamoDBSetup.md
 		..\LICENSE = ..\LICENSE
 		..\README.md = ..\README.md
 	EndProjectSection
@@ -33,7 +34,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Seriali
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Serialization.Json.Tests", "JKang.EventSourcing.Serialization.Json.Tests\JKang.EventSourcing.Serialization.Json.Tests.csproj", "{8ABC9B5B-7257-427B-BE62-58FCD4428DEB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JKang.EventSourcing.Persistence.DynamoDB", "JKang.EventSourcing.DynamoDB\JKang.EventSourcing.Persistence.DynamoDB.csproj", "{C174A0E0-ABD9-4FC9-AF05-3A4F4259AE49}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Persistence.DynamoDB", "JKang.EventSourcing.DynamoDB\JKang.EventSourcing.Persistence.DynamoDB.csproj", "{C174A0E0-ABD9-4FC9-AF05-3A4F4259AE49}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
