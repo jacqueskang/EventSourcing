@@ -5,16 +5,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="JKang.EventSourcing" Version="0.5.4" />
+    <PackageReference Include="JKang.EventSourcing.Persistence.DynamoDB" Version="0.5.4" />
+    <PackageReference Include="JKang.EventSourcing.Persistence.EfCore" Version="0.5.4" />
+    <PackageReference Include="JKang.EventSourcing.Persistence.FileSystem" Version="0.5.4" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\JKang.EventSourcing.DynamoDB\JKang.EventSourcing.Persistence.DynamoDB.csproj" />
-    <ProjectReference Include="..\..\JKang.EventSourcing.Persistence.EfCore\JKang.EventSourcing.Persistence.EfCore.csproj" />
-    <ProjectReference Include="..\..\JKang.EventSourcing.Persistence.FileSystem\JKang.EventSourcing.Persistence.FileSystem.csproj" />
-    <ProjectReference Include="..\..\JKang.EventSourcing\JKang.EventSourcing.csproj" />
     <ProjectReference Include="..\Samples.Domain\Samples.Domain.csproj" />
     <ProjectReference Include="..\Samples.Events\Samples.Events.csproj" />
     <ProjectReference Include="..\Samples.Persistence\Samples.Persistence.csproj" />

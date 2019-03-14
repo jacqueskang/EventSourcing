@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Abstrac
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples.Domain", "samples\Samples.Domain\Samples.Domain.csproj", "{134C14B8-93D8-4D3C-A8A6-44535FB6496A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{9D5CA406-F0EA-4C3D-AF34-EF7895E1F20F}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{9D5CA406-F0EA-4C3D-AF34-EF7895E1F20F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples.Persistence", "samples\Samples.Persistence\Samples.Persistence.csproj", "{CFF1243D-67F8-47F0-B6DB-C340FD6BFD85}"
 EndProject
@@ -30,9 +30,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Persist
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Serialization.Json", "src\JKang.EventSourcing.Serialization.Json\JKang.EventSourcing.Serialization.Json.csproj", "{A6001267-1D62-4FAF-8B63-847E68C0FCD4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Serialization.Json.Tests", "src\JKang.EventSourcing.Serialization.Json.Tests\JKang.EventSourcing.Serialization.Json.Tests.csproj", "{8ABC9B5B-7257-427B-BE62-58FCD4428DEB}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Persistence.DynamoDB", "src\JKang.EventSourcing.DynamoDB\JKang.EventSourcing.Persistence.DynamoDB.csproj", "{C174A0E0-ABD9-4FC9-AF05-3A4F4259AE49}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{219B2D75-5084-40AD-A1F1-B3C6A33EB040}"
+	ProjectSection(SolutionItems) = preProject
+		doc\DynamoDBSetup.md = doc\DynamoDBSetup.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Serialization.Json.Tests", "src\JKang.EventSourcing.Serialization.Json.Tests\JKang.EventSourcing.Serialization.Json.Tests.csproj", "{7D6D7350-E603-4E91-9D92-53D3BF4C3DBC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -76,14 +81,14 @@ Global
 		{A6001267-1D62-4FAF-8B63-847E68C0FCD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6001267-1D62-4FAF-8B63-847E68C0FCD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6001267-1D62-4FAF-8B63-847E68C0FCD4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8ABC9B5B-7257-427B-BE62-58FCD4428DEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8ABC9B5B-7257-427B-BE62-58FCD4428DEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8ABC9B5B-7257-427B-BE62-58FCD4428DEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8ABC9B5B-7257-427B-BE62-58FCD4428DEB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C174A0E0-ABD9-4FC9-AF05-3A4F4259AE49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C174A0E0-ABD9-4FC9-AF05-3A4F4259AE49}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C174A0E0-ABD9-4FC9-AF05-3A4F4259AE49}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C174A0E0-ABD9-4FC9-AF05-3A4F4259AE49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D6D7350-E603-4E91-9D92-53D3BF4C3DBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D6D7350-E603-4E91-9D92-53D3BF4C3DBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D6D7350-E603-4E91-9D92-53D3BF4C3DBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D6D7350-E603-4E91-9D92-53D3BF4C3DBC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
