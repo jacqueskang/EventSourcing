@@ -55,8 +55,8 @@ namespace Samples.WebApp
                         //{
                         //    x.Folder = "C:\\Temp\\EventSourcing\\GiftCards";
                         //})
-                        //.UseDbEventStore<SampleDbContext, GiftCard, Guid>()
-                        .UseDynamoDBEventStore<GiftCard, Guid>(Configuration.GetSection("GiftCardEventStore"))
+                        .UseDbEventStore<SampleDbContext, GiftCard, Guid>()
+                        //.UseDynamoDBEventStore<GiftCard, Guid>(Configuration.GetSection("GiftCardEventStore"))
                         ;
                 });
         }
