@@ -7,4 +7,4 @@ script:
  - cd src
  - dotnet restore
  - dotnet build --configuration Release
- - dotnet test src/JKang.EventSourcing.Serialization.Json.Tests
+ - dotnet test JKang.EventSourcing.Serialization.Json.Tests
