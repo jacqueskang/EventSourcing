@@ -7,7 +7,7 @@ A .NET Core event sourcing framework.
 Easy to integrate in ASP.NET Core project to persist event-sourced domain entities in:
  - file system (one text file per aggregate)
  - in relational database (using EF Core, one table per aggregate type)
- - in AWS DynamoDB (See [DynamoDB setup instructions](DynamoDBSetup.md))
+ - in AWS DynamoDB (See [DynamoDB setup instructions](doc/DynamoDBSetup.md))
 
 ## NuGet packages
  - [JKang.EventSourcing](https://www.nuget.org/packages/JKang.EventSourcing/)
