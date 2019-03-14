@@ -11,8 +11,8 @@ Easy to integrate in ASP.NET Core project to persist event-sourced domain entiti
 
 ## NuGet packages
  - [JKang.EventSourcing](https://www.nuget.org/packages/JKang.EventSourcing/)
- - [JKang.EventSourcing.EfCore](https://www.nuget.org/packages/JKang.EventSourcing.EfCore/)
- - [JKang.EventSourcing.DynamoDB](https://www.nuget.org/packages/JKang.EventSourcing.DynamoDB/)
+ - [JKang.EventSourcing.Persistence.EfCore](https://www.nuget.org/packages/JKang.EventSourcing.Persistence.EfCore/)
+ - [JKang.EventSourcing.Persistence.DynamoDB](https://www.nuget.org/packages/JKang.EventSourcing.Persistence.DynamoDB/)
 
 ## Quick Start:
 
