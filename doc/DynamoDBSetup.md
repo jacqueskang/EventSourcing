@@ -4,15 +4,15 @@
 
 1. Configure DI in ConfigureServices()
 ```json
-	services
+    services
         .AddDefaultAWSOptions(Configuration.GetAWSOptions())
-		.AddEventSourcing(builder =>
-		{
-			builder
-				.UseJsonEventSerializer()
-				.UseDynamoDBEventStore<GiftCard, Guid>(Configuration.GetSection("GiftCardEventStore"))
-				;
-		});
+        .AddEventSourcing(builder =>
+        {
+            builder
+                .UseJsonEventSerializer()
+                .UseDynamoDBEventStore<GiftCard, Guid>(Configuration.GetSection("GiftCardEventStore"))
+                ;
+        });
 ```
 
 2. (Optional) If you want automatically create the table during application startup, inject `IEventStoreInitializer<, >` in Configure() and call `EnsureCreatedAsync()`:
@@ -21,8 +21,8 @@
             IEventStoreInitializer<GiftCard, Guid> eventStoreInitializer)
         {
             eventStoreInitializer.EnsureCreatedAsync().Wait();
-			
-			// other configurations...
+            
+            // other configurations...
         }
 ```
 
