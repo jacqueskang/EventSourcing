@@ -1,3 +1,4 @@
+using JKang.EventSourcing.Persistence;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -45,9 +46,7 @@ namespace Samples.WebApp
                 });
 
             services
-                .AddDefaultAWSOptions(Configuration.GetAWSOptions());
-
-            services
+                .AddDefaultAWSOptions(Configuration.GetAWSOptions())
                 .AddEventSourcing(builder =>
                 {
                     builder
@@ -56,14 +55,20 @@ namespace Samples.WebApp
                         //{
                         //    x.Folder = "C:\\Temp\\EventSourcing\\GiftCards";
                         //})
-                        //.UseDbEventStore<SampleDbContext, GiftCard, Guid>()
-                        .UseDynamoDBEventStore<GiftCard, Guid>(Configuration.GetSection("GiftCardEventStore"));
+                        .UseDbEventStore<SampleDbContext, GiftCard, Guid>()
+                        //.UseDynamoDBEventStore<GiftCard, Guid>(Configuration.GetSection("GiftCardEventStore"))
+                        ;
                 });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(
+            IApplicationBuilder app,
+            IHostingEnvironment env,
+            IEventStoreInitializer<GiftCard, Guid> eventStoreInitializer)
         {
+            eventStoreInitializer.EnsureCreatedAsync().Wait();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
