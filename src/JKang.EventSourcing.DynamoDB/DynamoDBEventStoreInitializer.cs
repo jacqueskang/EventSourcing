@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace JKang.EventSourcing.Persistence.DynamoDB
 {
-    class DynamoDBEventStoreInitializer<TAggregate, TAggregateKey>
+    public class DynamoDBEventStoreInitializer<TAggregate, TAggregateKey>
         : IEventStoreInitializer<TAggregate, TAggregateKey>
         where TAggregate : IAggregate<TAggregateKey>
     {
@@ -49,7 +49,7 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
 
         public async Task EnsureCreatedAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            ListTablesResponse tables = await _dynamoDB.ListTablesAsync(cancellationToken);
+            ListTablesResponse tables = await _dynamoDB.ListTablesAsync(cancellationToken).ConfigureAwait(false);
             if (tables.TableNames.Contains(_options.TableName))
             {
                 return;
@@ -88,7 +88,8 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
                     ReadCapacityUnits = 5,
                     WriteCapacityUnits = 5
                 },
-            }, cancellationToken);
+            }, cancellationToken)
+            .ConfigureAwait(false);
         }
     }
 }

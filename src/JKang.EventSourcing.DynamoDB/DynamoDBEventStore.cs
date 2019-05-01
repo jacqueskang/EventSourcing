@@ -4,6 +4,7 @@ using JKang.EventSourcing.Domain;
 using JKang.EventSourcing.Events;
 using JKang.EventSourcing.Serialization.Json;
 using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace JKang.EventSourcing.Persistence.DynamoDB
 {
-    internal class DynamoDBEventStore<TAggregate, TAggregateKey> : IEventStore<TAggregate, TAggregateKey>
+    public class DynamoDBEventStore<TAggregate, TAggregateKey> : IEventStore<TAggregate, TAggregateKey>
         where TAggregate : IAggregate<TAggregateKey>
     {
         private readonly IJsonObjectSerializer _serializer;
@@ -37,13 +38,13 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
         {
             string json = _serializer.Serialize(@event);
             var item = Document.FromJson(json);
-            Document re = await _table.PutItemAsync(item, cancellationToken);
+            await _table.PutItemAsync(item, cancellationToken).ConfigureAwait(false);
         }
 
         public Task<TAggregateKey[]> GetAggregateIdsAsync(
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            return Task.FromResult(new TAggregateKey[0]);
+            return Task.FromResult(Array.Empty<TAggregateKey>());
         }
 
         public async Task<IAggregateEvent<TAggregateKey>[]> GetEventsAsync(
@@ -55,7 +56,7 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
             var events = new List<IAggregateEvent<TAggregateKey>>();
             do
             {
-                List<Document> documents = await search.GetNextSetAsync(cancellationToken);
+                List<Document> documents = await search.GetNextSetAsync(cancellationToken).ConfigureAwait(false);
                 foreach (Document document in documents)
                 {
                     string json = document.ToJson();

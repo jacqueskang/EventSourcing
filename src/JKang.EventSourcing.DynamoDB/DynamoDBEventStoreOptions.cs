@@ -12,7 +12,7 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
         /// <summary>
         /// Required if UseLocalDB is True
         /// </summary>
-        public string ServiceURL { get; set; }
+        public Uri ServiceURL { get; set; }
 
         internal AmazonDynamoDBClient CreateLocalDBClient()
         {
@@ -22,7 +22,7 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
             }
             return new AmazonDynamoDBClient(new AmazonDynamoDBConfig
             {
-                ServiceURL = ServiceURL
+                ServiceURL = ServiceURL.AbsoluteUri
             });
         }
     }
