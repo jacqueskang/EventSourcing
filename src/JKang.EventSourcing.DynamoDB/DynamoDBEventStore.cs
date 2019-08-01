@@ -4,7 +4,9 @@ using JKang.EventSourcing.Domain;
 using JKang.EventSourcing.Events;
 using JKang.EventSourcing.Serialization.Json;
 using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,10 +42,37 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
             Document re = await _table.PutItemAsync(item, cancellationToken);
         }
 
+        private static T Convert<T>(Primitive primitive)
+        {
+            Type type = typeof(T);
+            if (type == typeof(bool)) return (T)(object)primitive.AsBoolean();
+            if (type == typeof(byte)) return (T)(object)primitive.AsByte();
+            if (type == typeof(byte[])) return (T)(object)primitive.AsByteArray();
+            if (type == typeof(char)) return (T)(object)primitive.AsChar();
+            if (type == typeof(DateTime)) return (T)(object)primitive.AsDateTime();
+            if (type == typeof(decimal)) return (T)(object)primitive.AsDecimal();
+            if (type == typeof(double)) return (T)(object)primitive.AsDouble();
+            if (type == typeof(Guid)) return (T)(object)primitive.AsGuid();
+            if (type == typeof(int)) return (T)(object)primitive.AsInt();
+            if (type == typeof(long)) return (T)(object)primitive.AsLong();
+            if (type == typeof(MemoryStream)) return (T)(object)primitive.AsMemoryStream();
+            if (type == typeof(sbyte)) return (T)(object)primitive.AsSByte();
+            if (type == typeof(short)) return (T)(object)primitive.AsShort();
+            if (type == typeof(float)) return (T)(object)primitive.AsSingle();
+            if (type == typeof(string)) return (T)(object)primitive.AsString();
+            if (type == typeof(uint)) return (T)(object)primitive.AsUInt();
+            if (type == typeof(ulong)) return (T)(object)primitive.AsULong();
+            if (type == typeof(ushort)) return (T)(object)primitive.AsUShort();
+            throw new InvalidOperationException($"{type.FullName} is not supported as aggregate key in DynamoDB");
+        }
+
         public Task<TAggregateKey[]> GetAggregateIdsAsync(
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            return Task.FromResult(new TAggregateKey[0]);
+            return Task.FromResult(_table.HashKeys
+                .Select(x => new Primitive(x))
+                .Select(x => Convert<TAggregateKey>(x))
+                .ToArray());
         }
 
         public async Task<IAggregateEvent<TAggregateKey>[]> GetEventsAsync(
