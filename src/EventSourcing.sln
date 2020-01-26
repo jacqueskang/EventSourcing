@@ -11,6 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing", "JKan
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3CE8F82A-51A6-46BC-9A78-590642AA5242}"
 	ProjectSection(SolutionItems) = preProject
+		..\.travis.yml = ..\.travis.yml
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
@@ -22,11 +23,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Seriali
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Persistence.DynamoDB", "JKang.EventSourcing.Persistence.DynamoDB\JKang.EventSourcing.Persistence.DynamoDB.csproj", "{83906658-11ED-4097-AA85-3E3B7503E3BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JKang.EventSourcing.Persistence.DynamoDB.Tests", "JKang.EventSourcing.Persistence.DynamoDB.Tests\JKang.EventSourcing.Persistence.DynamoDB.Tests.csproj", "{5BCAB08D-A4E5-4698-96A7-321A6625B7FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Persistence.DynamoDB.Tests", "JKang.EventSourcing.Persistence.DynamoDB.Tests\JKang.EventSourcing.Persistence.DynamoDB.Tests.csproj", "{5BCAB08D-A4E5-4698-96A7-321A6625B7FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JKang.EventSourcing.TestingFixtures", "JKang.EventSourcing.TestingFixtures\JKang.EventSourcing.TestingFixtures.csproj", "{DE78F4D8-22C3-46FC-B325-2CB12A88F976}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.TestingFixtures", "JKang.EventSourcing.TestingFixtures\JKang.EventSourcing.TestingFixtures.csproj", "{DE78F4D8-22C3-46FC-B325-2CB12A88F976}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JKang.EventSourcing.TestingWebApp", "JKang.EventSourcing.TestingWebApp\JKang.EventSourcing.TestingWebApp.csproj", "{08A1EB3B-A44D-4E13-A842-9528CBAE79ED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.TestingWebApp", "JKang.EventSourcing.TestingWebApp\JKang.EventSourcing.TestingWebApp.csproj", "{08A1EB3B-A44D-4E13-A842-9528CBAE79ED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

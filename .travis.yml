@@ -1,6 +1,6 @@
 language: csharp
 mono: none
-dotnet: 2.1
+dotnet: 3.0
 dist: trusty
 sudo: required
 script:
@@ -8,3 +8,4 @@ script:
  - dotnet restore
  - dotnet build --configuration Release
  - dotnet test JKang.EventSourcing.Serialization.Json.Tests
+ - dotnet test JKang.EventSourcing.Persistence.DynamoDB.Tests
