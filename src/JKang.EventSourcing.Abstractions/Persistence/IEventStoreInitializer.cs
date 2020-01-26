@@ -7,6 +7,6 @@ namespace JKang.EventSourcing.Persistence
     public interface IEventStoreInitializer<TAggregate, TAggregateKey>
         where TAggregate : IAggregate<TAggregateKey>
     {
-        Task EnsureCreatedAsync(CancellationToken cancellationToken = default(CancellationToken));
+        Task EnsureCreatedAsync(CancellationToken cancellationToken = default);
     }
 }

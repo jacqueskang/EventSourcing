@@ -1,6 +1,4 @@
-﻿using JKang.EventSourcing.Events;
-
-namespace JKang.EventSourcing.Serialization
+﻿namespace JKang.EventSourcing.Serialization
 {
     public interface IObjectSerializer
     {

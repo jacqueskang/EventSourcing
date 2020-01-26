@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace JKang.EventSourcing.Persistence.DynamoDB
 {
-    internal class DynamoDBEventStore<TAggregate, TAggregateKey> : IEventStore<TAggregate, TAggregateKey>
+    public class DynamoDBEventStore<TAggregate, TAggregateKey> : IEventStore<TAggregate, TAggregateKey>
         where TAggregate : IAggregate<TAggregateKey>
     {
         private readonly IJsonObjectSerializer _serializer;
@@ -24,6 +24,11 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
             IOptionsMonitor<DynamoDBEventStoreOptions> monitor,
             IAmazonDynamoDB client)
         {
+            if (monitor is null)
+            {
+                throw new ArgumentNullException(nameof(monitor));
+            }
+
             _serializer = serializer;
             DynamoDBEventStoreOptions options = monitor.Get(typeof(TAggregate).FullName);
             if (options.UseLocalDB)
@@ -39,7 +44,7 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
         {
             string json = _serializer.Serialize(@event);
             var item = Document.FromJson(json);
-            await _table.PutItemAsync(item, cancellationToken);
+            await _table.PutItemAsync(item, cancellationToken).ConfigureAwait(false);
         }
 
         private static T Convert<T>(DynamoDBEntry entry)
@@ -78,7 +83,7 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
             var ids = new HashSet<TAggregateKey>();
             do
             {
-                List<Document> documents = await search.GetNextSetAsync(cancellationToken);
+                List<Document> documents = await search.GetNextSetAsync(cancellationToken).ConfigureAwait(false);
                 foreach (Document document in documents)
                 {
                     DynamoDBEntry entry = document["aggregateId"];
@@ -100,7 +105,7 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
             var events = new List<IAggregateEvent<TAggregateKey>>();
             do
             {
-                List<Document> documents = await search.GetNextSetAsync(cancellationToken);
+                List<Document> documents = await search.GetNextSetAsync(cancellationToken).ConfigureAwait(false);
                 foreach (Document document in documents)
                 {
                     string json = document.ToJson();

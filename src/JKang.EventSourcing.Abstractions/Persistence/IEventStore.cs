@@ -8,11 +8,13 @@ namespace JKang.EventSourcing.Persistence
     public interface IEventStore<TAggregate, TAggregateKey>
         where TAggregate : IAggregate<TAggregateKey>
     {
-        Task AddEventAsync(IAggregateEvent<TAggregateKey> @event,
-            CancellationToken cancellationToken = default(CancellationToken));
+        Task AddEventAsync(IAggregateEvent<TAggregateKey> e,
+            CancellationToken cancellationToken = default);
+
         Task<IAggregateEvent<TAggregateKey>[]> GetEventsAsync(TAggregateKey aggregateId,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default);
+
         Task<TAggregateKey[]> GetAggregateIdsAsync(
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default);
     }
 }

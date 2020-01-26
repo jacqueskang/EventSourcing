@@ -13,6 +13,11 @@ namespace Microsoft.Extensions.DependencyInjection
             Action<TextFileEventStoreOptions> setupAction)
             where TAggregate : IAggregate<TAggregateKey>
         {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
             builder.Services
                 .AddScoped<IEventStore<TAggregate, TAggregateKey>, TextFileEventStore<TAggregate, TAggregateKey>>()
                 .AddScoped<IEventStoreInitializer<TAggregate, TAggregateKey>, DefaultEventStoreInitializer<TAggregate, TAggregateKey>>()

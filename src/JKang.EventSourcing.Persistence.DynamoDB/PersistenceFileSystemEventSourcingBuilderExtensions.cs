@@ -13,6 +13,11 @@ namespace Microsoft.Extensions.DependencyInjection
             IConfiguration configuration)
             where TAggregate : IAggregate<TAggregateKey>
         {
+            if (builder is null)
+            {
+                throw new System.ArgumentNullException(nameof(builder));
+            }
+
             builder.Services
                 .Configure<DynamoDBEventStoreOptions>(typeof(TAggregate).FullName, configuration)
                 .AddAWSService<IAmazonDynamoDB>()

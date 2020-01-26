@@ -8,6 +8,6 @@ namespace JKang.EventSourcing.Serialization
     public class DefaultEventStoreInitializer<TAggregate, TAggregateKey> : IEventStoreInitializer<TAggregate, TAggregateKey>
         where TAggregate : IAggregate<TAggregateKey>
     {
-        public Task EnsureCreatedAsync(CancellationToken cancellationToken = default(CancellationToken)) => Task.CompletedTask;
+        public Task EnsureCreatedAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
     }
 }

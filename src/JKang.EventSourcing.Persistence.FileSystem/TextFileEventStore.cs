@@ -22,6 +22,11 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             IOptionsMonitor<TextFileEventStoreOptions> options,
             IObjectSerializer eventSerializer)
         {
+            if (options is null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
             _options = options.CurrentValue;
             _eventSerializer = eventSerializer;
         }
@@ -29,6 +34,11 @@ namespace JKang.EventSourcing.Persistence.FileSystem
         public async Task AddEventAsync(IAggregateEvent<TAggregateKey> @event,
             CancellationToken cancellationToken = default)
         {
+            if (@event is null)
+            {
+                throw new ArgumentNullException(nameof(@event));
+            }
+
             string serialized = _eventSerializer.Serialize(@event);
             string filePath = GetAggregateFilePath(@event.AggregateId, createFolderIfNotExist: true);
             using (var fs = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.None))
@@ -36,9 +46,9 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             {
                 if (fs.Position > 0)
                 {
-                    await sw.WriteAsync(_options.EventSeparator);
+                    await sw.WriteAsync(_options.EventSeparator).ConfigureAwait(false);
                 }
-                await sw.WriteAsync(serialized);
+                await sw.WriteAsync(serialized).ConfigureAwait(false);
             }
         }
 
@@ -51,7 +61,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem
                 var di = new DirectoryInfo(folder);
                 if (!di.Exists)
                 {
-                    return new TAggregateKey[0];
+                    return Array.Empty<TAggregateKey>();
                 }
 
                 return di.GetFiles("*.txt", SearchOption.TopDirectoryOnly)
@@ -76,7 +86,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             string filePath = GetAggregateFilePath(aggregateId);
             if (!File.Exists(filePath))
             {
-                return new IAggregateEvent<TAggregateKey>[0];
+                return Array.Empty<IAggregateEvent<TAggregateKey>>();
             }
 
             var events = new List<IAggregateEvent<TAggregateKey>>();
@@ -84,7 +94,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             using (FileStream fs = File.OpenRead(filePath))
             using (var sr = new StreamReader(fs))
             {
-                text = await sr.ReadToEndAsync();
+                text = await sr.ReadToEndAsync().ConfigureAwait(false);
             }
 
             return text.Split(new[] { _options.EventSeparator }, StringSplitOptions.None)

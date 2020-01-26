@@ -17,6 +17,11 @@ namespace JKang.EventSourcing.Domain
         /// <param name="created">The creation event</param>
         protected Aggregate(IAggregateEvent<TKey> created)
         {
+            if (created is null)
+            {
+                throw new ArgumentNullException(nameof(created));
+            }
+
             Id = created.AggregateId;
             ReceiveEvent(created);
         }
@@ -44,29 +49,34 @@ namespace JKang.EventSourcing.Domain
             return new Changeset(_unsavedEvents, this);
         }
 
-        protected abstract void ApplyEvent(IAggregateEvent<TKey> @event);
+        protected abstract void ApplyEvent(IAggregateEvent<TKey> e);
 
-        protected void ReceiveEvent(IAggregateEvent<TKey> @event)
+        protected void ReceiveEvent(IAggregateEvent<TKey> e)
         {
-            IntegrateEvent(@event);
-            _unsavedEvents.Enqueue(@event);
+            if (e is null)
+            {
+                throw new ArgumentNullException(nameof(e));
+            }
+
+            IntegrateEvent(e);
+            _unsavedEvents.Enqueue(e);
         }
 
-        private void IntegrateEvent(IAggregateEvent<TKey> @event)
+        private void IntegrateEvent(IAggregateEvent<TKey> e)
         {
-            if (!@event.AggregateId.Equals(Id))
+            if (!e.AggregateId.Equals(Id))
             {
-                throw new InvalidOperationException($"Cannot integrate event with {nameof(@event.AggregateId)} '{@event.AggregateId}' on an aggregate with {nameof(Id)} '{Id}'");
+                throw new InvalidOperationException($"Cannot integrate event with {nameof(e.AggregateId)} '{e.AggregateId}' on an aggregate with {nameof(Id)} '{Id}'");
             }
 
-            if (@event.AggregateVersion != GetNextVersion())
+            if (e.AggregateVersion != GetNextVersion())
             {
-                throw new InvalidOperationException($"Cannot integrate event with {nameof(@event.AggregateVersion)} '{@event.AggregateVersion}' on an aggregate with {nameof(Version)} '{Version}'");
+                throw new InvalidOperationException($"Cannot integrate event with {nameof(e.AggregateVersion)} '{e.AggregateVersion}' on an aggregate with {nameof(Version)} '{Version}'");
             }
 
-            ApplyEvent(@event);
+            ApplyEvent(e);
 
-            Version = @event.AggregateVersion;
+            Version = e.AggregateVersion;
         }
 
         public class Changeset : IAggregateChangeset<TKey>

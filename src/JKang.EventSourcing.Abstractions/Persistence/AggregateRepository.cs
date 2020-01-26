@@ -18,16 +18,21 @@ namespace JKang.EventSourcing.Persistence
 
         protected async Task SaveAggregateAsync(TAggregate aggregate)
         {
+            if (aggregate is null)
+            {
+                throw new ArgumentNullException(nameof(aggregate));
+            }
+
             IAggregateChangeset<TKey> changeset = aggregate.GetChangeset();
             foreach (IAggregateEvent<TKey> @event in changeset.Events)
             {
-                await _eventStore.AddEventAsync(@event);
-                await OnEventSavedAsync(@event);
+                await _eventStore.AddEventAsync(@event).ConfigureAwait(false);
+                await OnEventSavedAsync(@event).ConfigureAwait(false);
             }
             changeset.Commit();
         }
 
-        protected virtual Task OnEventSavedAsync(IAggregateEvent<TKey> @event)
+        protected virtual Task OnEventSavedAsync(IAggregateEvent<TKey> e)
         {
             return Task.CompletedTask;
         }
@@ -39,7 +44,7 @@ namespace JKang.EventSourcing.Persistence
 
         public async Task<TAggregate> FindAggregateAsync(TKey id)
         {
-            IAggregateEvent<TKey>[] events = await _eventStore.GetEventsAsync(id);
+            IAggregateEvent<TKey>[] events = await _eventStore.GetEventsAsync(id).ConfigureAwait(false);
             return events.Length == 0
                 ? null
                 : Activator.CreateInstance(typeof(TAggregate), id, events as IEnumerable<IAggregateEvent<TKey>>) as TAggregate;

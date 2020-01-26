@@ -8,6 +8,11 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IEventSourcingBuilder UseJsonEventSerializer(
             this IEventSourcingBuilder builder)
         {
+            if (builder is null)
+            {
+                throw new System.ArgumentNullException(nameof(builder));
+            }
+
             builder.Services
                 .AddScoped<IObjectSerializer, JsonObjectSerializer>()
                 .AddScoped<IJsonObjectSerializer, JsonObjectSerializer>()

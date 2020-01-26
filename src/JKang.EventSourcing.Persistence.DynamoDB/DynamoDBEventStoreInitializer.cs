@@ -24,7 +24,7 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
             _dynamoDB = _options.UseLocalDB
                 ? _options.CreateLocalDBClient()
                 : dynamoDB;
-        } 
+        }
 
         private static bool IsNumericType()
         {
@@ -47,9 +47,9 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
             }
         }
 
-        public async Task EnsureCreatedAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public async Task EnsureCreatedAsync(CancellationToken cancellationToken = default)
         {
-            ListTablesResponse tables = await _dynamoDB.ListTablesAsync(cancellationToken);
+            ListTablesResponse tables = await _dynamoDB.ListTablesAsync(cancellationToken).ConfigureAwait(false);
             if (tables.TableNames.Contains(_options.TableName))
             {
                 return;
@@ -88,7 +88,7 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
                     ReadCapacityUnits = 5,
                     WriteCapacityUnits = 5
                 },
-            }, cancellationToken);
+            }, cancellationToken).ConfigureAwait(false);
         }
     }
 }

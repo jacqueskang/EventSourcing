@@ -4,13 +4,19 @@ namespace JKang.EventSourcing.Events
 {
     public interface IAggregateEvent<TAggregateKey>
     {
-        // ID of domain aggregate
+        /// <summary>
+        /// ID of domain aggregate
+        /// </summary>
         TAggregateKey AggregateId { get; }
 
-        // Version of domain aggregate after event occurred
+        /// <summary>
+        /// Version of domain aggregate after event occurred
+        /// </summary>
         int AggregateVersion { get; }
 
-        // Timestamp of event
+        /// <summary>
+        /// Timestamp of event
+        /// </summary>
         DateTime Timestamp { get; }
     }
 }
