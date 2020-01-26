@@ -42,14 +42,14 @@
 
 Follow https://docs.aws.amazon.com/sdk-for-net/v3/developer-guide/net-dg-config-netcore.html to configure AWS profile in appsettings.json
 
-    ```json
-    {
-      "AWS": {
-        "Profile": "default",
-        "Region": "eu-west-1"
-      }
-    }
-    ```
+```json
+{
+  "AWS": {
+    "Profile": "default",
+    "Region": "eu-west-1"
+  }
+}
+```
 
 ### Development environment with locally installed DynamoDB emulator
 
@@ -57,7 +57,7 @@ Follow https://docs.aws.amazon.com/sdk-for-net/v3/developer-guide/net-dg-config-
 
 1. Assuming local DynamoDB is listening port 8000, update ConfigureServices() with:
 
-```csharp
+    ```csharp
     if (HostingEnvironment.IsDevelopment())
     {
         services.AddSingleton<IAmazonDynamoDB>(sp => new AmazonDynamoDBClient(new AmazonDynamoDBConfig
@@ -71,8 +71,8 @@ Follow https://docs.aws.amazon.com/sdk-for-net/v3/developer-guide/net-dg-config-
             .AddDefaultAWSOptions(Configuration.GetAWSOptions())
             .AddAWSService<IAmazonDynamoDB>();
     }
-```
+    ```
 
 ### Production environment
 
-1. Configure an IAM role with approperate permissions, then attach the role to the execution resource (EC2 instance, ECS task or Lambda function...). AWS SDK will automatically authenticate against DynamoDB using STS.
+Configure an IAM role with approperate permissions, then attach the role to the execution resource (EC2 instance, ECS task or Lambda function...). AWS SDK will automatically authenticate against DynamoDB using STS.
