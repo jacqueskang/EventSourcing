@@ -31,10 +31,6 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
 
             _serializer = serializer;
             DynamoDBEventStoreOptions options = monitor.Get(typeof(TAggregate).FullName);
-            if (options.UseLocalDB)
-            {
-                client = options.CreateLocalDBClient();
-            }
             _table = Table.LoadTable(client, options.TableName);
         }
 

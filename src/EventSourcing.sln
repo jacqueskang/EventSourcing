@@ -22,6 +22,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Seriali
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Persistence.DynamoDB", "JKang.EventSourcing.Persistence.DynamoDB\JKang.EventSourcing.Persistence.DynamoDB.csproj", "{83906658-11ED-4097-AA85-3E3B7503E3BD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JKang.EventSourcing.Persistence.DynamoDB.Tests", "JKang.EventSourcing.Persistence.DynamoDB.Tests\JKang.EventSourcing.Persistence.DynamoDB.Tests.csproj", "{5BCAB08D-A4E5-4698-96A7-321A6625B7FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JKang.EventSourcing.TestingFixtures", "JKang.EventSourcing.TestingFixtures\JKang.EventSourcing.TestingFixtures.csproj", "{DE78F4D8-22C3-46FC-B325-2CB12A88F976}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JKang.EventSourcing.TestingWebApp", "JKang.EventSourcing.TestingWebApp\JKang.EventSourcing.TestingWebApp.csproj", "{08A1EB3B-A44D-4E13-A842-9528CBAE79ED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,6 +62,18 @@ Global
 		{83906658-11ED-4097-AA85-3E3B7503E3BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83906658-11ED-4097-AA85-3E3B7503E3BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83906658-11ED-4097-AA85-3E3B7503E3BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BCAB08D-A4E5-4698-96A7-321A6625B7FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BCAB08D-A4E5-4698-96A7-321A6625B7FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BCAB08D-A4E5-4698-96A7-321A6625B7FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BCAB08D-A4E5-4698-96A7-321A6625B7FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE78F4D8-22C3-46FC-B325-2CB12A88F976}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE78F4D8-22C3-46FC-B325-2CB12A88F976}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE78F4D8-22C3-46FC-B325-2CB12A88F976}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE78F4D8-22C3-46FC-B325-2CB12A88F976}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08A1EB3B-A44D-4E13-A842-9528CBAE79ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08A1EB3B-A44D-4E13-A842-9528CBAE79ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08A1EB3B-A44D-4E13-A842-9528CBAE79ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08A1EB3B-A44D-4E13-A842-9528CBAE79ED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

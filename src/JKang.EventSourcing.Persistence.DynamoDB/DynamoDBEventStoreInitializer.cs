@@ -26,9 +26,7 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
             }
 
             _options = monitor.Get(typeof(TAggregate).FullName);
-            _dynamoDB = _options.UseLocalDB
-                ? _options.CreateLocalDBClient()
-                : dynamoDB;
+            _dynamoDB = dynamoDB;
         }
 
         private static bool IsNumericType()
