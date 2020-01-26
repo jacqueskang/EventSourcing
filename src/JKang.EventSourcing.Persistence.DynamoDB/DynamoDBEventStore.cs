@@ -6,6 +6,7 @@ using JKang.EventSourcing.Serialization.Json;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -41,10 +42,51 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
             await _table.PutItemAsync(item, cancellationToken).ConfigureAwait(false);
         }
 
-        public Task<TAggregateKey[]> GetAggregateIdsAsync(
+        private static T Convert<T>(DynamoDBEntry entry)
+        {
+            Type type = typeof(T);
+            if (type == typeof(bool)) return (T)(object)entry.AsBoolean();
+            if (type == typeof(byte)) return (T)(object)entry.AsByte();
+            if (type == typeof(byte[])) return (T)(object)entry.AsByteArray();
+            if (type == typeof(char)) return (T)(object)entry.AsChar();
+            if (type == typeof(DateTime)) return (T)(object)entry.AsDateTime();
+            if (type == typeof(decimal)) return (T)(object)entry.AsDecimal();
+            if (type == typeof(double)) return (T)(object)entry.AsDouble();
+            if (type == typeof(Guid)) return (T)(object)entry.AsGuid();
+            if (type == typeof(int)) return (T)(object)entry.AsInt();
+            if (type == typeof(long)) return (T)(object)entry.AsLong();
+            if (type == typeof(MemoryStream)) return (T)(object)entry.AsMemoryStream();
+            if (type == typeof(sbyte)) return (T)(object)entry.AsSByte();
+            if (type == typeof(short)) return (T)(object)entry.AsShort();
+            if (type == typeof(float)) return (T)(object)entry.AsSingle();
+            if (type == typeof(string)) return (T)(object)entry.AsString();
+            if (type == typeof(uint)) return (T)(object)entry.AsUInt();
+            if (type == typeof(ulong)) return (T)(object)entry.AsULong();
+            if (type == typeof(ushort)) return (T)(object)entry.AsUShort();
+            throw new InvalidOperationException($"{type.FullName} is not supported as aggregate key in DynamoDB");
+        }
+
+        public async Task<TAggregateKey[]> GetAggregateIdsAsync(
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            return Task.FromResult(Array.Empty<TAggregateKey>());
+            var scanFilter = new ScanFilter();
+            //scanFilter.AddCondition("aggregateVersion", ScanOperator.Equal, 1);
+            Search search = _table.Scan(scanFilter);
+
+            var ids = new HashSet<TAggregateKey>();
+            do
+            {
+                List<Document> documents = await search.GetNextSetAsync(cancellationToken);
+                foreach (Document document in documents)
+                {
+                    DynamoDBEntry entry = document["aggregateId"];
+                    TAggregateKey id = Convert<TAggregateKey>(entry);
+                    ids.Add(id);
+                }
+            }
+            while (!search.IsDone);
+
+            return ids.ToArray();
         }
 
         public async Task<IAggregateEvent<TAggregateKey>[]> GetEventsAsync(
