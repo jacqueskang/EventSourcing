@@ -2,52 +2,60 @@
 
 ## Change codes in Startup.cs to use DynamoDB
 
+1. Install NuGet package [JKang.EventSourcing.Persistence.DynamoDB](https://www.nuget.org/packages/JKang.EventSourcing.Persistence.DynamoDB/)
+
+    ```powershell
+    PM> Install-Package JKang.EventSourcing.Persistence.DynamoDB -Version 0.5.6
+    ```
+
 1. Configure DI in ConfigureServices()
-```csharp
+
+    ```csharp
     services
         .AddDefaultAWSOptions(Configuration.GetAWSOptions())
         .AddAWSService<IAmazonDynamoDB>();
-        
+
     services
         .AddEventSourcing(builder =>
         {
             builder
                 .UseDynamoDBEventStore<GiftCard, Guid>(x => x.TableName = "GiftcardEvents");
         });
-```
+    ```
 
-2. (Optional) If you want automatically create the table during application startup, inject `IEventStoreInitializer<, >` in Configure() and call `EnsureCreatedAsync()`:
-```csharp
-        public void Configure(
-            IApplicationBuilder app,
-            IEventStoreInitializer<GiftCard, Guid> giftCardStoreInitializer)
-        {
-            giftCardStoreInitializer.EnsureCreatedAsync().Wait();
-            
-            // other configurations...
-        }
-```
+1. (Optional) If you want automatically create the table during application startup:
 
-## Configure DynamoDB in appsettings.json
+    ```csharp
+    public void Configure(
+        IApplicationBuilder app,
+        IEventStoreInitializer<GiftCard, Guid> giftCardStoreInitializer)
+    {
+        giftCardStoreInitializer.EnsureCreatedAsync().Wait();
 
-### Work with remote DynamoDB in AWS (for development or testing)
+        // other configurations...
+    }
+    ```
 
-1. Follow https://docs.aws.amazon.com/sdk-for-net/v3/developer-guide/net-dg-config-netcore.html to configure AWS profile in appsettings.json
+## Personal preferences for configuring DynamoDB connection in different environments
 
-2. Configure event store in appsettings.json with:
-```json
-{
-  "AWS": {
-    "Profile": "default",
-    "Region": "eu-west-1"
-  }
-}
-```
+### Development environment with remote DynamoDB in AWS
 
-### Work with local installed DynamoDB (for development or testing)
+Follow https://docs.aws.amazon.com/sdk-for-net/v3/developer-guide/net-dg-config-netcore.html to configure AWS profile in appsettings.json
+
+    ```json
+    {
+      "AWS": {
+        "Profile": "default",
+        "Region": "eu-west-1"
+      }
+    }
+    ```
+
+### Development environment with locally installed DynamoDB emulator
 
 1. Download and start DynamoDB Local following https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.html
-2. Assuming local DynamoDB is listening port 8000, update ConfigureServices() with:
+
+1. Assuming local DynamoDB is listening port 8000, update ConfigureServices() with:
 
 ```csharp
     if (HostingEnvironment.IsDevelopment())
@@ -65,6 +73,6 @@
     }
 ```
 
-### Work with DynamoDB in AWS (for production)
+### Production environment
 
 1. Configure an IAM role with approperate permissions, then attach the role to the execution resource (EC2 instance, ECS task or Lambda function...). AWS SDK will automatically authenticate against DynamoDB using STS.
