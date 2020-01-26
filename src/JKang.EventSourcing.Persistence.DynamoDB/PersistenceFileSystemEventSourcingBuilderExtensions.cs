@@ -1,5 +1,6 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.Extensions.NETCore.Setup;
+using JKang.EventSourcing.DependencyInjection;
 using JKang.EventSourcing.Domain;
 using JKang.EventSourcing.Persistence;
 using JKang.EventSourcing.Persistence.DynamoDB;
@@ -74,7 +75,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where TAggregate : IAggregate<TAggregateKey>
         {
             return services
-                .Configure(typeof(TAggregate).FullName, setupAction)
+                .ConfigureAggregate<TAggregate, TAggregateKey, DynamoDBEventStoreOptions>(setupAction)
                 .AddScoped<IEventStore<TAggregate, TAggregateKey>, DynamoDBEventStore<TAggregate, TAggregateKey>>()
                 .AddScoped<IEventStoreInitializer<TAggregate, TAggregateKey>, DynamoDBEventStoreInitializer<TAggregate, TAggregateKey>>()
                 ;

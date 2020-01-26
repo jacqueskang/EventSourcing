@@ -1,9 +1,9 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
+using JKang.EventSourcing.DependencyInjection;
 using JKang.EventSourcing.Domain;
 using JKang.EventSourcing.Events;
 using JKang.EventSourcing.Serialization.Json;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,7 +21,7 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
 
         public DynamoDBEventStore(
             IJsonObjectSerializer serializer,
-            IOptionsMonitor<DynamoDBEventStoreOptions> monitor,
+            IAggregateOptionsMonitor<TAggregate, TAggregateKey, DynamoDBEventStoreOptions> monitor,
             IAmazonDynamoDB client)
         {
             if (monitor is null)
@@ -30,8 +30,7 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
             }
 
             _serializer = serializer;
-            DynamoDBEventStoreOptions options = monitor.Get(typeof(TAggregate).FullName);
-            _table = Table.LoadTable(client, options.TableName);
+            _table = Table.LoadTable(client, monitor.AggregateOptions.TableName);
         }
 
         public async Task AddEventAsync(
