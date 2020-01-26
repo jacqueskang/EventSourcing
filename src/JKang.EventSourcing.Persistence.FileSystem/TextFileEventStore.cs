@@ -27,7 +27,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem
         }
 
         public async Task AddEventAsync(IAggregateEvent<TAggregateKey> @event,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             string serialized = _eventSerializer.Serialize(@event);
             string filePath = GetAggregateFilePath(@event.AggregateId, createFolderIfNotExist: true);
@@ -43,7 +43,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem
         }
 
         public Task<TAggregateKey[]> GetAggregateIdsAsync(
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             return Task.Run(() =>
             {
@@ -71,7 +71,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem
         }
 
         public async Task<IAggregateEvent<TAggregateKey>[]> GetEventsAsync(TAggregateKey aggregateId,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             string filePath = GetAggregateFilePath(aggregateId);
             if (!File.Exists(filePath))

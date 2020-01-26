@@ -35,16 +35,17 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
 
         public async Task AddEventAsync(
             IAggregateEvent<TAggregateKey> @event,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             string json = _serializer.Serialize(@event);
             var item = Document.FromJson(json);
-            Document re = await _table.PutItemAsync(item, cancellationToken);
+            await _table.PutItemAsync(item, cancellationToken);
         }
 
         private static T Convert<T>(DynamoDBEntry entry)
         {
             Type type = typeof(T);
+#pragma warning disable IDE0011 // Add braces
             if (type == typeof(bool)) return (T)(object)entry.AsBoolean();
             if (type == typeof(byte)) return (T)(object)entry.AsByte();
             if (type == typeof(byte[])) return (T)(object)entry.AsByteArray();
@@ -63,11 +64,12 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
             if (type == typeof(uint)) return (T)(object)entry.AsUInt();
             if (type == typeof(ulong)) return (T)(object)entry.AsULong();
             if (type == typeof(ushort)) return (T)(object)entry.AsUShort();
+#pragma warning restore IDE0011 // Add braces
             throw new InvalidOperationException($"{type.FullName} is not supported as aggregate key in DynamoDB");
         }
 
         public async Task<TAggregateKey[]> GetAggregateIdsAsync(
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             var scanFilter = new ScanFilter();
             //scanFilter.AddCondition("aggregateVersion", ScanOperator.Equal, 1);
@@ -91,7 +93,7 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
 
         public async Task<IAggregateEvent<TAggregateKey>[]> GetEventsAsync(
             TAggregateKey aggregateId,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             Search search = _table.Query(aggregateId as dynamic, new QueryFilter());
 

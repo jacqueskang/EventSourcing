@@ -25,7 +25,7 @@ namespace JKang.EventSourcing.Persistence.EfCore
         }
 
         public async Task AddEventAsync(IAggregateEvent<TAggregateKey> @event,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             string serialized = _eventSerializer.Serialize(@event);
             var entity = new EventEntity<TAggregateKey>
@@ -40,7 +40,7 @@ namespace JKang.EventSourcing.Persistence.EfCore
         }
 
         public Task<TAggregateKey[]> GetAggregateIdsAsync(
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             return _context.GetDbSet()
                 .Select(x => x.AggregateId)
@@ -49,7 +49,7 @@ namespace JKang.EventSourcing.Persistence.EfCore
         }
 
         public async Task<IAggregateEvent<TAggregateKey>[]> GetEventsAsync(TAggregateKey aggregateId,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             List<string> serializedEvents = await _context.GetDbSet()
                 .Where(x => x.AggregateId.Equals(aggregateId))
