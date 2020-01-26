@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace JKang.EventSourcing.Persistence.DynamoDB
 {
-    class DynamoDBEventStoreInitializer<TAggregate, TAggregateKey>
+    public class DynamoDBEventStoreInitializer<TAggregate, TAggregateKey>
         : IEventStoreInitializer<TAggregate, TAggregateKey>
         where TAggregate : IAggregate<TAggregateKey>
     {
@@ -20,6 +20,11 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
             IOptionsMonitor<DynamoDBEventStoreOptions> monitor,
             IAmazonDynamoDB dynamoDB)
         {
+            if (monitor is null)
+            {
+                throw new ArgumentNullException(nameof(monitor));
+            }
+
             _options = monitor.Get(typeof(TAggregate).FullName);
             _dynamoDB = _options.UseLocalDB
                 ? _options.CreateLocalDBClient()

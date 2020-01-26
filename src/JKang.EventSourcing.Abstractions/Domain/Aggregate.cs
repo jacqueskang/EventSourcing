@@ -79,7 +79,7 @@ namespace JKang.EventSourcing.Domain
             Version = e.AggregateVersion;
         }
 
-        public class Changeset : IAggregateChangeset<TKey>
+        internal class Changeset : IAggregateChangeset<TKey>
         {
             private readonly Aggregate<TKey> _aggregate;
             public Changeset(IEnumerable<IAggregateEvent<TKey>> events, Aggregate<TKey> aggregate)

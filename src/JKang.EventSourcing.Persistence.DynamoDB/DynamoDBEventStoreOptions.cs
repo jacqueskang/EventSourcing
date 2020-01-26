@@ -12,17 +12,20 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
         /// <summary>
         /// Required if UseLocalDB is True
         /// </summary>
-        public string ServiceURL { get; set; }
+        public Uri ServiceURL { get; set; }
 
         internal AmazonDynamoDBClient CreateLocalDBClient()
         {
             if (!UseLocalDB)
             {
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
                 throw new InvalidOperationException("UseLocalDB is false");
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
             }
+
             return new AmazonDynamoDBClient(new AmazonDynamoDBConfig
             {
-                ServiceURL = ServiceURL
+                ServiceURL = ServiceURL.ToString()
             });
         }
     }
