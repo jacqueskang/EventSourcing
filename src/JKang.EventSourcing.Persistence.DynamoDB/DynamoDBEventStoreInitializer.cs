@@ -1,7 +1,7 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
+using JKang.EventSourcing.DependencyInjection;
 using JKang.EventSourcing.Domain;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -17,7 +17,7 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
         private readonly IAmazonDynamoDB _dynamoDB;
 
         public DynamoDBEventStoreInitializer(
-            IOptionsMonitor<DynamoDBEventStoreOptions> monitor,
+            IAggregateOptionsMonitor<TAggregate, TAggregateKey, DynamoDBEventStoreOptions> monitor,
             IAmazonDynamoDB dynamoDB)
         {
             if (monitor is null)
@@ -25,8 +25,8 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
                 throw new ArgumentNullException(nameof(monitor));
             }
 
-            _options = monitor.Get(typeof(TAggregate).FullName);
-            _dynamoDB = dynamoDB;
+            _options = monitor.AggregateOptions;
+            _dynamoDB = dynamoDB ?? throw new ArgumentNullException(nameof(dynamoDB));
         }
 
         private static bool IsNumericType()
