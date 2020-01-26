@@ -29,9 +29,6 @@ namespace JKang.EventSourcing.TestingWebApp
                 .AddScoped<IGiftCardRepository, GiftCardRepository>()
                 .AddEventSourcing(builder =>
                 {
-                    builder
-                        .UseJsonEventSerializer();
-
                     // change the following value to switch persistence mode
                     PersistenceMode persistenceMode = PersistenceMode.DynamoDb;
                     switch (persistenceMode)
