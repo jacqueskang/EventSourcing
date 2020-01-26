@@ -2,9 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>cb5278a6-703d-43fa-abf8-17397caac03b</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JKang.EventSourcing.Persistence.CosmosDB\JKang.EventSourcing.Persistence.CosmosDB.csproj" />
     <ProjectReference Include="..\JKang.EventSourcing.Persistence.DynamoDB\JKang.EventSourcing.Persistence.DynamoDB.csproj" />
     <ProjectReference Include="..\JKang.EventSourcing.Persistence.EfCore\JKang.EventSourcing.Persistence.EfCore.csproj" />
     <ProjectReference Include="..\JKang.EventSourcing.Persistence.FileSystem\JKang.EventSourcing.Persistence.FileSystem.csproj" />

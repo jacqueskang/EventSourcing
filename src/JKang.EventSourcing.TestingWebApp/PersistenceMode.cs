@@ -2,6 +2,7 @@
 {
     public enum PersistenceMode
     {
-        DynamoDb,
+        DynamoDB,
+        CosmosDB
     }
 }

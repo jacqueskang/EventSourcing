@@ -13,26 +13,6 @@ namespace JKang.EventSourcing.Persistence.DynamoDB.Tests
     public class ServiceBuilderTests
     {
         [Theory, AutoData]
-        public void UseLocalDynamoDBEventStore_HappyPath(string tableName, Uri serviceUrl)
-        {
-            ServiceProvider sp = new ServiceCollection()
-                .AddEventSourcing(builder => builder
-                    .UseLocalDynamoDBEventStore<GiftCard, Guid>(x => x.TableName = tableName, serviceUrl))
-                .BuildServiceProvider();
-
-            using IServiceScope scope = sp.CreateScope();
-
-            IAmazonDynamoDB actual = scope.ServiceProvider.GetService<IAmazonDynamoDB>();
-            Assert.NotNull(actual);
-            Assert.Equal(serviceUrl.ToString(), actual.Config.ServiceURL);
-
-            IOptionsMonitor<DynamoDBEventStoreOptions> monitor = scope.ServiceProvider.GetService<IOptionsMonitor<DynamoDBEventStoreOptions>>();
-            Assert.NotNull(monitor);
-            DynamoDBEventStoreOptions value = monitor.Get(typeof(GiftCard).FullName);
-            Assert.Equal(tableName, value.TableName);
-        }
-
-        [Theory, AutoData]
         public void UseDynamoDBEventStore_HappyPath(string tableName, RegionEndpoint region)
         {
             ServiceProvider sp = new ServiceCollection()
@@ -40,6 +20,7 @@ namespace JKang.EventSourcing.Persistence.DynamoDB.Tests
                 {
                     Region = region
                 })
+                .AddAWSService<IAmazonDynamoDB>()
                 .AddEventSourcing(builder => builder
                     .UseDynamoDBEventStore<GiftCard, Guid>(x => x.TableName = tableName))
                 .BuildServiceProvider();
