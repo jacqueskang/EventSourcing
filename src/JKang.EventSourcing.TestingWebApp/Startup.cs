@@ -6,6 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Cosmos.Fluent;
+using Amazon.DynamoDBv2;
+using JKang.EventSourcing.Persistence.CosmosDB;
 
 namespace JKang.EventSourcing.TestingWebApp
 {
@@ -26,38 +30,64 @@ namespace JKang.EventSourcing.TestingWebApp
             services.AddRazorPages();
 
             services
-                .AddScoped<IGiftCardRepository, GiftCardRepository>()
-                .AddEventSourcing(builder =>
-                {
-                    // change the following value to switch persistence mode
-                    PersistenceMode persistenceMode = PersistenceMode.DynamoDb;
-                    switch (persistenceMode)
+                .AddScoped<IGiftCardRepository, GiftCardRepository>();
+
+            // change the following value to switch persistence mode
+            PersistenceMode persistenceMode = PersistenceMode.CosmosDB;
+
+            switch (persistenceMode)
+            {
+                case PersistenceMode.DynamoDB:
+                    if (HostingEnvironment.IsDevelopment())
                     {
-                        case PersistenceMode.DynamoDb:
-                            if (HostingEnvironment.IsDevelopment())
-                            {
-                                builder.UseLocalDynamoDBEventStore<GiftCard, Guid>(
-                                    x => x.TableName = "GiftcardEvents",
-                                    new Uri("http://localhost:8800"));
-                            }
-                            else
-                            {
-                                builder.UseDynamoDBEventStore<GiftCard, Guid>(
-                                    x => x.TableName = "GiftcardEvents");
-                            }
-                            break;
-                        default:
-                            break;
+                        services.AddSingleton<IAmazonDynamoDB>(sp => new AmazonDynamoDBClient(new AmazonDynamoDBConfig
+                        {
+                            ServiceURL = "http://localhost:8800"
+                        }));
                     }
-                });
+                    else
+                    {
+                        services.AddAWSService<IAmazonDynamoDB>();
+                    }
+                    break;
+                case PersistenceMode.CosmosDB:
+                    services.AddSingleton(_ =>
+                        new CosmosClientBuilder(Configuration.GetConnectionString("CosmosDB"))
+                            .WithConnectionModeDirect()
+                            .WithCustomSerializer(new EventSourcingCosmosSerializer())
+                            .Build());
+                    break;
+                default:
+                    break;
+            }
+
+            services.AddEventSourcing(builder =>
+            {
+                switch (persistenceMode)
+                {
+                    case PersistenceMode.DynamoDB:
+                        builder.UseDynamoDBEventStore<GiftCard, Guid>(
+                            x => x.TableName = "GiftcardEvents");
+                        break;
+                    case PersistenceMode.CosmosDB:
+                        builder.UseCosmosDBEventStore<GiftCard, Guid>(x =>
+                        {
+                            x.DatabaseId = "EventSourcingTestingWebApp";
+                            x.ContainerId = "GiftcardEvents";
+                        });
+                        break;
+                    default:
+                        break;
+                }
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app,
             IWebHostEnvironment env,
-            IEventStoreInitializer<GiftCard, Guid> eventStoreInitializer)
+            IEventStoreInitializer<GiftCard, Guid> giftCardStoreInitializer)
         {
-            eventStoreInitializer.EnsureCreatedAsync().Wait();
+            giftCardStoreInitializer.EnsureCreatedAsync().Wait();
 
             if (env.IsDevelopment())
             {
