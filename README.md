@@ -87,9 +87,9 @@ For our use cases I'm defining 2 events as following:
 
 The minimum requirements of a domain aggregate are:
  1. Implement `IAggregate<TKey>` interface
- 2. Have a public constructor with signature: `public YourCustomAggregate(TKey id, IEnumerable<IAggregateEvent<TKey>> savedEvents)`
+ 2. Have a public constructor with signature `MyAggregate(TKey id, IEnumerable<IAggregateEvent<TKey>> savedEvents)` (which is used for recompiling from history events)
 
-You can inherit from the abstract class `Aggregate<TKey>` provided by the framework.
+You can optionally inherit from the abstract class `Aggregate<TKey>` provided by the framework.
 
 ```csharp
     public class GiftCard : Aggregate<Guid>
@@ -139,8 +139,9 @@ You can inherit from the abstract class `Aggregate<TKey>` provided by the framew
 
 ### Step 3 - Implement repository
 
-By definition of Event Sourcing, persisting an aggregate insists on persisting all historical events which is done by IEventStore implementation.
-The framework provides 2 IEventStore implementations (TextFileEventStore & DatabaseEventStore) and an abstract class `AggregateRepository<TAggregate, TAggregateKey>` to help implementing your aggregate repository.
+By definition of Event Sourcing, persisting an aggregate insists on persisting all historical events.
+
+You can optionally override the abstract class `AggregateRepository<TAggregate, TAggregateKey>`.
 
 ```csharp
     public interface IGiftCardRepository
@@ -163,7 +164,7 @@ The framework provides 2 IEventStore implementations (TextFileEventStore & Datab
     }
 ```
 
-### Step 4 - Setup dependency injection and configure event store
+### Step 4 - Register your repository interface and configure event store in dependency injection framework
 
 ```csharp
     services
@@ -176,7 +177,7 @@ The framework provides 2 IEventStore implementations (TextFileEventStore & Datab
             });
         });
 ```
-Note: It's possible to configure different event store for each aggregate type:
+Note: It's possible to configure multiple aggregate types for different event stores
 
 ### Now it's possible to resolve IGiftCardRepository from DI to create and use gift cards.
 
