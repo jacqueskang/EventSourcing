@@ -4,16 +4,20 @@
 
 A .NET Core event sourcing framework.
 
-Easy to integrate in ASP.NET Core project to persist event-sourced domain entities in:
- - file system (one text file per aggregate)
- - in relational database (using EF Core, one table per aggregate type)
+Easy to be integrated in ASP.NET Core web application, Lambda function or Azure function.
+
+Support various of event store:
+ - in text file (one text file per aggregate)
+ - in relational database such as SQL Server, MySQL, etc. using EF Core
  - in AWS DynamoDB (See [DynamoDB setup instructions](doc/DynamoDBSetup.md))
+ - in Azure DynamoDB (See [CosmosDB setup instructions](doc/CosmosDBSetup.md))
 
 ## NuGet packages
  - JKang.EventSourcing [![NuGet version](https://badge.fury.io/nu/JKang.EventSourcing.svg)](https://badge.fury.io/nu/JKang.EventSourcing)
  - JKang.EventSourcing.Persistence.FileSystem [![NuGet version](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.FileSystem.svg)](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.FileSystem)
  - JKang.EventSourcing.Persistence.EfCore [![NuGet version](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.EfCore.svg)](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.EfCore)
  - JKang.EventSourcing.Persistence.DynamoDB [![NuGet version](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.DynamoDB.svg)](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.DynamoDB)
+ - JKang.EventSourcing.Persistence.CosmosDB [![NuGet version](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.CosmosDB.svg)](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.CosmosDB)
 
 ## Quick Start:
 

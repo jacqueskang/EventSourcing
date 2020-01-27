@@ -5,7 +5,7 @@
 1. Install NuGet package [JKang.EventSourcing.Persistence.DynamoDB](https://www.nuget.org/packages/JKang.EventSourcing.Persistence.DynamoDB/)
 
     ```powershell
-    PM> Install-Package JKang.EventSourcing.Persistence.DynamoDB -Version 0.5.6
+    PM> Install-Package JKang.EventSourcing.Persistence.DynamoDB
     ```
 
 1. Configure DI in ConfigureServices()
