@@ -8,7 +8,7 @@ Easy to be integrated in ASP.NET Core web application, Lambda function or Azure 
 
 Support various of event store:
  - in text file (one text file per aggregate)
- - in relational database such as SQL Server, MySQL, etc. using EF Core
+ - in relational database such as SQL Server, MySQL, etc. using EF Core  (See [EF Core setup instructions](doc/EfCoreSetup.md))
  - in AWS DynamoDB (See [DynamoDB setup instructions](doc/DynamoDBSetup.md))
  - in Azure DynamoDB (See [CosmosDB setup instructions](doc/CosmosDBSetup.md))
 
@@ -54,7 +54,6 @@ It's recommended that to implement an event in an **immutable** way.
 Event must be serializable. The framework uses Json.NET by default but you can customize the serialization by providing your own implementation of `IObjectSerializer` interface. (e.g., with Protobuf)
 
 You can optionally inherit from the abstract classes `AggregateEvent<TAggregateKey>` or `AggregateCreatedEvent<TAggregateKey>` provided by the framework to save several lines of code.
-
 
 For our use cases I'm defining 2 events as following: 
 
@@ -169,14 +168,6 @@ The framework provides 2 IEventStore implementations (TextFileEventStore & Datab
 ```csharp
     services
         .AddScoped<IGiftCardRepository, GiftCardRepository>()
-```
-
-Note: It's possible to configure different event store for each aggregate type:
-
-* File system event store
-
-```csharp
-    services
         .AddEventSourcing(builder =>
         {
             builder.UseTextFileEventStore<GiftCard, Guid>(x =>
@@ -185,41 +176,9 @@ Note: It's possible to configure different event store for each aggregate type:
             });
         });
 ```
-
-* Database event store (using EF Core)
-
-```csharp
-    public class SampleDbContext : DbContext, IEventSourcingDbContext<GiftCard, Guid>
-    {
-        public SampleDbContext(DbContextOptions<SampleDbContext> options)
-            : base(options)
-        { }
-
-        public DbSet<EventEntity<Guid>> GiftCardEvents { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-            => modelBuilder.ApplyConfiguration(new EventEntityConfiguration<Guid>());
-
-        DbSet<EventEntity<Guid>> IEventSourcingDbContext<GiftCard, Guid>.GetDbSet()
-            => GiftCardEvents;
-    }
-```
-
-```csharp
-    services
-        .AddDbContext<SampleDbContext>(x =>
-        {
-            x.UseInMemoryDatabase("eventstore");
-        })
-        .AddEventSourcing(builder =>
-        {
-            builder.UseDbEventStore<SampleDbContext, GiftCard, Guid>();
-        })
-        ;
-```
+Note: It's possible to configure different event store for each aggregate type:
 
 ### Now it's possible to resolve IGiftCardRepository from DI to create and use gift cards.
-
 
 ```csharp
     // create a new gift card with initial credit 100

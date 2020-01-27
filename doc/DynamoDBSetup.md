@@ -1,29 +1,24 @@
 # Setup DynamoDB event store
 
-## Change codes in Startup.cs to use DynamoDB
-
 1. Install NuGet package [JKang.EventSourcing.Persistence.DynamoDB](https://www.nuget.org/packages/JKang.EventSourcing.Persistence.DynamoDB/)
 
     ```powershell
     PM> Install-Package JKang.EventSourcing.Persistence.DynamoDB
     ```
 
-1. Configure DI in ConfigureServices()
+1. Register necessary services in ConfigureServices()
 
     ```csharp
     services
         .AddDefaultAWSOptions(Configuration.GetAWSOptions())
-        .AddAWSService<IAmazonDynamoDB>();
-
-    services
+        .AddAWSService<IAmazonDynamoDB>()
         .AddEventSourcing(builder =>
         {
-            builder
-                .UseDynamoDBEventStore<GiftCard, Guid>(x => x.TableName = "GiftcardEvents");
+            builder.UseDynamoDBEventStore<GiftCard, Guid>(x => x.TableName = "GiftcardEvents");
         });
     ```
 
-1. (Optional) If you want automatically create the table during application startup:
+1. (Optional) If you want automatically create the DynamoDB table during application startup:
 
     ```csharp
     public void Configure(
@@ -32,7 +27,7 @@
     {
         giftCardStoreInitializer.EnsureCreatedAsync().Wait();
 
-        // other configurations...
+        //...
     }
     ```
 
@@ -40,16 +35,16 @@
 
 ### Development environment with remote DynamoDB in AWS
 
-Follow https://docs.aws.amazon.com/sdk-for-net/v3/developer-guide/net-dg-config-netcore.html to configure AWS profile in appsettings.json
+    Follow https://docs.aws.amazon.com/sdk-for-net/v3/developer-guide/net-dg-config-netcore.html to configure AWS profile in appsettings.json
 
-```json
-{
-  "AWS": {
-    "Profile": "default",
-    "Region": "eu-west-1"
-  }
-}
-```
+    ```json
+    {
+    "AWS": {
+        "Profile": "default",
+        "Region": "eu-west-1"
+    }
+    }
+    ```
 
 ### Development environment with locally installed DynamoDB emulator
 
@@ -71,8 +66,14 @@ Follow https://docs.aws.amazon.com/sdk-for-net/v3/developer-guide/net-dg-config-
             .AddDefaultAWSOptions(Configuration.GetAWSOptions())
             .AddAWSService<IAmazonDynamoDB>();
     }
+
+    services
+        .AddEventSourcing(builder =>
+        {
+            builder.UseDynamoDBEventStore<GiftCard, Guid>(x => x.TableName = "GiftcardEvents");
+        });
     ```
 
 ### Production environment
 
-Configure an IAM role with approperate permissions, then attach the role to the execution resource (EC2 instance, ECS task or Lambda function...). AWS SDK will automatically authenticate against DynamoDB using STS.
+    Configure an IAM role with approperate permissions, then attach the role to the execution resource (EC2 instance, ECS task or Lambda function...). AWS SDK will automatically authenticate against DynamoDB using STS.
