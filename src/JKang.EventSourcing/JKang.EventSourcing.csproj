@@ -9,11 +9,11 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\JKang.EventSourcing.Serialization.Json\JKang.EventSourcing.Serialization.Json.csproj" />
+    <ProjectReference Include="..\JKang.EventSourcing.Abstractions\JKang.EventSourcing.Abstractions.csproj" />
+    <ProjectReference Include="..\JKang.EventSourcing.Options\JKang.EventSourcing.Options.csproj" />
   </ItemGroup>
 
 </Project>

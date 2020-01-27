@@ -1,15 +1,16 @@
+using Amazon.DynamoDBv2;
 using JKang.EventSourcing.Persistence;
+using JKang.EventSourcing.Persistence.CosmosDB;
 using JKang.EventSourcing.TestingFixtures;
+using JKang.EventSourcing.TestingWebApp.Database;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Azure.Cosmos.Fluent;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using Microsoft.Azure.Cosmos;
-using Microsoft.Azure.Cosmos.Fluent;
-using Amazon.DynamoDBv2;
-using JKang.EventSourcing.Persistence.CosmosDB;
 
 namespace JKang.EventSourcing.TestingWebApp
 {
@@ -33,7 +34,7 @@ namespace JKang.EventSourcing.TestingWebApp
                 .AddScoped<IGiftCardRepository, GiftCardRepository>();
 
             // change the following value to switch persistence mode
-            PersistenceMode persistenceMode = PersistenceMode.CosmosDB;
+            PersistenceMode persistenceMode = PersistenceMode.FileSystem;
 
             switch (persistenceMode)
             {
@@ -57,6 +58,12 @@ namespace JKang.EventSourcing.TestingWebApp
                             .WithCustomSerializer(new EventSourcingCosmosSerializer())
                             .Build());
                     break;
+                case PersistenceMode.EfCore:
+                    services.AddDbContext<SampleDbContext>(x =>
+                    {
+                        x.UseInMemoryDatabase("eventstore");
+                    });
+                    break;
                 default:
                     break;
             }
@@ -65,6 +72,10 @@ namespace JKang.EventSourcing.TestingWebApp
             {
                 switch (persistenceMode)
                 {
+                    case PersistenceMode.FileSystem:
+                        builder.UseTextFileEventStore<GiftCard, Guid>(
+                            x => x.Folder = "C:/Temp/GiftcardEvents");
+                        break;
                     case PersistenceMode.DynamoDB:
                         builder.UseDynamoDBEventStore<GiftCard, Guid>(
                             x => x.TableName = "GiftcardEvents");
@@ -75,6 +86,9 @@ namespace JKang.EventSourcing.TestingWebApp
                             x.DatabaseId = "EventSourcingTestingWebApp";
                             x.ContainerId = "GiftcardEvents";
                         });
+                        break;
+                    case PersistenceMode.EfCore:
+                        builder.UseDbEventStore<SampleDbContext, GiftCard, Guid>();
                         break;
                     default:
                         break;

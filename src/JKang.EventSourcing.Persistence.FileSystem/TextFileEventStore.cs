@@ -1,7 +1,9 @@
 ﻿using JKang.EventSourcing.Domain;
 using JKang.EventSourcing.Events;
-using JKang.EventSourcing.Serialization;
-using Microsoft.Extensions.Options;
+using JKang.EventSourcing.Options;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,20 +17,26 @@ namespace JKang.EventSourcing.Persistence.FileSystem
     public class TextFileEventStore<TAggregate, TAggregateKey> : IEventStore<TAggregate, TAggregateKey>
         where TAggregate : IAggregate<TAggregateKey>
     {
+        private static readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.Objects,
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            NullValueHandling = NullValueHandling.Ignore,
+            Formatting = Formatting.None,
+            Converters = new[] { new StringEnumConverter() },
+            MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead,
+        };
         private readonly TextFileEventStoreOptions _options;
-        private readonly IObjectSerializer _eventSerializer;
 
         public TextFileEventStore(
-            IOptionsMonitor<TextFileEventStoreOptions> options,
-            IObjectSerializer eventSerializer)
+            IAggregateOptionsMonitor<TAggregate, TAggregateKey, TextFileEventStoreOptions> monitor)
         {
-            if (options is null)
+            if (monitor is null)
             {
-                throw new ArgumentNullException(nameof(options));
+                throw new ArgumentNullException(nameof(monitor));
             }
 
-            _options = options.CurrentValue;
-            _eventSerializer = eventSerializer;
+            _options = monitor.AggregateOptions;
         }
 
         public async Task AddEventAsync(IAggregateEvent<TAggregateKey> @event,
@@ -39,8 +47,8 @@ namespace JKang.EventSourcing.Persistence.FileSystem
                 throw new ArgumentNullException(nameof(@event));
             }
 
-            string serialized = _eventSerializer.Serialize(@event);
-            string filePath = GetAggregateFilePath(@event.AggregateId, createFolderIfNotExist: true);
+            string serialized = JsonConvert.SerializeObject(@event, _jsonSerializerSettings);
+            string filePath = GetAggregateFilePath(@event.AggregateId);
             using (var fs = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.None))
             using (var sw = new StreamWriter(fs))
             {
@@ -57,8 +65,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem
         {
             return Task.Run(() =>
             {
-                string folder = GetAggregateFolder();
-                var di = new DirectoryInfo(folder);
+                var di = new DirectoryInfo(_options.Folder);
                 if (!di.Exists)
                 {
                     return Array.Empty<TAggregateKey>();
@@ -98,23 +105,13 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             }
 
             return text.Split(new[] { _options.EventSeparator }, StringSplitOptions.None)
-                .Select(x => _eventSerializer.Deserialize<IAggregateEvent<TAggregateKey>>(x))
+                .Select(x => JsonConvert.DeserializeObject<IAggregateEvent<TAggregateKey>>(x, _jsonSerializerSettings))
                 .ToArray();
         }
 
-        private string GetAggregateFilePath(TAggregateKey aggregateId, bool createFolderIfNotExist = false)
+        private string GetAggregateFilePath(TAggregateKey aggregateId)
         {
-            string folder = GetAggregateFolder(createFolderIfNotExist);
-            return Path.Combine(folder, $"{aggregateId}.txt");
-        }
-
-        private string GetAggregateFolder(bool createIfNotExist = false)
-        {
-            if (createIfNotExist)
-            {
-                Directory.CreateDirectory(_options.Folder);
-            }
-            return _options.Folder;
+            return Path.Combine(_options.Folder, $"{aggregateId}.txt");
         }
     }
 }

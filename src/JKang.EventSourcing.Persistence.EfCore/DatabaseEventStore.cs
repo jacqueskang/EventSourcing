@@ -1,7 +1,9 @@
 ﻿using JKang.EventSourcing.Domain;
 using JKang.EventSourcing.Events;
-using JKang.EventSourcing.Serialization;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -13,15 +15,20 @@ namespace JKang.EventSourcing.Persistence.EfCore
         where TDbContext : DbContext, IEventSourcingDbContext<TAggregate, TAggregateKey>
         where TAggregate : IAggregate<TAggregateKey>
     {
-        private readonly TDbContext _context;
-        private readonly IObjectSerializer _eventSerializer;
-
-        public DatabaseEventStore(
-            TDbContext context,
-            IObjectSerializer eventSerializer)
+        private static readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings
         {
-            _context = context;
-            _eventSerializer = eventSerializer;
+            TypeNameHandling = TypeNameHandling.Objects,
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            NullValueHandling = NullValueHandling.Ignore,
+            Formatting = Formatting.None,
+            Converters = new[] { new StringEnumConverter() },
+            MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead,
+        };
+        private readonly TDbContext _context;
+
+        public DatabaseEventStore(TDbContext context)
+        {
+            _context = context ?? throw new System.ArgumentNullException(nameof(context));
         }
 
         public async Task AddEventAsync(IAggregateEvent<TAggregateKey> @event,
@@ -32,7 +39,7 @@ namespace JKang.EventSourcing.Persistence.EfCore
                 throw new System.ArgumentNullException(nameof(@event));
             }
 
-            string serialized = _eventSerializer.Serialize(@event);
+            string serialized = JsonConvert.SerializeObject(@event, _jsonSerializerSettings);
             var entity = new EventEntity<TAggregateKey>
             {
                 AggregateId = @event.AggregateId,
@@ -64,7 +71,7 @@ namespace JKang.EventSourcing.Persistence.EfCore
                 .ConfigureAwait(false);
 
             return serializedEvents
-                .Select(x => _eventSerializer.Deserialize<IAggregateEvent<TAggregateKey>>(x))
+                .Select(x => JsonConvert.DeserializeObject<IAggregateEvent<TAggregateKey>>(x, _jsonSerializerSettings))
                 .ToArray();
         }
     }

@@ -1,5 +1,5 @@
-﻿using JKang.EventSourcing.DependencyInjection;
-using JKang.EventSourcing.Domain;
+﻿using JKang.EventSourcing.Domain;
+using JKang.EventSourcing.Options;
 using Microsoft.Azure.Cosmos;
 using System;
 using System.Linq;
@@ -53,7 +53,9 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
                 {
                     Path = indexPath
                 });
-                await containerResponse.Container.ReplaceContainerAsync(containerResponse.Resource).ConfigureAwait(false);
+                await containerResponse.Container
+                    .ReplaceContainerAsync(containerResponse.Resource, cancellationToken: cancellationToken)
+                    .ConfigureAwait(false);
             }
         }
     }

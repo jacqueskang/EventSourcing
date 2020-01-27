@@ -1,7 +1,6 @@
 ﻿using JKang.EventSourcing.Domain;
 using JKang.EventSourcing.Persistence;
 using JKang.EventSourcing.Persistence.EfCore;
-using JKang.EventSourcing.Serialization;
 using Microsoft.EntityFrameworkCore;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -20,7 +19,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             builder.Services
                 .AddScoped<IEventStore<TAggregate, TAggregateKey>, DatabaseEventStore<TEventSourcingDbContext, TAggregate, TAggregateKey>>()
-                .AddScoped<IEventStoreInitializer<TAggregate, TAggregateKey>, DefaultEventStoreInitializer<TAggregate, TAggregateKey>>()
+                .AddScoped<IEventStoreInitializer<TAggregate, TAggregateKey>, DatabaseEventStoreInitializer<TEventSourcingDbContext, TAggregate, TAggregateKey>>()
                 ;
             return builder;
         }
