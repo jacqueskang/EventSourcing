@@ -10,7 +10,7 @@ Support various of event store:
  - in text file (one text file per aggregate)
  - in relational database such as SQL Server, MySQL, etc. using EF Core
  - in AWS DynamoDB (See [DynamoDB setup instructions](doc/DynamoDBSetup.md))
- - in Azure DynamoDB (See [CosmosDB setup instructions](doc/CosmosDBSetup.md))
+ - in Azure CosmosDB (See [CosmosDB setup instructions](doc/CosmosDBSetup.md))
 
 ## NuGet packages
  - JKang.EventSourcing [![NuGet version](https://badge.fury.io/nu/JKang.EventSourcing.svg)](https://badge.fury.io/nu/JKang.EventSourcing)

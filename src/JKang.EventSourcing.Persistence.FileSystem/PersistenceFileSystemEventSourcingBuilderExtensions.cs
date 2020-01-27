@@ -1,7 +1,7 @@
 ﻿using JKang.EventSourcing.Domain;
+using JKang.EventSourcing.Initialization;
 using JKang.EventSourcing.Persistence;
 using JKang.EventSourcing.Persistence.FileSystem;
-using JKang.EventSourcing.Serialization;
 using System;
 
 namespace Microsoft.Extensions.DependencyInjection

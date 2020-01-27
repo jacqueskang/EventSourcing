@@ -3,7 +3,7 @@ using JKang.EventSourcing.Persistence;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace JKang.EventSourcing.Serialization
+namespace JKang.EventSourcing.Initialization
 {
     public class DefaultEventStoreInitializer<TAggregate, TAggregateKey> : IEventStoreInitializer<TAggregate, TAggregateKey>
         where TAggregate : IAggregate<TAggregateKey>

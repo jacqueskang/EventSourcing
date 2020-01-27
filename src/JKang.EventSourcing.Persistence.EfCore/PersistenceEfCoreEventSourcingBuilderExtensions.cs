@@ -1,7 +1,7 @@
 ﻿using JKang.EventSourcing.Domain;
+using JKang.EventSourcing.Initialization;
 using JKang.EventSourcing.Persistence;
 using JKang.EventSourcing.Persistence.EfCore;
-using JKang.EventSourcing.Serialization;
 using Microsoft.EntityFrameworkCore;
 
 namespace Microsoft.Extensions.DependencyInjection

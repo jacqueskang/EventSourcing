@@ -1,7 +1,9 @@
 ﻿using JKang.EventSourcing.Domain;
 using JKang.EventSourcing.Events;
-using JKang.EventSourcing.Serialization;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,12 +17,19 @@ namespace JKang.EventSourcing.Persistence.FileSystem
     public class TextFileEventStore<TAggregate, TAggregateKey> : IEventStore<TAggregate, TAggregateKey>
         where TAggregate : IAggregate<TAggregateKey>
     {
+        private static readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.Objects,
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            NullValueHandling = NullValueHandling.Ignore,
+            Formatting = Formatting.None,
+            Converters = new[] { new StringEnumConverter() },
+            MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead,
+        };
         private readonly TextFileEventStoreOptions _options;
-        private readonly IObjectSerializer _eventSerializer;
 
         public TextFileEventStore(
-            IOptionsMonitor<TextFileEventStoreOptions> options,
-            IObjectSerializer eventSerializer)
+            IOptionsMonitor<TextFileEventStoreOptions> options)
         {
             if (options is null)
             {
@@ -28,7 +37,6 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             }
 
             _options = options.CurrentValue;
-            _eventSerializer = eventSerializer;
         }
 
         public async Task AddEventAsync(IAggregateEvent<TAggregateKey> @event,
@@ -39,7 +47,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem
                 throw new ArgumentNullException(nameof(@event));
             }
 
-            string serialized = _eventSerializer.Serialize(@event);
+            string serialized = JsonConvert.SerializeObject(@event, _jsonSerializerSettings);
             string filePath = GetAggregateFilePath(@event.AggregateId, createFolderIfNotExist: true);
             using (var fs = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.None))
             using (var sw = new StreamWriter(fs))
@@ -98,7 +106,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             }
 
             return text.Split(new[] { _options.EventSeparator }, StringSplitOptions.None)
-                .Select(x => _eventSerializer.Deserialize<IAggregateEvent<TAggregateKey>>(x))
+                .Select(x => JsonConvert.DeserializeObject<IAggregateEvent<TAggregateKey>>(x, _jsonSerializerSettings))
                 .ToArray();
         }
 
