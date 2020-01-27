@@ -51,7 +51,7 @@ The minimum requirement for an user defined event is to implement the following 
 ```
 It's recommended that to implement an event in an **immutable** way.
 
-Event must be serializable. The framework uses Json.NET by default but you can customize the serialization by providing your own implementation of `IObjectSerializer` interface. (e.g., with Protobuf)
+In order to use built-in event store, please make sure event can be properly serialized using [Json.NET](https://www.newtonsoft.com/json).
 
 You can optionally inherit from the abstract classes `AggregateEvent<TAggregateKey>` or `AggregateCreatedEvent<TAggregateKey>` provided by the framework to save several lines of code.
 
