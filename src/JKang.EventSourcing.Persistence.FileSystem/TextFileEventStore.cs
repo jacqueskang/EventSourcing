@@ -1,6 +1,6 @@
 ﻿using JKang.EventSourcing.Domain;
 using JKang.EventSourcing.Events;
-using Microsoft.Extensions.Options;
+using JKang.EventSourcing.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -29,14 +29,14 @@ namespace JKang.EventSourcing.Persistence.FileSystem
         private readonly TextFileEventStoreOptions _options;
 
         public TextFileEventStore(
-            IOptionsMonitor<TextFileEventStoreOptions> options)
+            IAggregateOptionsMonitor<TAggregate, TAggregateKey, TextFileEventStoreOptions> monitor)
         {
-            if (options is null)
+            if (monitor is null)
             {
-                throw new ArgumentNullException(nameof(options));
+                throw new ArgumentNullException(nameof(monitor));
             }
 
-            _options = options.CurrentValue;
+            _options = monitor.AggregateOptions;
         }
 
         public async Task AddEventAsync(IAggregateEvent<TAggregateKey> @event,
@@ -48,7 +48,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             }
 
             string serialized = JsonConvert.SerializeObject(@event, _jsonSerializerSettings);
-            string filePath = GetAggregateFilePath(@event.AggregateId, createFolderIfNotExist: true);
+            string filePath = GetAggregateFilePath(@event.AggregateId);
             using (var fs = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.None))
             using (var sw = new StreamWriter(fs))
             {
@@ -65,8 +65,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem
         {
             return Task.Run(() =>
             {
-                string folder = GetAggregateFolder();
-                var di = new DirectoryInfo(folder);
+                var di = new DirectoryInfo(_options.Folder);
                 if (!di.Exists)
                 {
                     return Array.Empty<TAggregateKey>();
@@ -110,19 +109,9 @@ namespace JKang.EventSourcing.Persistence.FileSystem
                 .ToArray();
         }
 
-        private string GetAggregateFilePath(TAggregateKey aggregateId, bool createFolderIfNotExist = false)
+        private string GetAggregateFilePath(TAggregateKey aggregateId)
         {
-            string folder = GetAggregateFolder(createFolderIfNotExist);
-            return Path.Combine(folder, $"{aggregateId}.txt");
-        }
-
-        private string GetAggregateFolder(bool createIfNotExist = false)
-        {
-            if (createIfNotExist)
-            {
-                Directory.CreateDirectory(_options.Folder);
-            }
-            return _options.Folder;
+            return Path.Combine(_options.Folder, $"{aggregateId}.txt");
         }
     }
 }
