@@ -1,9 +1,11 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
-using JKang.EventSourcing.DependencyInjection;
 using JKang.EventSourcing.Domain;
 using JKang.EventSourcing.Events;
-using JKang.EventSourcing.Serialization.Json;
+using JKang.EventSourcing.Options;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,11 +18,18 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
     public class DynamoDBEventStore<TAggregate, TAggregateKey> : IEventStore<TAggregate, TAggregateKey>
         where TAggregate : IAggregate<TAggregateKey>
     {
-        private readonly IJsonObjectSerializer _serializer;
+        private static readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.Objects,
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            NullValueHandling = NullValueHandling.Ignore,
+            Formatting = Formatting.None,
+            Converters = new[] { new StringEnumConverter() },
+            MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead,
+        };
         private readonly Table _table;
 
         public DynamoDBEventStore(
-            IJsonObjectSerializer serializer,
             IAggregateOptionsMonitor<TAggregate, TAggregateKey, DynamoDBEventStoreOptions> monitor,
             IAmazonDynamoDB client)
         {
@@ -29,7 +38,6 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
                 throw new ArgumentNullException(nameof(monitor));
             }
 
-            _serializer = serializer;
             _table = Table.LoadTable(client, monitor.AggregateOptions.TableName);
         }
 
@@ -37,7 +45,7 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
             IAggregateEvent<TAggregateKey> @event,
             CancellationToken cancellationToken = default)
         {
-            string json = _serializer.Serialize(@event);
+            string json = JsonConvert.SerializeObject(@event, _jsonSerializerSettings);
             var item = Document.FromJson(json);
             await _table.PutItemAsync(item, cancellationToken).ConfigureAwait(false);
         }
@@ -104,7 +112,7 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
                 foreach (Document document in documents)
                 {
                     string json = document.ToJson();
-                    IAggregateEvent<TAggregateKey> @event = _serializer.Deserialize<IAggregateEvent<TAggregateKey>>(json);
+                    IAggregateEvent<TAggregateKey> @event = JsonConvert.DeserializeObject<IAggregateEvent<TAggregateKey>>(json, _jsonSerializerSettings);
                     events.Add(@event);
                 }
             } while (!search.IsDone);

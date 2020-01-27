@@ -1,15 +1,14 @@
+using Amazon.DynamoDBv2;
 using JKang.EventSourcing.Persistence;
+using JKang.EventSourcing.Persistence.CosmosDB;
 using JKang.EventSourcing.TestingFixtures;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using Microsoft.Azure.Cosmos;
-using Microsoft.Azure.Cosmos.Fluent;
-using Amazon.DynamoDBv2;
-using JKang.EventSourcing.Persistence.CosmosDB;
 
 namespace JKang.EventSourcing.TestingWebApp
 {

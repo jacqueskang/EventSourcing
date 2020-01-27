@@ -14,8 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\JKang.EventSourcing.Abstractions\JKang.EventSourcing.Abstractions.csproj" />
-    <ProjectReference Include="..\JKang.EventSourcing.Serialization.Json\JKang.EventSourcing.Serialization.Json.csproj" />
-    <ProjectReference Include="..\JKang.EventSourcing\JKang.EventSourcing.csproj" />
+    <ProjectReference Include="..\JKang.EventSourcing.Options\JKang.EventSourcing.Options.csproj" />
   </ItemGroup>
 
 </Project>

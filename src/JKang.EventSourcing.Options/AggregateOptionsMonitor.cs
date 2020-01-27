@@ -1,8 +1,7 @@
-﻿using JKang.EventSourcing.DependencyInjection;
-using JKang.EventSourcing.Domain;
+﻿using JKang.EventSourcing.Domain;
 using Microsoft.Extensions.Options;
 
-namespace JKang.EventSourcing
+namespace JKang.EventSourcing.Options
 {
     public class AggregateOptionsMonitor<TAggregate, TKey, TOptions>
         : IAggregateOptionsMonitor<TAggregate, TKey, TOptions>

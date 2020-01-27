@@ -1,7 +1,7 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
-using JKang.EventSourcing.DependencyInjection;
 using JKang.EventSourcing.Domain;
+using JKang.EventSourcing.Options;
 using System;
 using System.Collections.Generic;
 using System.Threading;

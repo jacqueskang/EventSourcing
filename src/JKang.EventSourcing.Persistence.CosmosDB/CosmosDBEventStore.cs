@@ -1,6 +1,6 @@
-﻿using JKang.EventSourcing.DependencyInjection;
-using JKang.EventSourcing.Domain;
+﻿using JKang.EventSourcing.Domain;
 using JKang.EventSourcing.Events;
+using JKang.EventSourcing.Options;
 using JKang.EventSourcing.Persistence.DynamoDB;
 using Microsoft.Azure.Cosmos;
 using System;

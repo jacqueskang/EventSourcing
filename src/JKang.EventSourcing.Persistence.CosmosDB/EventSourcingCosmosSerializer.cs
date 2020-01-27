@@ -1,5 +1,7 @@
-﻿using JKang.EventSourcing.Serialization.Json;
-using Microsoft.Azure.Cosmos;
+﻿using Microsoft.Azure.Cosmos;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using System.IO;
 using System.Text;
 
@@ -7,7 +9,15 @@ namespace JKang.EventSourcing.Persistence.CosmosDB
 {
     public class EventSourcingCosmosSerializer : CosmosSerializer
     {
-        private readonly JsonObjectSerializer _serializer = new JsonObjectSerializer();
+        private static readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.Objects,
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            NullValueHandling = NullValueHandling.Ignore,
+            Formatting = Formatting.None,
+            Converters = new[] { new StringEnumConverter() },
+            MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead,
+        };
 
         public override T FromStream<T>(Stream stream)
         {
@@ -20,14 +30,15 @@ namespace JKang.EventSourcing.Persistence.CosmosDB
 
                 using (var sr = new StreamReader(stream))
                 {
-                    return _serializer.Deserialize<T>(sr.ReadToEnd());
+                    string serialized = sr.ReadToEnd();
+                    return JsonConvert.DeserializeObject<T>(serialized, _jsonSerializerSettings);
                 }
             }
         }
 
         public override Stream ToStream<T>(T input)
         {
-            string serialized = _serializer.Serialize(input);
+            string serialized = JsonConvert.SerializeObject(input, _jsonSerializerSettings);
             return new MemoryStream(Encoding.UTF8.GetBytes(serialized));
         }
     }
