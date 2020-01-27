@@ -3,6 +3,7 @@
     public enum PersistenceMode
     {
         FileSystem,
+        EfCore,
         DynamoDB,
         CosmosDB
     }

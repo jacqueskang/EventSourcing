@@ -26,8 +26,7 @@ namespace JKang.EventSourcing.Persistence.EfCore
         };
         private readonly TDbContext _context;
 
-        public DatabaseEventStore(
-            TDbContext context)
+        public DatabaseEventStore(TDbContext context)
         {
             _context = context ?? throw new System.ArgumentNullException(nameof(context));
         }
