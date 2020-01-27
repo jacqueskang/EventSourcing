@@ -61,7 +61,9 @@ namespace JKang.EventSourcing.Persistence.CosmosDB
 
             while (iterator.HasMoreResults)
             {
-                FeedResponse<TAggregateKey> results = await iterator.ReadNextAsync().ConfigureAwait(false);
+                FeedResponse<TAggregateKey> results = await iterator
+                    .ReadNextAsync(cancellationToken)
+                    .ConfigureAwait(false);
                 foreach (TAggregateKey id in results)
                 {
                     ids.Add(id);
@@ -81,7 +83,9 @@ namespace JKang.EventSourcing.Persistence.CosmosDB
 
             while (iterator.HasMoreResults)
             {
-                FeedResponse<IAggregateEvent<TAggregateKey>> results = await iterator.ReadNextAsync().ConfigureAwait(false);
+                FeedResponse<IAggregateEvent<TAggregateKey>> results = await iterator
+                    .ReadNextAsync(cancellationToken)
+                    .ConfigureAwait(false);
                 foreach (IAggregateEvent<TAggregateKey> e in results)
                 {
                     events.Add(e);
