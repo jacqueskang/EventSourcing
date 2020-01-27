@@ -53,7 +53,9 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
                 {
                     Path = indexPath
                 });
-                await containerResponse.Container.ReplaceContainerAsync(containerResponse.Resource).ConfigureAwait(false);
+                await containerResponse.Container
+                    .ReplaceContainerAsync(containerResponse.Resource, cancellationToken: cancellationToken)
+                    .ConfigureAwait(false);
             }
         }
     }

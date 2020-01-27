@@ -2,9 +2,11 @@ using Amazon.DynamoDBv2;
 using JKang.EventSourcing.Persistence;
 using JKang.EventSourcing.Persistence.CosmosDB;
 using JKang.EventSourcing.TestingFixtures;
+using JKang.EventSourcing.TestingWebApp.Database;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Azure.Cosmos.Fluent;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -56,6 +58,12 @@ namespace JKang.EventSourcing.TestingWebApp
                             .WithCustomSerializer(new EventSourcingCosmosSerializer())
                             .Build());
                     break;
+                case PersistenceMode.EfCore:
+                    services.AddDbContext<SampleDbContext>(x =>
+                    {
+                        x.UseInMemoryDatabase("eventstore");
+                    });
+                    break;
                 default:
                     break;
             }
@@ -78,6 +86,9 @@ namespace JKang.EventSourcing.TestingWebApp
                             x.DatabaseId = "EventSourcingTestingWebApp";
                             x.ContainerId = "GiftcardEvents";
                         });
+                        break;
+                    case PersistenceMode.EfCore:
+                        builder.UseDbEventStore<SampleDbContext, GiftCard, Guid>();
                         break;
                     default:
                         break;
