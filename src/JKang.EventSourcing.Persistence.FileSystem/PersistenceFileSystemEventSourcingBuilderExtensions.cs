@@ -1,5 +1,4 @@
 ﻿using JKang.EventSourcing.Domain;
-using JKang.EventSourcing.Initialization;
 using JKang.EventSourcing.Persistence;
 using JKang.EventSourcing.Persistence.FileSystem;
 using System;
@@ -19,9 +18,9 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             builder.Services
+                .ConfigureAggregate<TAggregate, TAggregateKey, TextFileEventStoreOptions>(setupAction)
                 .AddScoped<IEventStore<TAggregate, TAggregateKey>, TextFileEventStore<TAggregate, TAggregateKey>>()
-                .AddScoped<IEventStoreInitializer<TAggregate, TAggregateKey>, DefaultEventStoreInitializer<TAggregate, TAggregateKey>>()
-                .Configure(setupAction)
+                .AddScoped<IEventStoreInitializer<TAggregate, TAggregateKey>, TextFileEventStoreInitializer<TAggregate, TAggregateKey>>()
                 ;
             return builder;
         }

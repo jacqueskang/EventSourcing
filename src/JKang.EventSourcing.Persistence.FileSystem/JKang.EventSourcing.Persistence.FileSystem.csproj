@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\JKang.EventSourcing.Abstractions\JKang.EventSourcing.Abstractions.csproj" />
+    <ProjectReference Include="..\JKang.EventSourcing.Options\JKang.EventSourcing.Options.csproj" />
   </ItemGroup>
 
 </Project>

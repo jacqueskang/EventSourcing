@@ -32,7 +32,7 @@ namespace JKang.EventSourcing.TestingWebApp
                 .AddScoped<IGiftCardRepository, GiftCardRepository>();
 
             // change the following value to switch persistence mode
-            PersistenceMode persistenceMode = PersistenceMode.CosmosDB;
+            PersistenceMode persistenceMode = PersistenceMode.FileSystem;
 
             switch (persistenceMode)
             {
@@ -64,6 +64,10 @@ namespace JKang.EventSourcing.TestingWebApp
             {
                 switch (persistenceMode)
                 {
+                    case PersistenceMode.FileSystem:
+                        builder.UseTextFileEventStore<GiftCard, Guid>(
+                            x => x.Folder = "C:/Temp/GiftcardEvents");
+                        break;
                     case PersistenceMode.DynamoDB:
                         builder.UseDynamoDBEventStore<GiftCard, Guid>(
                             x => x.TableName = "GiftcardEvents");
