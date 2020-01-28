@@ -51,6 +51,8 @@ namespace JKang.EventSourcing.Domain
 
         protected abstract void ApplyEvent(IAggregateEvent<TKey> e);
 
+        protected abstract void ApplySnapshot(IAggregateSnapshot<TKey> snapshot);
+
         protected void ReceiveEvent(IAggregateEvent<TKey> e)
         {
             if (e is null)
@@ -69,12 +71,19 @@ namespace JKang.EventSourcing.Domain
                 throw new InvalidOperationException($"Cannot integrate event with {nameof(e.AggregateId)} '{e.AggregateId}' on an aggregate with {nameof(Id)} '{Id}'");
             }
 
-            if (e.AggregateVersion != GetNextVersion())
+            if (e is IAggregateSnapshot<TKey> snapshot)
             {
-                throw new InvalidOperationException($"Cannot integrate event with {nameof(e.AggregateVersion)} '{e.AggregateVersion}' on an aggregate with {nameof(Version)} '{Version}'");
+                ApplySnapshot(snapshot);
             }
+            else
+            {
+                if (e.AggregateVersion != GetNextVersion())
+                {
+                    throw new InvalidOperationException($"Cannot integrate event with {nameof(e.AggregateVersion)} '{e.AggregateVersion}' on an aggregate with {nameof(Version)} '{Version}'");
+                }
 
-            ApplyEvent(e);
+                ApplyEvent(e);
+            }
 
             Version = e.AggregateVersion;
         }

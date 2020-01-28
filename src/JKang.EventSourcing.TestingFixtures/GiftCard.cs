@@ -47,5 +47,13 @@ namespace JKang.EventSourcing.TestingFixtures
                 Balance -= debited.Amount;
             }
         }
+
+        protected override void ApplySnapshot(IAggregateSnapshot<Guid> snapshot)
+        {
+            GiftCardSnapshot giftCardSnapshot = snapshot as GiftCardSnapshot
+                ?? throw new InvalidOperationException();
+
+            Balance = giftCardSnapshot.Balance;
+        }
     }
 }

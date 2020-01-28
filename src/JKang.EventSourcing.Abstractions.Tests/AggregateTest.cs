@@ -28,7 +28,7 @@ namespace JKang.EventSourcing.Abstractions.Tests
         }
 
         [Theory, AutoData]
-        public void Constructor_CreateFromHistory(Guid aggregateId)
+        public void Constructor_CreateFromSavedEvents(Guid aggregateId)
         {
             // arrange;
             var history = new IAggregateEvent<Guid>[]
@@ -42,8 +42,31 @@ namespace JKang.EventSourcing.Abstractions.Tests
             IAggregateChangeset<Guid> changeset = sut.GetChangeset();
 
             // assert
+            Assert.Equal(100 - 30, sut.Balance);
             Assert.Equal(aggregateId, sut.Id);
             Assert.Equal(2, sut.Version);
+            Assert.Equal(2, sut.Events.Count());
+            Assert.Empty(changeset.Events);
+        }
+
+        [Theory, AutoData]
+        public void Constructor_CreateFromSnapshotWithSavedEvents(Guid aggregateId)
+        {
+            // arrange;
+            var history = new IAggregateEvent<Guid>[]
+            {
+                new GiftCardSnapshot(aggregateId, 10, DateTime.UtcNow.AddDays(-10), 70),
+                new GiftCardDebited(aggregateId, 11, DateTime.UtcNow.AddDays(-5), 30)
+            };
+
+            // act
+            var sut = new GiftCard(aggregateId, history);
+            IAggregateChangeset<Guid> changeset = sut.GetChangeset();
+
+            // assert
+            Assert.Equal(70 - 30, sut.Balance);
+            Assert.Equal(aggregateId, sut.Id);
+            Assert.Equal(11, sut.Version);
             Assert.Equal(2, sut.Events.Count());
             Assert.Empty(changeset.Events);
         }
