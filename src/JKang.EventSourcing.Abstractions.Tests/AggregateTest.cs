@@ -70,5 +70,30 @@ namespace JKang.EventSourcing.Abstractions.Tests
             Assert.Equal(2, sut.Events.Count());
             Assert.Empty(changeset.Events);
         }
+
+        [Theory, AutoData]
+        public void TakeSnapshot(Guid aggregateId)
+        {
+            // arrange;
+            var savedEvents = new IAggregateEvent<Guid>[]
+            {
+                new GiftCardCreated(aggregateId, DateTime.UtcNow.AddDays(-10), 100),
+                new GiftCardDebited(aggregateId, 2, DateTime.UtcNow.AddDays(-5), 30),
+                new GiftCardDebited(aggregateId, 3, DateTime.UtcNow.AddDays(-2), 20)
+            };
+            var sut = new GiftCard(aggregateId, savedEvents);
+            sut.TakeSnapshot();
+
+            // assert
+            Assert.Equal(3, sut.Version);
+            IAggregateChangeset<Guid> changeset = sut.GetChangeset();
+            Assert.Single(changeset.Events);
+            var snapshot = changeset.Events.Single() as GiftCardSnapshot;
+            Assert.NotNull(snapshot);
+            Assert.Equal(aggregateId, snapshot.AggregateId);
+            Assert.Equal(3, snapshot.AggregateVersion);
+            Assert.Equal(savedEvents.Last().Timestamp, snapshot.Timestamp);
+            Assert.Equal(sut.Balance, snapshot.Balance);
+        }
     }
 }

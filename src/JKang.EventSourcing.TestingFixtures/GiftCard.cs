@@ -2,6 +2,7 @@
 using JKang.EventSourcing.Events;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace JKang.EventSourcing.TestingFixtures
 {
@@ -54,6 +55,11 @@ namespace JKang.EventSourcing.TestingFixtures
                 ?? throw new InvalidOperationException();
 
             Balance = giftCardSnapshot.Balance;
+        }
+
+        protected override IAggregateSnapshot<Guid> CreateSnapshot()
+        {
+            return new GiftCardSnapshot(Id, Version, Events.Last().Timestamp, Balance);
         }
     }
 }

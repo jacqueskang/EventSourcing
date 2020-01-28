@@ -44,6 +44,28 @@ namespace JKang.EventSourcing.Domain
 
         public IEnumerable<IAggregateEvent<TKey>> Events { get => _savedEvents.Concat(_unsavedEvents); }
 
+        public void TakeSnapshot()
+        {
+            IAggregateSnapshot<TKey> snapshot = CreateSnapshot();
+
+            if (!Id.Equals(snapshot.AggregateId))
+            {
+                throw new InvalidOperationException($"Snapshot AggregateId must be {Id}");
+            }
+
+            if (!Version.Equals(snapshot.AggregateVersion))
+            {
+                throw new InvalidOperationException($"Snapshot AggregateVersion must be {Version}");
+            }
+
+            if (!Events.Last().Timestamp.Equals(snapshot.Timestamp))
+            {
+                throw new InvalidOperationException($"Snapshot AggregateVersion must be {Events.Last().Timestamp}");
+            }
+
+            _unsavedEvents.Enqueue(snapshot);
+        }
+
         public IAggregateChangeset<TKey> GetChangeset()
         {
             return new Changeset(_unsavedEvents, this);
@@ -51,7 +73,9 @@ namespace JKang.EventSourcing.Domain
 
         protected abstract void ApplyEvent(IAggregateEvent<TKey> e);
 
-        protected abstract void ApplySnapshot(IAggregateSnapshot<TKey> snapshot);
+        protected virtual void ApplySnapshot(IAggregateSnapshot<TKey> snapshot) => throw new NotImplementedException();
+
+        protected virtual IAggregateSnapshot<TKey> CreateSnapshot() => throw new NotImplementedException();
 
         protected void ReceiveEvent(IAggregateEvent<TKey> e)
         {
