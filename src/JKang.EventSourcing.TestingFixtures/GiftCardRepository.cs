@@ -1,7 +1,5 @@
 ﻿using JKang.EventSourcing.Persistence;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace JKang.EventSourcing.TestingFixtures
