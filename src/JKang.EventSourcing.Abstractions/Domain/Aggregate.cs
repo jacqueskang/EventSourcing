@@ -10,7 +10,7 @@ namespace JKang.EventSourcing.Domain
     {
         private readonly Queue<IAggregateEvent<TKey>> _savedEvents = new Queue<IAggregateEvent<TKey>>();
         private readonly Queue<IAggregateEvent<TKey>> _unsavedEvents = new Queue<IAggregateEvent<TKey>>();
-        private readonly Queue<IAggregateSnapshot<TKey>> _unsavedSnapshots = new Queue<IAggregateSnapshot<TKey>>();
+        private IAggregateSnapshot<TKey> _unsavedSnapshot = null;
 
         /// <summary>
         /// Create a new aggregate
@@ -99,12 +99,12 @@ namespace JKang.EventSourcing.Domain
                 throw new InvalidOperationException($"Snapshot AggregateVersion must be {Version}");
             }
 
-            _unsavedSnapshots.Enqueue(snapshot);
+            _unsavedSnapshot = snapshot;
         }
 
         public IAggregateChangeset<TKey> GetChangeset()
         {
-            return new Changeset(this, _unsavedEvents, _unsavedSnapshots);
+            return new Changeset(this, _unsavedEvents, _unsavedSnapshot);
         }
 
         protected int GetNextVersion() => Version + 1;
@@ -162,25 +162,20 @@ namespace JKang.EventSourcing.Domain
             public Changeset(
                 Aggregate<TKey> aggregate,
                 IEnumerable<IAggregateEvent<TKey>> events,
-                IEnumerable<IAggregateSnapshot<TKey>> snapshots)
+                IAggregateSnapshot<TKey> snapshot = null)
             {
                 if (events is null)
                 {
                     throw new ArgumentNullException(nameof(events));
                 }
 
-                if (snapshots is null)
-                {
-                    throw new ArgumentNullException(nameof(snapshots));
-                }
-
                 _aggregate = aggregate ?? throw new ArgumentNullException(nameof(aggregate));
                 Events = events.ToList().AsReadOnly();
-                Snapshots = snapshots.ToList().AsReadOnly();
+                Snapshot = snapshot;
             }
 
             public IEnumerable<IAggregateEvent<TKey>> Events { get; }
-            public IEnumerable<IAggregateSnapshot<TKey>> Snapshots { get; }
+            public IAggregateSnapshot<TKey> Snapshot { get; }
 
             public void Commit()
             {
@@ -190,7 +185,7 @@ namespace JKang.EventSourcing.Domain
                     _aggregate._savedEvents.Enqueue(@evt);
                 }
 
-                _aggregate._unsavedSnapshots.Clear();
+                _aggregate._unsavedSnapshot = null;
             }
         }
     }

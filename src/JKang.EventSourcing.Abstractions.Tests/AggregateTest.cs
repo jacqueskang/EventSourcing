@@ -48,6 +48,7 @@ namespace JKang.EventSourcing.Abstractions.Tests
             Assert.Equal(2, sut.Version);
             Assert.Equal(2, sut.Events.Count());
             Assert.Empty(changeset.Events);
+            Assert.Null(changeset.Snapshot);
         }
 
         [Theory, AutoData]
@@ -70,7 +71,7 @@ namespace JKang.EventSourcing.Abstractions.Tests
             Assert.Equal(11, sut.Version);
             Assert.Single(sut.Events);
             Assert.Empty(changeset.Events);
-            Assert.Empty(changeset.Snapshots);
+            Assert.Null(changeset.Snapshot);
         }
 
         [Theory, AutoData]
@@ -84,14 +85,16 @@ namespace JKang.EventSourcing.Abstractions.Tests
                 new GiftCardDebited(aggregateId, 3, DateTime.UtcNow.AddDays(-2), 20)
             };
             var sut = new GiftCard(aggregateId, savedEvents);
+
+            // act
             sut.TakeSnapshot();
 
             // assert
             Assert.Equal(3, sut.Version);
             IAggregateChangeset<Guid> changeset = sut.GetChangeset();
-            Assert.Single(changeset.Snapshots);
-            var snapshot = changeset.Snapshots.Single() as GiftCardSnapshot;
-            Assert.NotNull(snapshot);
+            Assert.NotNull(changeset.Snapshot);
+            Assert.IsType<GiftCardSnapshot>(changeset.Snapshot);
+            var snapshot = changeset.Snapshot as GiftCardSnapshot;
             Assert.Equal(aggregateId, snapshot.AggregateId);
             Assert.Equal(3, snapshot.AggregateVersion);
             Assert.Equal(sut.Balance, snapshot.Balance);

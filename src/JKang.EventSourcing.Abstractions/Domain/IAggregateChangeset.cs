@@ -8,7 +8,7 @@ namespace JKang.EventSourcing.Domain
     {
         IEnumerable<IAggregateEvent<TKey>> Events { get; }
 
-        IEnumerable<IAggregateSnapshot<TKey>> Snapshots { get; }
+        IAggregateSnapshot<TKey> Snapshot { get; }
 
         void Commit();
     }
