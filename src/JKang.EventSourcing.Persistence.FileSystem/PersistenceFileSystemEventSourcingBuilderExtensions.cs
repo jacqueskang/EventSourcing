@@ -7,10 +7,10 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class PersistenceFileSystemEventSourcingBuilderExtensions
     {
-        public static IEventSourcingBuilder UseTextFileEventStore<TAggregate, TAggregateKey>(
+        public static IEventSourcingBuilder UseTextFileEventStore<TAggregate, TKey>(
             this IEventSourcingBuilder builder,
             Action<TextFileEventStoreOptions> setupAction)
-            where TAggregate : IAggregate<TAggregateKey>
+            where TAggregate : IAggregate<TKey>
         {
             if (builder is null)
             {
@@ -18,9 +18,9 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             builder.Services
-                .ConfigureAggregate<TAggregate, TAggregateKey, TextFileEventStoreOptions>(setupAction)
-                .AddScoped<IEventStore<TAggregate, TAggregateKey>, TextFileEventStore<TAggregate, TAggregateKey>>()
-                .AddScoped<IEventStoreInitializer<TAggregate, TAggregateKey>, TextFileEventStoreInitializer<TAggregate, TAggregateKey>>()
+                .ConfigureAggregate<TAggregate, TKey, TextFileEventStoreOptions>(setupAction)
+                .AddScoped<IEventStore<TAggregate, TKey>, TextFileEventStore<TAggregate, TKey>>()
+                .AddScoped<IEventStoreInitializer<TAggregate, TKey>, TextFileEventStoreInitializer<TAggregate, TKey>>()
                 ;
             return builder;
         }

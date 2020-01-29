@@ -1,14 +1,14 @@
 ﻿namespace JKang.EventSourcing.Caching
 {
-    public abstract class AggregateSnapshot<TAggregateKey> : IAggregateSnapshot<TAggregateKey>
+    public abstract class AggregateSnapshot<TKey> : IAggregateSnapshot<TKey>
     {
-        protected AggregateSnapshot(TAggregateKey aggregateId, int aggregateVersion)
+        protected AggregateSnapshot(TKey aggregateId, int aggregateVersion)
         {
             AggregateId = aggregateId;
             AggregateVersion = aggregateVersion;
         }
 
-        public TAggregateKey AggregateId { get; }
+        public TKey AggregateId { get; }
         public int AggregateVersion { get; }
     }
 }

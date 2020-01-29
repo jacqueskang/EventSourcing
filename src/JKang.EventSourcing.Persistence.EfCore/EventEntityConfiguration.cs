@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace JKang.EventSourcing.Persistence.EfCore
 {
-    public class EventEntityConfiguration<TAggregateKey> : IEntityTypeConfiguration<EventEntity<TAggregateKey>>
+    public class EventEntityConfiguration<TKey> : IEntityTypeConfiguration<EventEntity<TKey>>
     {
-        public void Configure(EntityTypeBuilder<EventEntity<TAggregateKey>> builder)
+        public void Configure(EntityTypeBuilder<EventEntity<TKey>> builder)
         {
             if (builder is null)
             {

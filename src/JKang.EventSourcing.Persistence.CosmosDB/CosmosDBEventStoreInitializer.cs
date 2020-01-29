@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 
 namespace JKang.EventSourcing.Persistence.DynamoDB
 {
-    public class CosmosDBEventStoreInitializer<TAggregate, TAggregateKey>
-        : IEventStoreInitializer<TAggregate, TAggregateKey>
-        where TAggregate : IAggregate<TAggregateKey>
+    public class CosmosDBEventStoreInitializer<TAggregate, TKey>
+        : IEventStoreInitializer<TAggregate, TKey>
+        where TAggregate : IAggregate<TKey>
     {
         private readonly CosmosDBEventStoreOptions _options;
         private readonly CosmosClient _client;
 
         public CosmosDBEventStoreInitializer(
             CosmosClient client,
-            IAggregateOptionsMonitor<TAggregate, TAggregateKey, CosmosDBEventStoreOptions> monitor)
+            IAggregateOptionsMonitor<TAggregate, TKey, CosmosDBEventStoreOptions> monitor)
         {
             if (client is null)
             {

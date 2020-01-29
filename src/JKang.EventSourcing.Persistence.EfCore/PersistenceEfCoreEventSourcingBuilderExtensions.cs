@@ -7,10 +7,10 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class PersistenceEfCoreEventSourcingBuilderExtensions
     {
-        public static IEventSourcingBuilder UseDbEventStore<TEventSourcingDbContext, TAggregate, TAggregateKey>(
+        public static IEventSourcingBuilder UseDbEventStore<TEventSourcingDbContext, TAggregate, TKey>(
             this IEventSourcingBuilder builder)
-            where TEventSourcingDbContext : DbContext, IEventSourcingDbContext<TAggregate, TAggregateKey>
-            where TAggregate : IAggregate<TAggregateKey>
+            where TEventSourcingDbContext : DbContext, IEventSourcingDbContext<TAggregate, TKey>
+            where TAggregate : IAggregate<TKey>
         {
             if (builder is null)
             {
@@ -18,8 +18,8 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             builder.Services
-                .AddScoped<IEventStore<TAggregate, TAggregateKey>, DatabaseEventStore<TEventSourcingDbContext, TAggregate, TAggregateKey>>()
-                .AddScoped<IEventStoreInitializer<TAggregate, TAggregateKey>, DatabaseEventStoreInitializer<TEventSourcingDbContext, TAggregate, TAggregateKey>>()
+                .AddScoped<IEventStore<TAggregate, TKey>, DatabaseEventStore<TEventSourcingDbContext, TAggregate, TKey>>()
+                .AddScoped<IEventStoreInitializer<TAggregate, TKey>, DatabaseEventStoreInitializer<TEventSourcingDbContext, TAggregate, TKey>>()
                 ;
             return builder;
         }

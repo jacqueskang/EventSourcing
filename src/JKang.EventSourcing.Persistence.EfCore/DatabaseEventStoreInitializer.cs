@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace JKang.EventSourcing.Persistence.EfCore
 {
-    public class DatabaseEventStoreInitializer<TEventSourcingDbContext, TAggregate, TAggregateKey>
-        : IEventStoreInitializer<TAggregate, TAggregateKey>
-        where TEventSourcingDbContext : DbContext, IEventSourcingDbContext<TAggregate, TAggregateKey>
-        where TAggregate : IAggregate<TAggregateKey>
+    public class DatabaseEventStoreInitializer<TEventSourcingDbContext, TAggregate, TKey>
+        : IEventStoreInitializer<TAggregate, TKey>
+        where TEventSourcingDbContext : DbContext, IEventSourcingDbContext<TAggregate, TKey>
+        where TAggregate : IAggregate<TKey>
     {
         private readonly TEventSourcingDbContext _context;
 

@@ -9,15 +9,15 @@ using System.Threading.Tasks;
 
 namespace JKang.EventSourcing.Persistence.DynamoDB
 {
-    public class DynamoDBEventStoreInitializer<TAggregate, TAggregateKey>
-        : IEventStoreInitializer<TAggregate, TAggregateKey>
-        where TAggregate : IAggregate<TAggregateKey>
+    public class DynamoDBEventStoreInitializer<TAggregate, TKey>
+        : IEventStoreInitializer<TAggregate, TKey>
+        where TAggregate : IAggregate<TKey>
     {
         private readonly DynamoDBEventStoreOptions _options;
         private readonly IAmazonDynamoDB _dynamoDB;
 
         public DynamoDBEventStoreInitializer(
-            IAggregateOptionsMonitor<TAggregate, TAggregateKey, DynamoDBEventStoreOptions> monitor,
+            IAggregateOptionsMonitor<TAggregate, TKey, DynamoDBEventStoreOptions> monitor,
             IAmazonDynamoDB dynamoDB)
         {
             if (monitor is null)
@@ -31,7 +31,7 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
 
         private static bool IsNumericType()
         {
-            switch (Type.GetTypeCode(typeof(TAggregateKey)))
+            switch (Type.GetTypeCode(typeof(TKey)))
             {
                 case TypeCode.Byte:
                 case TypeCode.SByte:

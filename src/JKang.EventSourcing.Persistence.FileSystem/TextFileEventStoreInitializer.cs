@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace JKang.EventSourcing.Persistence.FileSystem
 {
-    public class TextFileEventStoreInitializer<TAggregate, TAggregateKey>
-        : IEventStoreInitializer<TAggregate, TAggregateKey>
-        where TAggregate : IAggregate<TAggregateKey>
+    public class TextFileEventStoreInitializer<TAggregate, TKey>
+        : IEventStoreInitializer<TAggregate, TKey>
+        where TAggregate : IAggregate<TKey>
     {
         private readonly TextFileEventStoreOptions _options;
 
         public TextFileEventStoreInitializer(
-            IAggregateOptionsMonitor<TAggregate, TAggregateKey, TextFileEventStoreOptions> monitor)
+            IAggregateOptionsMonitor<TAggregate, TKey, TextFileEventStoreOptions> monitor)
         {
             if (monitor is null)
             {

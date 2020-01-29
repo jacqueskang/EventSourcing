@@ -1,11 +1,11 @@
 ﻿namespace JKang.EventSourcing.Caching
 {
-    public interface IAggregateSnapshot<TAggregateKey>
+    public interface IAggregateSnapshot<TKey>
     {
         /// <summary>
         /// ID of domain aggregate
         /// </summary>
-        TAggregateKey AggregateId { get; }
+        TKey AggregateId { get; }
 
         /// <summary>
         /// Version of domain aggregate after event occurred

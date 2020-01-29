@@ -14,8 +14,8 @@ using System.Threading.Tasks;
 
 namespace JKang.EventSourcing.Persistence.FileSystem
 {
-    public class TextFileEventStore<TAggregate, TAggregateKey> : IEventStore<TAggregate, TAggregateKey>
-        where TAggregate : IAggregate<TAggregateKey>
+    public class TextFileEventStore<TAggregate, TKey> : IEventStore<TAggregate, TKey>
+        where TAggregate : IAggregate<TKey>
     {
         private static readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings
         {
@@ -29,7 +29,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem
         private readonly TextFileEventStoreOptions _options;
 
         public TextFileEventStore(
-            IAggregateOptionsMonitor<TAggregate, TAggregateKey, TextFileEventStoreOptions> monitor)
+            IAggregateOptionsMonitor<TAggregate, TKey, TextFileEventStoreOptions> monitor)
         {
             if (monitor is null)
             {
@@ -39,7 +39,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             _options = monitor.AggregateOptions;
         }
 
-        public async Task AddEventAsync(IAggregateEvent<TAggregateKey> @event,
+        public async Task AddEventAsync(IAggregateEvent<TKey> @event,
             CancellationToken cancellationToken = default)
         {
             if (@event is null)
@@ -60,7 +60,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             }
         }
 
-        public Task<TAggregateKey[]> GetAggregateIdsAsync(
+        public Task<TKey[]> GetAggregateIdsAsync(
             CancellationToken cancellationToken = default)
         {
             return Task.Run(() =>
@@ -68,7 +68,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem
                 var di = new DirectoryInfo(_options.Folder);
                 if (!di.Exists)
                 {
-                    return Array.Empty<TAggregateKey>();
+                    return Array.Empty<TKey>();
                 }
 
                 return di.GetFiles("*.txt", SearchOption.TopDirectoryOnly)
@@ -76,27 +76,27 @@ namespace JKang.EventSourcing.Persistence.FileSystem
                     .Select(x => Path.GetFileNameWithoutExtension(x))
                     .Select(x =>
                     {
-                        MethodInfo mi = typeof(TAggregateKey).GetMethod("Parse", new Type[] { typeof(string) });
+                        MethodInfo mi = typeof(TKey).GetMethod("Parse", new Type[] { typeof(string) });
                         if (mi == null)
                         {
-                            throw new InvalidOperationException($"Type '{typeof(TAggregateKey).Name}' must have a static method Parse(string)");
+                            throw new InvalidOperationException($"Type '{typeof(TKey).Name}' must have a static method Parse(string)");
                         }
-                        return (TAggregateKey)mi.Invoke(null, new object[] { x });
+                        return (TKey)mi.Invoke(null, new object[] { x });
                     })
                     .ToArray();
             });
         }
 
-        public async Task<IAggregateEvent<TAggregateKey>[]> GetEventsAsync(TAggregateKey aggregateId,
+        public async Task<IAggregateEvent<TKey>[]> GetEventsAsync(TKey aggregateId,
             CancellationToken cancellationToken = default)
         {
             string filePath = GetAggregateFilePath(aggregateId);
             if (!File.Exists(filePath))
             {
-                return Array.Empty<IAggregateEvent<TAggregateKey>>();
+                return Array.Empty<IAggregateEvent<TKey>>();
             }
 
-            var events = new List<IAggregateEvent<TAggregateKey>>();
+            var events = new List<IAggregateEvent<TKey>>();
             string text;
             using (FileStream fs = File.OpenRead(filePath))
             using (var sr = new StreamReader(fs))
@@ -105,11 +105,11 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             }
 
             return text.Split(new[] { _options.EventSeparator }, StringSplitOptions.None)
-                .Select(x => JsonConvert.DeserializeObject<IAggregateEvent<TAggregateKey>>(x, _jsonSerializerSettings))
+                .Select(x => JsonConvert.DeserializeObject<IAggregateEvent<TKey>>(x, _jsonSerializerSettings))
                 .ToArray();
         }
 
-        private string GetAggregateFilePath(TAggregateKey aggregateId)
+        private string GetAggregateFilePath(TKey aggregateId)
         {
             return Path.Combine(_options.Folder, $"{aggregateId}.txt");
         }

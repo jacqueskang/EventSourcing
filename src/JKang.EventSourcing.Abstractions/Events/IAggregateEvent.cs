@@ -2,12 +2,12 @@
 
 namespace JKang.EventSourcing.Events
 {
-    public interface IAggregateEvent<TAggregateKey>
+    public interface IAggregateEvent<TKey>
     {
         /// <summary>
         /// ID of domain aggregate
         /// </summary>
-        TAggregateKey AggregateId { get; }
+        TKey AggregateId { get; }
 
         /// <summary>
         /// Version of domain aggregate after event occurred

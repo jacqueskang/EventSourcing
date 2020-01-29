@@ -15,8 +15,8 @@ using System.Threading.Tasks;
 
 namespace JKang.EventSourcing.Persistence.DynamoDB
 {
-    public class DynamoDBEventStore<TAggregate, TAggregateKey> : IEventStore<TAggregate, TAggregateKey>
-        where TAggregate : IAggregate<TAggregateKey>
+    public class DynamoDBEventStore<TAggregate, TKey> : IEventStore<TAggregate, TKey>
+        where TAggregate : IAggregate<TKey>
     {
         private static readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings
         {
@@ -30,7 +30,7 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
         private readonly Table _table;
 
         public DynamoDBEventStore(
-            IAggregateOptionsMonitor<TAggregate, TAggregateKey, DynamoDBEventStoreOptions> monitor,
+            IAggregateOptionsMonitor<TAggregate, TKey, DynamoDBEventStoreOptions> monitor,
             IAmazonDynamoDB client)
         {
             if (monitor is null)
@@ -42,7 +42,7 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
         }
 
         public async Task AddEventAsync(
-            IAggregateEvent<TAggregateKey> @event,
+            IAggregateEvent<TKey> @event,
             CancellationToken cancellationToken = default)
         {
             string json = JsonConvert.SerializeObject(@event, _jsonSerializerSettings);
@@ -76,21 +76,21 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
             throw new InvalidOperationException($"{type.FullName} is not supported as aggregate key in DynamoDB");
         }
 
-        public async Task<TAggregateKey[]> GetAggregateIdsAsync(
+        public async Task<TKey[]> GetAggregateIdsAsync(
             CancellationToken cancellationToken = default)
         {
             var scanFilter = new ScanFilter();
             //scanFilter.AddCondition("aggregateVersion", ScanOperator.Equal, 1);
             Search search = _table.Scan(scanFilter);
 
-            var ids = new HashSet<TAggregateKey>();
+            var ids = new HashSet<TKey>();
             do
             {
                 List<Document> documents = await search.GetNextSetAsync(cancellationToken).ConfigureAwait(false);
                 foreach (Document document in documents)
                 {
                     DynamoDBEntry entry = document["aggregateId"];
-                    TAggregateKey id = Convert<TAggregateKey>(entry);
+                    TKey id = Convert<TKey>(entry);
                     ids.Add(id);
                 }
             }
@@ -99,20 +99,20 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
             return ids.ToArray();
         }
 
-        public async Task<IAggregateEvent<TAggregateKey>[]> GetEventsAsync(
-            TAggregateKey aggregateId,
+        public async Task<IAggregateEvent<TKey>[]> GetEventsAsync(
+            TKey aggregateId,
             CancellationToken cancellationToken = default)
         {
             Search search = _table.Query(aggregateId as dynamic, new QueryFilter());
 
-            var events = new List<IAggregateEvent<TAggregateKey>>();
+            var events = new List<IAggregateEvent<TKey>>();
             do
             {
                 List<Document> documents = await search.GetNextSetAsync(cancellationToken).ConfigureAwait(false);
                 foreach (Document document in documents)
                 {
                     string json = document.ToJson();
-                    IAggregateEvent<TAggregateKey> @event = JsonConvert.DeserializeObject<IAggregateEvent<TAggregateKey>>(json, _jsonSerializerSettings);
+                    IAggregateEvent<TKey> @event = JsonConvert.DeserializeObject<IAggregateEvent<TKey>>(json, _jsonSerializerSettings);
                     events.Add(@event);
                 }
             } while (!search.IsDone);

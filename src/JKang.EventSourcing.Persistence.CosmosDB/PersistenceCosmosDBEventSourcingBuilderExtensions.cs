@@ -28,10 +28,10 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
-        public static IEventSourcingBuilder UseCosmosDBEventStore<TAggregate, TAggregateKey>(
+        public static IEventSourcingBuilder UseCosmosDBEventStore<TAggregate, TKey>(
             this IEventSourcingBuilder builder,
             Action<CosmosDBEventStoreOptions> setupAction)
-            where TAggregate : IAggregate<TAggregateKey>
+            where TAggregate : IAggregate<TKey>
         {
             if (builder is null)
             {
@@ -39,9 +39,9 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             builder.Services
-                .ConfigureAggregate<TAggregate, TAggregateKey, CosmosDBEventStoreOptions>(setupAction)
-                .AddScoped<IEventStore<TAggregate, TAggregateKey>, CosmosDBEventStore<TAggregate, TAggregateKey>>()
-                .AddScoped<IEventStoreInitializer<TAggregate, TAggregateKey>, CosmosDBEventStoreInitializer<TAggregate, TAggregateKey>>()
+                .ConfigureAggregate<TAggregate, TKey, CosmosDBEventStoreOptions>(setupAction)
+                .AddScoped<IEventStore<TAggregate, TKey>, CosmosDBEventStore<TAggregate, TKey>>()
+                .AddScoped<IEventStoreInitializer<TAggregate, TKey>, CosmosDBEventStoreInitializer<TAggregate, TKey>>()
                 ;
 
             return builder;
