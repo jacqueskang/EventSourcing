@@ -1,4 +1,5 @@
-﻿using JKang.EventSourcing.Events;
+﻿using JKang.EventSourcing.Caching;
+using JKang.EventSourcing.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,10 @@ namespace JKang.EventSourcing.Domain
     {
         private readonly Queue<IAggregateEvent<TKey>> _savedEvents = new Queue<IAggregateEvent<TKey>>();
         private readonly Queue<IAggregateEvent<TKey>> _unsavedEvents = new Queue<IAggregateEvent<TKey>>();
+        private readonly Queue<IAggregateSnapshot<TKey>> _unsavedSnapshots = new Queue<IAggregateSnapshot<TKey>>();
 
         /// <summary>
-        /// Use this constructor to create a new aggregate
+        /// Create a new aggregate
         /// </summary>
         /// <param name="id">Aggregate ID</param>
         /// <param name="created">The creation event</param>
@@ -26,9 +28,50 @@ namespace JKang.EventSourcing.Domain
             ReceiveEvent(created);
         }
 
-        protected Aggregate(TKey id, IEnumerable<IAggregateEvent<TKey>> savedEvents)
+        /// <summary>
+        /// Rehydrate an aggregate from historical events
+        /// </summary>
+        /// <param name="id">Aggregate ID</param>
+        /// <param name="savedEvents">Historical events</param>
+        protected Aggregate(TKey id,
+            IEnumerable<IAggregateEvent<TKey>> savedEvents)
         {
+            if (savedEvents is null)
+            {
+                throw new ArgumentNullException(nameof(savedEvents));
+            }
+
             Id = id;
+            foreach (IAggregateEvent<TKey> @event in savedEvents.OrderBy(x => x.AggregateVersion))
+            {
+                IntegrateEvent(@event);
+                _savedEvents.Enqueue(@event);
+            }
+        }
+
+        /// <summary>
+        /// Rehydrate an aggregate from a snapshot + historical events
+        /// </summary>
+        /// <param name="id">Aggregate ID</param>
+        /// <param name="snapshot">Aggregate snapshot</param>
+        /// <param name="savedEvents">Historical events after the snapshot</param>
+        protected Aggregate(TKey id,
+            IAggregateSnapshot<TKey> snapshot,
+            IEnumerable<IAggregateEvent<TKey>> savedEvents)
+        {
+            if (snapshot is null)
+            {
+                throw new ArgumentNullException(nameof(snapshot));
+            }
+
+            if (savedEvents is null)
+            {
+                throw new ArgumentNullException(nameof(savedEvents));
+            }
+
+            Id = id;
+            IntegrateSnapshot(snapshot);
+
             foreach (IAggregateEvent<TKey> @event in savedEvents.OrderBy(x => x.AggregateVersion))
             {
                 IntegrateEvent(@event);
@@ -39,8 +82,6 @@ namespace JKang.EventSourcing.Domain
         public TKey Id { get; }
 
         public int Version { get; private set; } = 0;
-
-        protected int GetNextVersion() => Version + 1;
 
         public IEnumerable<IAggregateEvent<TKey>> Events { get => _savedEvents.Concat(_unsavedEvents); }
 
@@ -58,18 +99,15 @@ namespace JKang.EventSourcing.Domain
                 throw new InvalidOperationException($"Snapshot AggregateVersion must be {Version}");
             }
 
-            if (!Events.Last().Timestamp.Equals(snapshot.Timestamp))
-            {
-                throw new InvalidOperationException($"Snapshot AggregateVersion must be {Events.Last().Timestamp}");
-            }
-
-            _unsavedEvents.Enqueue(snapshot);
+            _unsavedSnapshots.Enqueue(snapshot);
         }
 
         public IAggregateChangeset<TKey> GetChangeset()
         {
-            return new Changeset(_unsavedEvents, this);
+            return new Changeset(this, _unsavedEvents, _unsavedSnapshots);
         }
+
+        protected int GetNextVersion() => Version + 1;
 
         protected abstract void ApplyEvent(IAggregateEvent<TKey> e);
 
@@ -92,36 +130,57 @@ namespace JKang.EventSourcing.Domain
         {
             if (!e.AggregateId.Equals(Id))
             {
-                throw new InvalidOperationException($"Cannot integrate event with {nameof(e.AggregateId)} '{e.AggregateId}' on an aggregate with {nameof(Id)} '{Id}'");
+                throw new InvalidOperationException($"Cannot integrate event of aggregate #{e.AggregateId} on aggregate #{Id}.");
             }
 
-            if (e is IAggregateSnapshot<TKey> snapshot)
+            if (e.AggregateVersion != GetNextVersion())
             {
-                ApplySnapshot(snapshot);
+                throw new InvalidOperationException($"Cannot integrate event with version '{e.AggregateVersion}' on an aggregate with version '{Version}'");
             }
-            else
-            {
-                if (e.AggregateVersion != GetNextVersion())
-                {
-                    throw new InvalidOperationException($"Cannot integrate event with {nameof(e.AggregateVersion)} '{e.AggregateVersion}' on an aggregate with {nameof(Version)} '{Version}'");
-                }
 
-                ApplyEvent(e);
-            }
+            ApplyEvent(e);
 
             Version = e.AggregateVersion;
+        }
+
+        private void IntegrateSnapshot(IAggregateSnapshot<TKey> snapshot)
+        {
+            if (!snapshot.AggregateId.Equals(Id))
+            {
+                throw new InvalidOperationException($"Cannot integrate snapshot of aggregate #{snapshot.AggregateId} on aggregate #{Id}");
+            }
+
+            ApplySnapshot(snapshot);
+
+            Version = snapshot.AggregateVersion;
         }
 
         internal class Changeset : IAggregateChangeset<TKey>
         {
             private readonly Aggregate<TKey> _aggregate;
-            public Changeset(IEnumerable<IAggregateEvent<TKey>> events, Aggregate<TKey> aggregate)
+
+            public Changeset(
+                Aggregate<TKey> aggregate,
+                IEnumerable<IAggregateEvent<TKey>> events,
+                IEnumerable<IAggregateSnapshot<TKey>> snapshots)
             {
+                if (events is null)
+                {
+                    throw new ArgumentNullException(nameof(events));
+                }
+
+                if (snapshots is null)
+                {
+                    throw new ArgumentNullException(nameof(snapshots));
+                }
+
+                _aggregate = aggregate ?? throw new ArgumentNullException(nameof(aggregate));
                 Events = events.ToList().AsReadOnly();
-                _aggregate = aggregate;
+                Snapshots = snapshots.ToList().AsReadOnly();
             }
 
             public IEnumerable<IAggregateEvent<TKey>> Events { get; }
+            public IEnumerable<IAggregateSnapshot<TKey>> Snapshots { get; }
 
             public void Commit()
             {
@@ -130,6 +189,8 @@ namespace JKang.EventSourcing.Domain
                     IAggregateEvent<TKey> @evt = _aggregate._unsavedEvents.Dequeue();
                     _aggregate._savedEvents.Enqueue(@evt);
                 }
+
+                _aggregate._unsavedSnapshots.Clear();
             }
         }
     }

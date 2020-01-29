@@ -1,4 +1,4 @@
-﻿using JKang.EventSourcing.Events;
+﻿using JKang.EventSourcing.Caching;
 using System;
 
 namespace JKang.EventSourcing.TestingFixtures
@@ -8,9 +8,8 @@ namespace JKang.EventSourcing.TestingFixtures
         public GiftCardSnapshot(
             Guid aggregateId,
             int aggregateVersion,
-            DateTime timestamp,
             decimal balance)
-            : base(aggregateId, aggregateVersion, timestamp)
+            : base(aggregateId, aggregateVersion)
         {
             Balance = balance;
         }

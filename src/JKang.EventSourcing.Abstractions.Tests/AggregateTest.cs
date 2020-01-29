@@ -1,4 +1,5 @@
 using AutoFixture.Xunit2;
+using JKang.EventSourcing.Caching;
 using JKang.EventSourcing.Domain;
 using JKang.EventSourcing.Events;
 using JKang.EventSourcing.TestingFixtures;
@@ -53,22 +54,23 @@ namespace JKang.EventSourcing.Abstractions.Tests
         public void Constructor_CreateFromSnapshotWithSavedEvents(Guid aggregateId)
         {
             // arrange;
+            var snapshot = new GiftCardSnapshot(aggregateId, 10, 70);
             var history = new IAggregateEvent<Guid>[]
             {
-                new GiftCardSnapshot(aggregateId, 10, DateTime.UtcNow.AddDays(-10), 70),
                 new GiftCardDebited(aggregateId, 11, DateTime.UtcNow.AddDays(-5), 30)
             };
 
             // act
-            var sut = new GiftCard(aggregateId, history);
+            var sut = new GiftCard(aggregateId, snapshot, history);
             IAggregateChangeset<Guid> changeset = sut.GetChangeset();
 
             // assert
             Assert.Equal(70 - 30, sut.Balance);
             Assert.Equal(aggregateId, sut.Id);
             Assert.Equal(11, sut.Version);
-            Assert.Equal(2, sut.Events.Count());
+            Assert.Single(sut.Events);
             Assert.Empty(changeset.Events);
+            Assert.Empty(changeset.Snapshots);
         }
 
         [Theory, AutoData]
@@ -87,12 +89,11 @@ namespace JKang.EventSourcing.Abstractions.Tests
             // assert
             Assert.Equal(3, sut.Version);
             IAggregateChangeset<Guid> changeset = sut.GetChangeset();
-            Assert.Single(changeset.Events);
-            var snapshot = changeset.Events.Single() as GiftCardSnapshot;
+            Assert.Single(changeset.Snapshots);
+            var snapshot = changeset.Snapshots.Single() as GiftCardSnapshot;
             Assert.NotNull(snapshot);
             Assert.Equal(aggregateId, snapshot.AggregateId);
             Assert.Equal(3, snapshot.AggregateVersion);
-            Assert.Equal(savedEvents.Last().Timestamp, snapshot.Timestamp);
             Assert.Equal(sut.Balance, snapshot.Balance);
         }
     }

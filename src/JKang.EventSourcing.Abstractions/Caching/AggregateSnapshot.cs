@@ -1,18 +1,14 @@
-﻿using System;
-
-namespace JKang.EventSourcing.Events
+﻿namespace JKang.EventSourcing.Caching
 {
     public abstract class AggregateSnapshot<TAggregateKey> : IAggregateSnapshot<TAggregateKey>
     {
-        protected AggregateSnapshot(TAggregateKey aggregateId, int aggregateVersion, DateTime timestamp)
+        protected AggregateSnapshot(TAggregateKey aggregateId, int aggregateVersion)
         {
             AggregateId = aggregateId;
             AggregateVersion = aggregateVersion;
-            Timestamp = timestamp;
         }
 
         public TAggregateKey AggregateId { get; }
         public int AggregateVersion { get; }
-        public DateTime Timestamp { get; }
     }
 }
