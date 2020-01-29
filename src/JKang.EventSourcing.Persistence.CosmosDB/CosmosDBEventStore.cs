@@ -75,9 +75,10 @@ namespace JKang.EventSourcing.Persistence.CosmosDB
 
         public async Task<IAggregateEvent<TKey>[]> GetEventsAsync(
             TKey aggregateId,
+            int skip = 0,
             CancellationToken cancellationToken = default)
         {
-            string query = $"SELECT VALUE c.data FROM c WHERE c.data.aggregateId = '{aggregateId}' ORDER BY c.data.aggregateVersion";
+            string query = $"SELECT VALUE c.data FROM c WHERE c.data.aggregateId = '{aggregateId}' AND c.data.aggregateVersion > '{skip}' ORDER BY c.data.aggregateVersion";
             FeedIterator<IAggregateEvent<TKey>> iterator = _container.GetItemQueryIterator<IAggregateEvent<TKey>>(new QueryDefinition(query));
             var events = new List<IAggregateEvent<TKey>>();
 

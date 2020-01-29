@@ -12,6 +12,7 @@ namespace JKang.EventSourcing.Persistence
             CancellationToken cancellationToken = default);
 
         Task<IAggregateEvent<TKey>[]> GetEventsAsync(TKey aggregateId,
+            int skip = 0,
             CancellationToken cancellationToken = default);
 
         Task<TKey[]> GetAggregateIdsAsync(

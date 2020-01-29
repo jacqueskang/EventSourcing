@@ -26,6 +26,12 @@
 
             <input class="btn btn-danger" type="submit" asp-page-handler="Debit" value="Pay!" asp-route-id="@Model.GiftCard.Id" />
         </form>
+
+        <form method="post" class="form">
+            <input class="btn btn-primary" type="submit" value="Take a snapshot"
+                   asp-page-handler="TakeSnapshot"
+                   asp-route-id="@Model.GiftCard.Id" />
+        </form>
     </div>
 
     <div class="col-md-6">
