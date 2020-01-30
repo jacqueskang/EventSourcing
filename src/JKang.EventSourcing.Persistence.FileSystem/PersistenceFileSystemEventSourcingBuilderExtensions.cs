@@ -1,6 +1,7 @@
 ﻿using JKang.EventSourcing.Domain;
 using JKang.EventSourcing.Persistence;
 using JKang.EventSourcing.Persistence.FileSystem;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -21,6 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .ConfigureAggregate<TAggregate, TKey, TextFileEventStoreOptions>(setupAction)
                 .AddScoped<IEventStore<TAggregate, TKey>, TextFileEventStore<TAggregate, TKey>>()
                 .AddScoped<IEventStoreInitializer<TAggregate, TKey>, TextFileEventStoreInitializer<TAggregate, TKey>>()
+                .TryAddScoped<ISnapshotStore<TAggregate, TKey>, FakeSnapshotStore<TAggregate, TKey>>()
                 ;
             return builder;
         }

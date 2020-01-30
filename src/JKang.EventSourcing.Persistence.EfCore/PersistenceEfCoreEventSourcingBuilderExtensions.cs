@@ -2,6 +2,7 @@
 using JKang.EventSourcing.Persistence;
 using JKang.EventSourcing.Persistence.EfCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -20,6 +21,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services
                 .AddScoped<IEventStore<TAggregate, TKey>, DatabaseEventStore<TEventSourcingDbContext, TAggregate, TKey>>()
                 .AddScoped<IEventStoreInitializer<TAggregate, TKey>, DatabaseEventStoreInitializer<TEventSourcingDbContext, TAggregate, TKey>>()
+                .TryAddScoped<ISnapshotStore<TAggregate, TKey>, FakeSnapshotStore<TAggregate, TKey>>()
                 ;
             return builder;
         }
