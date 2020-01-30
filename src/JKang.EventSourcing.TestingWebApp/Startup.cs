@@ -75,7 +75,7 @@ namespace JKang.EventSourcing.TestingWebApp
                     case PersistenceMode.FileSystem:
                         builder
                             .UseTextFileEventStore<GiftCard, Guid>(x => x.Folder = "C:/Temp/GiftcardEvents")
-                            .UseTextFileSnapshotStore<GiftCard, Guid>(x => x.Folder = "C:/Temp/GiftcardSnapshots");
+                            .UseTextFileSnapshotStore<GiftCard, Guid>(x => x.Folder = "C:/Temp/GiftcardEvents");
                         break;
                     case PersistenceMode.DynamoDB:
                         builder.UseDynamoDBEventStore<GiftCard, Guid>(

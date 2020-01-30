@@ -61,22 +61,28 @@ namespace JKang.EventSourcing.Persistence
         protected async Task<TAggregate> FindAggregateAsync(TKey id, bool useSnapshot,
             CancellationToken cancellationToken = default)
         {
+            IAggregateSnapshot<TKey> snapshot = null;
             if (useSnapshot)
             {
-                IAggregateSnapshot<TKey> snapshot = await _snapshotStore
+                snapshot = await _snapshotStore
                     .FindLastSnapshotAsync(id, cancellationToken)
                     .ConfigureAwait(false);
-
-                if (snapshot != null)
-                {
-
-                }
             }
 
-            IAggregateEvent<TKey>[] events = await _eventStore.GetEventsAsync(id).ConfigureAwait(false);
-            return events.Length == 0
-                ? null
-                : Activator.CreateInstance(typeof(TAggregate), id, events as IEnumerable<IAggregateEvent<TKey>>) as TAggregate;
+            IAggregateEvent<TKey>[] events = await _eventStore
+                .GetEventsAsync(id, snapshot == null ? 0 : snapshot.AggregateVersion, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (snapshot == null)
+            {
+                return events.Length == 0
+                    ? null
+                    : Activator.CreateInstance(typeof(TAggregate), id, events as IEnumerable<IAggregateEvent<TKey>>) as TAggregate;
+            }
+            else
+            {
+                return Activator.CreateInstance(typeof(TAggregate), id, snapshot, events as IEnumerable<IAggregateEvent<TKey>>) as TAggregate;
+            }
         }
     }
 }

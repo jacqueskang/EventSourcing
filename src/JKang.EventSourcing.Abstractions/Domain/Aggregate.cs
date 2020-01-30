@@ -71,6 +71,7 @@ namespace JKang.EventSourcing.Domain
 
             Id = id;
             IntegrateSnapshot(snapshot);
+            Snapshot = snapshot;
 
             foreach (IAggregateEvent<TKey> @event in savedEvents.OrderBy(x => x.AggregateVersion))
             {
@@ -83,7 +84,9 @@ namespace JKang.EventSourcing.Domain
 
         public int Version { get; private set; } = 0;
 
-        public IEnumerable<IAggregateEvent<TKey>> Events { get => _savedEvents.Concat(_unsavedEvents); }
+        public IEnumerable<IAggregateEvent<TKey>> Events => _savedEvents.Concat(_unsavedEvents);
+
+        public IAggregateSnapshot<TKey> Snapshot { get; } = null;
 
         public void TakeSnapshot()
         {

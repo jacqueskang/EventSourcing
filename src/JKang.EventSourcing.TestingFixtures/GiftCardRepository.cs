@@ -14,7 +14,8 @@ namespace JKang.EventSourcing.TestingFixtures
 
         public Task SaveGiftCardAsync(GiftCard giftCard) => SaveAggregateAsync(giftCard);
 
-        public Task<GiftCard> FindGiftCardAsync(Guid id, bool useSnapshot) => FindAggregateAsync(id, useSnapshot);
+        public Task<GiftCard> FindGiftCardAsync(Guid id, bool useSnapshot = true)
+            => FindAggregateAsync(id, useSnapshot);
 
         public Task<Guid[]> GetGiftCardIdsAsync() => GetAggregateIdsAsync();
     }

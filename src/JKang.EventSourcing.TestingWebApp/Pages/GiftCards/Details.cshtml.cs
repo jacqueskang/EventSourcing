@@ -33,27 +33,19 @@ namespace JKang.EventSourcing.TestingWebApp.Pages.GiftCards
             GiftCard = await _repository.FindGiftCardAsync(id, true)
                 ?? throw new InvalidOperationException("Gift card not found");
 
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
-            try
-            {
-                GiftCard.Debit(Amount);
-                await _repository.SaveGiftCardAsync(GiftCard);
-                return RedirectToPage(new { id });
-            }
-            catch (InvalidOperationException ex)
-            {
-                ModelState.AddModelError("", ex.Message);
-                return Page();
-            }
+            GiftCard.Debit(Amount);
+            await _repository.SaveGiftCardAsync(GiftCard);
+            return RedirectToPage(new { id });
         }
 
         public async Task<IActionResult> OnPostTakeSnapshot(Guid id)
         {
-            throw new NotImplementedException();
+            GiftCard giftCard = await _repository.FindGiftCardAsync(id)
+                ?? throw new InvalidOperationException("Gift card not found");
+
+            giftCard.TakeSnapshot();
+            await _repository.SaveGiftCardAsync(giftCard);
+            return RedirectToPage(new { id });
         }
     }
 }

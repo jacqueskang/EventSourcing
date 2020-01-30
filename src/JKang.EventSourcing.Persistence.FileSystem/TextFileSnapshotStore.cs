@@ -14,10 +14,10 @@ namespace JKang.EventSourcing.Persistence.FileSystem
     public class TextFileSnapshotStore<TAggregate, TKey> : ISnapshotStore<TAggregate, TKey>
         where TAggregate : IAggregate<TKey>
     {
-        private readonly TextFileEventStoreOptions _options;
+        private readonly TextFileSnapshotStoreOptions _options;
 
         public TextFileSnapshotStore(
-            IAggregateOptionsMonitor<TAggregate, TKey, TextFileEventStoreOptions> monitor)
+            IAggregateOptionsMonitor<TAggregate, TKey, TextFileSnapshotStoreOptions> monitor)
         {
             if (monitor is null)
             {
@@ -50,7 +50,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             }
 
             int latestVersion = Directory
-                .GetFiles(_options.Folder, "*.txt")
+                .GetFiles(_options.Folder, "*.snapshot")
                 .Select(x => Path.GetFileNameWithoutExtension(x))
                 .Select(x => x.Split('.').LastOrDefault())
                 .Select(x => int.TryParse(x, NumberStyles.Integer, CultureInfo.InvariantCulture, out int version) ? version : -1)
@@ -64,10 +64,12 @@ namespace JKang.EventSourcing.Persistence.FileSystem
 
             string filePath = GetFilePath(aggregateId, latestVersion);
             string serialized = File.ReadAllText(filePath);
-            return Task.FromResult(JsonConvert.DeserializeObject<IAggregateSnapshot<TKey>>(serialized));
+            IAggregateSnapshot<TKey> snapshot = JsonConvert.DeserializeObject<IAggregateSnapshot<TKey>>(
+                serialized, Standards.JsonSerializerSettings);
+            return Task.FromResult(snapshot);
         }
 
         private string GetFilePath(TKey aggregateId, int version)
-            => Path.Combine(_options.Folder, $"{aggregateId}-snapshot.{version.ToString(CultureInfo.InvariantCulture)}.txt");       
+            => Path.Combine(_options.Folder, $"{aggregateId}.{version.ToString(CultureInfo.InvariantCulture)}.snapshot");       
     }
 }

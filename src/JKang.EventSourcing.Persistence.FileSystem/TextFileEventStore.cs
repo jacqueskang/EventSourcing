@@ -56,7 +56,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem
                     return Array.Empty<TKey>();
                 }
 
-                return di.GetFiles("*.txt", SearchOption.TopDirectoryOnly)
+                return di.GetFiles("*.events", SearchOption.TopDirectoryOnly)
                     .Select(x => x.Name)
                     .Select(x => Path.GetFileNameWithoutExtension(x))
                     .Select(x =>
@@ -87,13 +87,17 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             using (var sr = new StreamReader(fs))
             {
                 string serialized = await sr.ReadLineAsync().ConfigureAwait(false);
-                if (skip > 0)
+                while (!string.IsNullOrEmpty(serialized))
                 {
-                    skip--;
-                }
-                else
-                {
-                    events.Add(JsonConvert.DeserializeObject<IAggregateEvent<TKey>>(serialized, Standards.JsonSerializerSettings));
+                    if (skip > 0)
+                    {
+                        skip--;
+                    }
+                    else
+                    {
+                        events.Add(JsonConvert.DeserializeObject<IAggregateEvent<TKey>>(serialized, Standards.JsonSerializerSettings));
+                    }
+                    serialized = await sr.ReadLineAsync().ConfigureAwait(false);
                 }
             }
             return events.ToArray();
@@ -101,7 +105,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem
 
         private string GetFilePath(TKey aggregateId)
         {
-            return Path.Combine(_options.Folder, $"{aggregateId}.txt");
+            return Path.Combine(_options.Folder, $"{aggregateId}.events");
         }
     }
 }

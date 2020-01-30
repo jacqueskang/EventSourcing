@@ -16,7 +16,7 @@ namespace JKang.EventSourcing.TestingFixtures
             : base(id, savedEvents)
         { }
 
-        public GiftCard(Guid id, GiftCardSnapshot snapshot, IEnumerable<IAggregateEvent<Guid>> savedEvents)
+        public GiftCard(Guid id, IAggregateSnapshot<Guid> snapshot, IEnumerable<IAggregateEvent<Guid>> savedEvents)
             : base(id, snapshot, savedEvents)
         { }
 
