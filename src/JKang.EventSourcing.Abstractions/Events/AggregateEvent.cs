@@ -2,16 +2,16 @@
 
 namespace JKang.EventSourcing.Events
 {
-    public abstract class AggregateEvent<TAggregateKey> : IAggregateEvent<TAggregateKey>
+    public abstract class AggregateEvent<TKey> : IAggregateEvent<TKey>
     {
-        protected AggregateEvent(TAggregateKey aggregateId, int aggregateVersion, DateTime timestamp)
+        protected AggregateEvent(TKey aggregateId, int aggregateVersion, DateTime timestamp)
         {
             AggregateId = aggregateId;
             AggregateVersion = aggregateVersion;
             Timestamp = timestamp;
         }
 
-        public TAggregateKey AggregateId { get; }
+        public TKey AggregateId { get; }
         public int AggregateVersion { get; }
         public DateTime Timestamp { get; }
     }

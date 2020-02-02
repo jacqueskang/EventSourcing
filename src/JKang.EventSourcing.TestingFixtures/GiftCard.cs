@@ -7,18 +7,16 @@ namespace JKang.EventSourcing.TestingFixtures
 {
     public class GiftCard : Aggregate<Guid>
     {
-        /// <summary>
-        /// Constructor for an new aggregate
-        /// </summary>
         public GiftCard(decimal initialCredit)
             : base(new GiftCardCreated(Guid.NewGuid(), DateTime.UtcNow, initialCredit))
         { }
 
-        /// <summary>
-        /// Constructor for rehydrate the aggregate from historical events
-        /// </summary>
         public GiftCard(Guid id, IEnumerable<IAggregateEvent<Guid>> savedEvents)
             : base(id, savedEvents)
+        { }
+
+        public GiftCard(Guid id, IAggregateSnapshot<Guid> snapshot, IEnumerable<IAggregateEvent<Guid>> savedEvents)
+            : base(id, snapshot, savedEvents)
         { }
 
         public decimal Balance { get; private set; }
@@ -46,6 +44,19 @@ namespace JKang.EventSourcing.TestingFixtures
 
                 Balance -= debited.Amount;
             }
+        }
+
+        protected override void ApplySnapshot(IAggregateSnapshot<Guid> snapshot)
+        {
+            GiftCardSnapshot giftCardSnapshot = snapshot as GiftCardSnapshot
+                ?? throw new InvalidOperationException();
+
+            Balance = giftCardSnapshot.Balance;
+        }
+
+        protected override IAggregateSnapshot<Guid> CreateSnapshot()
+        {
+            return new GiftCardSnapshot(Id, Version, Balance);
         }
     }
 }

@@ -2,9 +2,9 @@
 
 namespace JKang.EventSourcing.Persistence.EfCore
 {
-    public class EventEntity<TAggregateKey>
+    public class EventEntity<TKey>
     {
-        public TAggregateKey AggregateId { get; set; }
+        public TKey AggregateId { get; set; }
         public int AggregateVersion { get; set; }
         public DateTime Timestamp { get; set; }
         public string Serialized { get; set; }

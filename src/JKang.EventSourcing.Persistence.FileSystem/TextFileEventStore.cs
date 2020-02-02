@@ -2,8 +2,6 @@
 using JKang.EventSourcing.Events;
 using JKang.EventSourcing.Options;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,22 +12,13 @@ using System.Threading.Tasks;
 
 namespace JKang.EventSourcing.Persistence.FileSystem
 {
-    public class TextFileEventStore<TAggregate, TAggregateKey> : IEventStore<TAggregate, TAggregateKey>
-        where TAggregate : IAggregate<TAggregateKey>
+    public class TextFileEventStore<TAggregate, TKey> : IEventStore<TAggregate, TKey>
+        where TAggregate : IAggregate<TKey>
     {
-        private static readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings
-        {
-            TypeNameHandling = TypeNameHandling.Objects,
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore,
-            Formatting = Formatting.None,
-            Converters = new[] { new StringEnumConverter() },
-            MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead,
-        };
         private readonly TextFileEventStoreOptions _options;
 
         public TextFileEventStore(
-            IAggregateOptionsMonitor<TAggregate, TAggregateKey, TextFileEventStoreOptions> monitor)
+            IAggregateOptionsMonitor<TAggregate, TKey, TextFileEventStoreOptions> monitor)
         {
             if (monitor is null)
             {
@@ -39,7 +28,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem
             _options = monitor.AggregateOptions;
         }
 
-        public async Task AddEventAsync(IAggregateEvent<TAggregateKey> @event,
+        public async Task AddEventAsync(IAggregateEvent<TKey> @event,
             CancellationToken cancellationToken = default)
         {
             if (@event is null)
@@ -47,20 +36,16 @@ namespace JKang.EventSourcing.Persistence.FileSystem
                 throw new ArgumentNullException(nameof(@event));
             }
 
-            string serialized = JsonConvert.SerializeObject(@event, _jsonSerializerSettings);
-            string filePath = GetAggregateFilePath(@event.AggregateId);
+            string serialized = JsonConvert.SerializeObject(@event, Defaults.JsonSerializerSettings);
+            string filePath = GetFilePath(@event.AggregateId);
             using (var fs = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.None))
             using (var sw = new StreamWriter(fs))
             {
-                if (fs.Position > 0)
-                {
-                    await sw.WriteAsync(_options.EventSeparator).ConfigureAwait(false);
-                }
-                await sw.WriteAsync(serialized).ConfigureAwait(false);
+                await sw.WriteLineAsync(serialized).ConfigureAwait(false);
             }
         }
 
-        public Task<TAggregateKey[]> GetAggregateIdsAsync(
+        public Task<TKey[]> GetAggregateIdsAsync(
             CancellationToken cancellationToken = default)
         {
             return Task.Run(() =>
@@ -68,50 +53,59 @@ namespace JKang.EventSourcing.Persistence.FileSystem
                 var di = new DirectoryInfo(_options.Folder);
                 if (!di.Exists)
                 {
-                    return Array.Empty<TAggregateKey>();
+                    return Array.Empty<TKey>();
                 }
 
-                return di.GetFiles("*.txt", SearchOption.TopDirectoryOnly)
+                return di.GetFiles("*.events", SearchOption.TopDirectoryOnly)
                     .Select(x => x.Name)
                     .Select(x => Path.GetFileNameWithoutExtension(x))
                     .Select(x =>
                     {
-                        MethodInfo mi = typeof(TAggregateKey).GetMethod("Parse", new Type[] { typeof(string) });
+                        MethodInfo mi = typeof(TKey).GetMethod("Parse", new Type[] { typeof(string) });
                         if (mi == null)
                         {
-                            throw new InvalidOperationException($"Type '{typeof(TAggregateKey).Name}' must have a static method Parse(string)");
+                            throw new InvalidOperationException($"Type '{typeof(TKey).Name}' must have a static method Parse(string)");
                         }
-                        return (TAggregateKey)mi.Invoke(null, new object[] { x });
+                        return (TKey)mi.Invoke(null, new object[] { x });
                     })
                     .ToArray();
             });
         }
 
-        public async Task<IAggregateEvent<TAggregateKey>[]> GetEventsAsync(TAggregateKey aggregateId,
+        public async Task<IAggregateEvent<TKey>[]> GetEventsAsync(TKey aggregateId,
+            int skip = 0,
             CancellationToken cancellationToken = default)
         {
-            string filePath = GetAggregateFilePath(aggregateId);
+            string filePath = GetFilePath(aggregateId);
             if (!File.Exists(filePath))
             {
-                return Array.Empty<IAggregateEvent<TAggregateKey>>();
+                return Array.Empty<IAggregateEvent<TKey>>();
             }
 
-            var events = new List<IAggregateEvent<TAggregateKey>>();
-            string text;
+            var events = new List<IAggregateEvent<TKey>>();
             using (FileStream fs = File.OpenRead(filePath))
             using (var sr = new StreamReader(fs))
             {
-                text = await sr.ReadToEndAsync().ConfigureAwait(false);
+                string serialized = await sr.ReadLineAsync().ConfigureAwait(false);
+                while (!string.IsNullOrEmpty(serialized))
+                {
+                    if (skip > 0)
+                    {
+                        skip--;
+                    }
+                    else
+                    {
+                        events.Add(JsonConvert.DeserializeObject<IAggregateEvent<TKey>>(serialized, Defaults.JsonSerializerSettings));
+                    }
+                    serialized = await sr.ReadLineAsync().ConfigureAwait(false);
+                }
             }
-
-            return text.Split(new[] { _options.EventSeparator }, StringSplitOptions.None)
-                .Select(x => JsonConvert.DeserializeObject<IAggregateEvent<TAggregateKey>>(x, _jsonSerializerSettings))
-                .ToArray();
+            return events.ToArray();
         }
 
-        private string GetAggregateFilePath(TAggregateKey aggregateId)
+        private string GetFilePath(TKey aggregateId)
         {
-            return Path.Combine(_options.Folder, $"{aggregateId}.txt");
+            return Path.Combine(_options.Folder, $"{aggregateId}.events");
         }
     }
 }

@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Persist
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Options", "JKang.EventSourcing.Options\JKang.EventSourcing.Options.csproj", "{5230D7B5-EE3C-43B4-BCBB-2FA6487BDA7D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JKang.EventSourcing.Abstractions.Tests", "JKang.EventSourcing.Abstractions.Tests\JKang.EventSourcing.Abstractions.Tests.csproj", "{1D8A6FFC-1D14-4EA0-A42A-959E38D46EC1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{5230D7B5-EE3C-43B4-BCBB-2FA6487BDA7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5230D7B5-EE3C-43B4-BCBB-2FA6487BDA7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5230D7B5-EE3C-43B4-BCBB-2FA6487BDA7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D8A6FFC-1D14-4EA0-A42A-959E38D46EC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D8A6FFC-1D14-4EA0-A42A-959E38D46EC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D8A6FFC-1D14-4EA0-A42A-959E38D46EC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D8A6FFC-1D14-4EA0-A42A-959E38D46EC1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

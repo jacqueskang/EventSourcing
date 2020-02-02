@@ -5,16 +5,17 @@ using System.Threading.Tasks;
 
 namespace JKang.EventSourcing.Persistence
 {
-    public interface IEventStore<TAggregate, TAggregateKey>
-        where TAggregate : IAggregate<TAggregateKey>
+    public interface IEventStore<TAggregate, TKey>
+        where TAggregate : IAggregate<TKey>
     {
-        Task AddEventAsync(IAggregateEvent<TAggregateKey> e,
+        Task AddEventAsync(IAggregateEvent<TKey> e,
             CancellationToken cancellationToken = default);
 
-        Task<IAggregateEvent<TAggregateKey>[]> GetEventsAsync(TAggregateKey aggregateId,
+        Task<IAggregateEvent<TKey>[]> GetEventsAsync(TKey aggregateId,
+            int skip = 0,
             CancellationToken cancellationToken = default);
 
-        Task<TAggregateKey[]> GetAggregateIdsAsync(
+        Task<TKey[]> GetAggregateIdsAsync(
             CancellationToken cancellationToken = default);
     }
 }

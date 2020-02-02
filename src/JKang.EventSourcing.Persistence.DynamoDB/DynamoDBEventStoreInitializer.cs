@@ -9,15 +9,15 @@ using System.Threading.Tasks;
 
 namespace JKang.EventSourcing.Persistence.DynamoDB
 {
-    public class DynamoDBEventStoreInitializer<TAggregate, TAggregateKey>
-        : IEventStoreInitializer<TAggregate, TAggregateKey>
-        where TAggregate : IAggregate<TAggregateKey>
+    public class DynamoDBEventStoreInitializer<TAggregate, TKey>
+        : IEventStoreInitializer<TAggregate, TKey>
+        where TAggregate : IAggregate<TKey>
     {
         private readonly DynamoDBEventStoreOptions _options;
         private readonly IAmazonDynamoDB _dynamoDB;
 
         public DynamoDBEventStoreInitializer(
-            IAggregateOptionsMonitor<TAggregate, TAggregateKey, DynamoDBEventStoreOptions> monitor,
+            IAggregateOptionsMonitor<TAggregate, TKey, DynamoDBEventStoreOptions> monitor,
             IAmazonDynamoDB dynamoDB)
         {
             if (monitor is null)
@@ -27,27 +27,6 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
 
             _options = monitor.AggregateOptions;
             _dynamoDB = dynamoDB ?? throw new ArgumentNullException(nameof(dynamoDB));
-        }
-
-        private static bool IsNumericType()
-        {
-            switch (Type.GetTypeCode(typeof(TAggregateKey)))
-            {
-                case TypeCode.Byte:
-                case TypeCode.SByte:
-                case TypeCode.UInt16:
-                case TypeCode.UInt32:
-                case TypeCode.UInt64:
-                case TypeCode.Int16:
-                case TypeCode.Int32:
-                case TypeCode.Int64:
-                case TypeCode.Decimal:
-                case TypeCode.Double:
-                case TypeCode.Single:
-                    return true;
-                default:
-                    return false;
-            }
         }
 
         public async Task EnsureCreatedAsync(CancellationToken cancellationToken = default)
@@ -65,7 +44,7 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
                     new AttributeDefinition
                     {
                         AttributeName = "aggregateId",
-                        AttributeType = IsNumericType() ? "N" : "S"
+                        AttributeType = Defaults.IsNumericType<TKey>() ? "N" : "S"
                     },
                     new AttributeDefinition
                     {

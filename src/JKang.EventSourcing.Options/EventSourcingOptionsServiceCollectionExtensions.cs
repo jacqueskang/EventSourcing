@@ -8,10 +8,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Configure options for an aggregate type
         /// </summary>
-        public static IServiceCollection ConfigureAggregate<TAggregate, TAggregateKey, TAggregateOptions>(
+        public static IServiceCollection ConfigureAggregate<TAggregate, TKey, TAggregateOptions>(
             this IServiceCollection services,
             Action<TAggregateOptions> configureOptions)
-            where TAggregate : IAggregate<TAggregateKey>
+            where TAggregate : IAggregate<TKey>
             where TAggregateOptions : class
             => services.Configure(typeof(TAggregate).FullName, configureOptions);
     }
