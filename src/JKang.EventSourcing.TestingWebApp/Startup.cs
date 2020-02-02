@@ -1,6 +1,7 @@
 using Amazon.DynamoDBv2;
 using JKang.EventSourcing.Persistence;
 using JKang.EventSourcing.Persistence.CosmosDB;
+using JKang.EventSourcing.Snapshotting.Persistence;
 using JKang.EventSourcing.TestingFixtures;
 using JKang.EventSourcing.TestingWebApp.Database;
 using Microsoft.AspNetCore.Builder;

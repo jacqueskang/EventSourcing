@@ -1,4 +1,4 @@
-﻿namespace JKang.EventSourcing.Caching
+﻿namespace JKang.EventSourcing.Domain
 {
     public interface IAggregateSnapshot<TKey>
     {

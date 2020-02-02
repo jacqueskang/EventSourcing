@@ -1,5 +1,5 @@
 ﻿using JKang.EventSourcing.Domain;
-using JKang.EventSourcing.Persistence;
+using JKang.EventSourcing.Snapshotting.Persistence;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection

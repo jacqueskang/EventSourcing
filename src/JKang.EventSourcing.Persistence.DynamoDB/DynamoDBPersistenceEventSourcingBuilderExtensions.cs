@@ -1,7 +1,6 @@
 ﻿using JKang.EventSourcing.Domain;
 using JKang.EventSourcing.Persistence;
 using JKang.EventSourcing.Persistence.DynamoDB;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -22,10 +21,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 .ConfigureAggregate<TAggregate, TKey, DynamoDBEventStoreOptions>(setupAction)
                 .AddScoped<IEventStore<TAggregate, TKey>, DynamoDBEventStore<TAggregate, TKey>>()
                 .AddScoped<IEventStoreInitializer<TAggregate, TKey>, DynamoDBEventStoreInitializer<TAggregate, TKey>>()
-                .TryAddScoped<ISnapshotStore<TAggregate, TKey>, DefaultSnapshotStore<TAggregate, TKey>>()
                 ;
 
-            return builder;
+            return builder.TryUseDefaultSnapshotStore<TAggregate, TKey>();
         }
     }
 }

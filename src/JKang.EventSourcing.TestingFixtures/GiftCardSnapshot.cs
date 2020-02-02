@@ -1,4 +1,4 @@
-﻿using JKang.EventSourcing.Caching;
+﻿using JKang.EventSourcing.Snapshotting;
 using System;
 
 namespace JKang.EventSourcing.TestingFixtures

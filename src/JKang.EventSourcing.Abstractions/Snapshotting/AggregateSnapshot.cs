@@ -1,4 +1,6 @@
-﻿namespace JKang.EventSourcing.Caching
+﻿using JKang.EventSourcing.Domain;
+
+namespace JKang.EventSourcing.Snapshotting
 {
     public abstract class AggregateSnapshot<TKey> : IAggregateSnapshot<TKey>
     {

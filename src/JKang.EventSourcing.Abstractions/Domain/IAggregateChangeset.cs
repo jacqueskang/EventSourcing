@@ -1,5 +1,5 @@
-﻿using JKang.EventSourcing.Caching;
-using JKang.EventSourcing.Events;
+﻿using JKang.EventSourcing.Events;
+using JKang.EventSourcing.Snapshotting;
 using System.Collections.Generic;
 
 namespace JKang.EventSourcing.Domain

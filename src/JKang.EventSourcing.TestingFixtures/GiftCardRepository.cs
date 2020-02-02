@@ -1,4 +1,5 @@
 ﻿using JKang.EventSourcing.Persistence;
+using JKang.EventSourcing.Snapshotting.Persistence;
 using System;
 using System.Threading.Tasks;
 

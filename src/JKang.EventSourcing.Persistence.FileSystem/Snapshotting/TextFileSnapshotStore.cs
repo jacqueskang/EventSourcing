@@ -1,6 +1,6 @@
-﻿using JKang.EventSourcing.Caching;
-using JKang.EventSourcing.Domain;
+﻿using JKang.EventSourcing.Domain;
 using JKang.EventSourcing.Options;
+using JKang.EventSourcing.Snapshotting.Persistence;
 using Newtonsoft.Json;
 using System;
 using System.Globalization;

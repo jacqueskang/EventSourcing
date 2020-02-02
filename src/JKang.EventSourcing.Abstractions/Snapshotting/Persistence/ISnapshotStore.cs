@@ -1,9 +1,8 @@
-﻿using JKang.EventSourcing.Caching;
-using JKang.EventSourcing.Domain;
+﻿using JKang.EventSourcing.Domain;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace JKang.EventSourcing.Persistence
+namespace JKang.EventSourcing.Snapshotting.Persistence
 {
     public interface ISnapshotStore<TAggregate, TKey>
         where TAggregate : IAggregate<TKey>

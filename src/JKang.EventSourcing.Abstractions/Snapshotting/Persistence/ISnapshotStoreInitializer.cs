@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace JKang.EventSourcing.Persistence
+namespace JKang.EventSourcing.Snapshotting.Persistence
 {
     public interface ISnapshotStoreInitializer<TAggregate, TKey>
         where TAggregate : IAggregate<TKey>

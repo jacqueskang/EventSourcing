@@ -1,5 +1,6 @@
 ﻿using JKang.EventSourcing.Domain;
 using JKang.EventSourcing.Options;
+using JKang.EventSourcing.Snapshotting.Persistence;
 using Microsoft.Azure.Cosmos;
 using System;
 using System.Linq;

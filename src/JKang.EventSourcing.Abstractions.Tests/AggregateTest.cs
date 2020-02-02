@@ -1,5 +1,4 @@
 using AutoFixture.Xunit2;
-using JKang.EventSourcing.Caching;
 using JKang.EventSourcing.Domain;
 using JKang.EventSourcing.Events;
 using JKang.EventSourcing.TestingFixtures;

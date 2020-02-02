@@ -1,5 +1,6 @@
 ﻿using JKang.EventSourcing.Domain;
 using JKang.EventSourcing.Options;
+using JKang.EventSourcing.Snapshotting.Persistence;
 using System;
 using System.IO;
 using System.Threading;

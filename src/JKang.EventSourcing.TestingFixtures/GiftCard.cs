@@ -1,5 +1,4 @@
-﻿using JKang.EventSourcing.Caching;
-using JKang.EventSourcing.Domain;
+﻿using JKang.EventSourcing.Domain;
 using JKang.EventSourcing.Events;
 using System;
 using System.Collections.Generic;

@@ -1,8 +1,9 @@
 ﻿using JKang.EventSourcing.Domain;
+using JKang.EventSourcing.Persistence;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace JKang.EventSourcing.Persistence
+namespace JKang.EventSourcing.Snapshotting.Persistence
 {
     public class DefaultSnapshotStoreInitializer<TAggregate, TKey>
         : ISnapshotStoreInitializer<TAggregate, TKey>

@@ -1,6 +1,7 @@
-﻿using JKang.EventSourcing.Caching;
-using JKang.EventSourcing.Domain;
+﻿using JKang.EventSourcing.Domain;
 using JKang.EventSourcing.Events;
+using JKang.EventSourcing.Snapshotting;
+using JKang.EventSourcing.Snapshotting.Persistence;
 using System;
 using System.Collections.Generic;
 using System.Threading;

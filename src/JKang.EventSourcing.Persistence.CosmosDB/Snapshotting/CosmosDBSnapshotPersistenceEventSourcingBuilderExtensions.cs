@@ -1,6 +1,6 @@
 ﻿using JKang.EventSourcing.Domain;
-using JKang.EventSourcing.Persistence;
 using JKang.EventSourcing.Persistence.CosmosDB.Snapshotting;
+using JKang.EventSourcing.Snapshotting.Persistence;
 using System;
 
 namespace Microsoft.Extensions.DependencyInjection
