@@ -78,7 +78,7 @@ namespace JKang.EventSourcing.Persistence.CosmosDB
             int skip = 0,
             CancellationToken cancellationToken = default)
         {
-            var query = $@"
+            string query = $@"
 SELECT VALUE c.data
 FROM c
 WHERE c.data.aggregateId = '{aggregateId}' AND c.data.aggregateVersion > {skip}

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace JKang.EventSourcing.Persistence
 {
-    public class FakeSnapshotStore<TAggregate, TKey>
+    public class DefaultSnapshotStore<TAggregate, TKey>
         : ISnapshotStore<TAggregate, TKey>
         where TAggregate : IAggregate<TKey>
     {

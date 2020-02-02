@@ -1,4 +1,4 @@
-﻿namespace JKang.EventSourcing.Persistence.FileSystem
+﻿namespace JKang.EventSourcing.Persistence.FileSystem.Snapshotting
 {
     public class TextFileSnapshotStoreOptions
     {

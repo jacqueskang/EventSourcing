@@ -6,7 +6,7 @@ using System;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class PersistenceDynamoDBEventSourcingBuilderExtensions
+    public static class DynamoDBPersistenceEventSourcingBuilderExtensions
     {
         public static IEventSourcingBuilder UseDynamoDBEventStore<TAggregate, TKey>(
             this IEventSourcingBuilder builder,
@@ -22,7 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .ConfigureAggregate<TAggregate, TKey, DynamoDBEventStoreOptions>(setupAction)
                 .AddScoped<IEventStore<TAggregate, TKey>, DynamoDBEventStore<TAggregate, TKey>>()
                 .AddScoped<IEventStoreInitializer<TAggregate, TKey>, DynamoDBEventStoreInitializer<TAggregate, TKey>>()
-                .TryAddScoped<ISnapshotStore<TAggregate, TKey>, FakeSnapshotStore<TAggregate, TKey>>()
+                .TryAddScoped<ISnapshotStore<TAggregate, TKey>, DefaultSnapshotStore<TAggregate, TKey>>()
                 ;
 
             return builder;

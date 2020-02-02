@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace JKang.EventSourcing.Persistence.FileSystem
+namespace JKang.EventSourcing.Persistence.FileSystem.Snapshotting
 {
     public class TextFileSnapshotStore<TAggregate, TKey> : ISnapshotStore<TAggregate, TKey>
         where TAggregate : IAggregate<TKey>

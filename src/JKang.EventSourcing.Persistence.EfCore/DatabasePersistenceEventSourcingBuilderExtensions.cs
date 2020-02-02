@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class PersistenceEfCoreEventSourcingBuilderExtensions
+    public static class DatabasePersistenceEventSourcingBuilderExtensions
     {
         public static IEventSourcingBuilder UseDbEventStore<TEventSourcingDbContext, TAggregate, TKey>(
             this IEventSourcingBuilder builder)
@@ -21,7 +21,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services
                 .AddScoped<IEventStore<TAggregate, TKey>, DatabaseEventStore<TEventSourcingDbContext, TAggregate, TKey>>()
                 .AddScoped<IEventStoreInitializer<TAggregate, TKey>, DatabaseEventStoreInitializer<TEventSourcingDbContext, TAggregate, TKey>>()
-                .TryAddScoped<ISnapshotStore<TAggregate, TKey>, FakeSnapshotStore<TAggregate, TKey>>()
+                .TryAddScoped<ISnapshotStore<TAggregate, TKey>, DefaultSnapshotStore<TAggregate, TKey>>()
                 ;
             return builder;
         }

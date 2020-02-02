@@ -75,7 +75,7 @@ namespace JKang.EventSourcing.TestingWebApp
                     case PersistenceMode.FileSystem:
                         builder
                             .UseTextFileEventStore<GiftCard, Guid>(x => x.Folder = "C:/Temp/GiftcardEvents")
-                            //.UseTextFileSnapshotStore<GiftCard, Guid>(x => x.Folder = "C:/Temp/GiftcardEvents")
+                            .UseTextFileSnapshotStore<GiftCard, Guid>(x => x.Folder = "C:/Temp/GiftcardEvents")
                             ;
                         break;
                     case PersistenceMode.DynamoDB:
@@ -83,11 +83,17 @@ namespace JKang.EventSourcing.TestingWebApp
                             x => x.TableName = "GiftcardEvents");
                         break;
                     case PersistenceMode.CosmosDB:
-                        builder.UseCosmosDBEventStore<GiftCard, Guid>(x =>
-                        {
-                            x.DatabaseId = "EventSourcingTestingWebApp";
-                            x.ContainerId = "GiftcardEvents";
-                        });
+                        builder
+                            .UseCosmosDBEventStore<GiftCard, Guid>(x =>
+                            {
+                                x.DatabaseId = "EventSourcingTestingWebApp";
+                                x.ContainerId = "GiftcardEvents";
+                            })
+                            .UseCosmosDBSnapshotStore<GiftCard, Guid>(x =>
+                            {
+                                x.DatabaseId = "EventSourcingTestingWebApp";
+                                x.ContainerId = "GiftcardSnapshots";
+                            });
                         break;
                     case PersistenceMode.EfCore:
                         builder.UseDbEventStore<SampleDbContext, GiftCard, Guid>();
@@ -101,9 +107,11 @@ namespace JKang.EventSourcing.TestingWebApp
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app,
             IWebHostEnvironment env,
-            IEventStoreInitializer<GiftCard, Guid> giftCardStoreInitializer)
+            IEventStoreInitializer<GiftCard, Guid> eventStoreInitializer,
+            ISnapshotStoreInitializer<GiftCard, Guid> snapshotStoreInitializer)
         {
-            giftCardStoreInitializer.EnsureCreatedAsync().Wait();
+            eventStoreInitializer.EnsureCreatedAsync().Wait();
+            snapshotStoreInitializer.EnsureCreatedAsync().Wait();
 
             if (env.IsDevelopment())
             {
