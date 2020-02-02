@@ -107,15 +107,16 @@ namespace JKang.EventSourcing.TestingWebApp
         public void ConfigureServicesForEfCore(IServiceCollection services)
         {
             services
-                .AddDbContext<SampleDbContext>(x => x.UseInMemoryDatabase("eventstore"))
+                .AddDbContext<SampleDbContext>(x => x.UseInMemoryDatabase("eventstore"));
+
+            services
                 .AddEventSourcing(builder =>
                 {
                     builder
                         .UseEfCoreEventStore<SampleDbContext, GiftCard, Guid>()
                         .UseEfCoreSnapshotStore<SampleDbContext, GiftCard, Guid>()
                         ;
-                })
-            ;
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

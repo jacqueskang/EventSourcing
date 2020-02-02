@@ -190,4 +190,13 @@ giftCard.Debit(50); // ==> balance: 10
 giftCard.Debit(20); // ==> invalid operation exception
 ```
 
+## How to programmatically initialize event store?
+
+See [this page](doc/StoreInitialization.md).
+
+## How to use snapshots to optimize performance?
+
+See [this page](doc/Snapshots.md).
+
+---
 __Please feel free to download, fork and/or provide any feedback!__
