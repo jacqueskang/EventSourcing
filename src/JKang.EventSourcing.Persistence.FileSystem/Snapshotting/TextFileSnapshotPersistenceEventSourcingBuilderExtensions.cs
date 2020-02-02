@@ -22,6 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<ISnapshotStoreInitializer<TAggregate, TKey>, TextFileSnapshotStoreInitializer<TAggregate, TKey>>()
                 .AddScoped<ISnapshotStore<TAggregate, TKey>, TextFileSnapshotStore<TAggregate, TKey>>()
                 ;
+
             return builder;
         }
     }

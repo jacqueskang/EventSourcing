@@ -5,7 +5,7 @@ using System;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class DynamoDBPersistenceEventSourcingBuilderExtensions
+    public static class DynamoDBEventPersistenceEventSourcingBuilderExtensions
     {
         public static IEventSourcingBuilder UseDynamoDBEventStore<TAggregate, TKey>(
             this IEventSourcingBuilder builder,

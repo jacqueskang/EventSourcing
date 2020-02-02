@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class DatabasePersistenceEventSourcingBuilderExtensions
+    public static class EfCoreEventPersistenceEventSourcingBuilderExtensions
     {
-        public static IEventSourcingBuilder UseDbEventStore<TEventSourcingDbContext, TAggregate, TKey>(
+        public static IEventSourcingBuilder UseEfCoreEventStore<TEventDbContext, TAggregate, TKey>(
             this IEventSourcingBuilder builder)
-            where TEventSourcingDbContext : DbContext, IEventSourcingDbContext<TAggregate, TKey>
+            where TEventDbContext : DbContext, IEventDbContext<TAggregate, TKey>
             where TAggregate : IAggregate<TKey>
         {
             if (builder is null)
@@ -18,8 +18,8 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             builder.Services
-                .AddScoped<IEventStore<TAggregate, TKey>, DatabaseEventStore<TEventSourcingDbContext, TAggregate, TKey>>()
-                .AddScoped<IEventStoreInitializer<TAggregate, TKey>, DatabaseEventStoreInitializer<TEventSourcingDbContext, TAggregate, TKey>>()
+                .AddScoped<IEventStore<TAggregate, TKey>, EfCoreEventStore<TEventDbContext, TAggregate, TKey>>()
+                .AddScoped<IEventStoreInitializer<TAggregate, TKey>, EfCoreEventStoreInitializer<TEventDbContext, TAggregate, TKey>>()
                 ;
 
             return builder.TryUseDefaultSnapshotStore<TAggregate, TKey>();

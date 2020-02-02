@@ -33,7 +33,7 @@ namespace JKang.EventSourcing.TestingWebApp
                 .AddScoped<IGiftCardRepository, GiftCardRepository>();
 
             // change the following value to switch persistence mode
-            PersistenceMode persistenceMode = PersistenceMode.DynamoDB;
+            PersistenceMode persistenceMode = PersistenceMode.EfCore;
 
             switch (persistenceMode)
             {
@@ -110,7 +110,10 @@ namespace JKang.EventSourcing.TestingWebApp
                 .AddDbContext<SampleDbContext>(x => x.UseInMemoryDatabase("eventstore"))
                 .AddEventSourcing(builder =>
                 {
-                    builder.UseDbEventStore<SampleDbContext, GiftCard, Guid>();
+                    builder
+                        .UseEfCoreEventStore<SampleDbContext, GiftCard, Guid>()
+                        .UseEfCoreSnapshotStore<SampleDbContext, GiftCard, Guid>()
+                        ;
                 })
             ;
         }

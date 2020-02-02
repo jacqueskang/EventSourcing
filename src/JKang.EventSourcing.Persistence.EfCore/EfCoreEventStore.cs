@@ -2,8 +2,6 @@
 using JKang.EventSourcing.Events;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -11,22 +9,13 @@ using System.Threading.Tasks;
 
 namespace JKang.EventSourcing.Persistence.EfCore
 {
-    public class DatabaseEventStore<TDbContext, TAggregate, TKey> : IEventStore<TAggregate, TKey>
-        where TDbContext : DbContext, IEventSourcingDbContext<TAggregate, TKey>
+    public class EfCoreEventStore<TEventDbContext, TAggregate, TKey> : IEventStore<TAggregate, TKey>
+        where TEventDbContext : DbContext, IEventDbContext<TAggregate, TKey>
         where TAggregate : IAggregate<TKey>
     {
-        private static readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings
-        {
-            TypeNameHandling = TypeNameHandling.Objects,
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore,
-            Formatting = Formatting.None,
-            Converters = new[] { new StringEnumConverter() },
-            MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead,
-        };
-        private readonly TDbContext _context;
+        private readonly TEventDbContext _context;
 
-        public DatabaseEventStore(TDbContext context)
+        public EfCoreEventStore(TEventDbContext context)
         {
             _context = context ?? throw new System.ArgumentNullException(nameof(context));
         }
@@ -39,7 +28,7 @@ namespace JKang.EventSourcing.Persistence.EfCore
                 throw new System.ArgumentNullException(nameof(@event));
             }
 
-            string serialized = JsonConvert.SerializeObject(@event, _jsonSerializerSettings);
+            string serialized = JsonConvert.SerializeObject(@event, Defaults.JsonSerializerSettings);
             var entity = new EventEntity<TKey>
             {
                 AggregateId = @event.AggregateId,
@@ -47,14 +36,14 @@ namespace JKang.EventSourcing.Persistence.EfCore
                 Timestamp = @event.Timestamp,
                 Serialized = serialized
             };
-            await _context.GetDbSet().AddAsync(entity, cancellationToken);
+            await _context.GetEventDbSet().AddAsync(entity, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
 
         public Task<TKey[]> GetAggregateIdsAsync(
             CancellationToken cancellationToken = default)
         {
-            return _context.GetDbSet()
+            return _context.GetEventDbSet()
                 .Select(x => x.AggregateId)
                 .Distinct()
                 .ToArrayAsync(cancellationToken);
@@ -65,7 +54,7 @@ namespace JKang.EventSourcing.Persistence.EfCore
             int skip = 0,
             CancellationToken cancellationToken = default)
         {
-            List<string> serializedEvents = await _context.GetDbSet()
+            List<string> serializedEvents = await _context.GetEventDbSet()
                 .Where(x => x.AggregateId.Equals(aggregateId))
                 .OrderBy(x => x.AggregateVersion)
                 .Skip(skip)
@@ -74,7 +63,7 @@ namespace JKang.EventSourcing.Persistence.EfCore
                 .ConfigureAwait(false);
 
             return serializedEvents
-                .Select(x => JsonConvert.DeserializeObject<IAggregateEvent<TKey>>(x, _jsonSerializerSettings))
+                .Select(x => JsonConvert.DeserializeObject<IAggregateEvent<TKey>>(x, Defaults.JsonSerializerSettings))
                 .ToArray();
         }
     }
