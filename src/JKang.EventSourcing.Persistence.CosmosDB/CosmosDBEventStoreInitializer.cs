@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace JKang.EventSourcing.Persistence.DynamoDB
+namespace JKang.EventSourcing.Persistence.CosmosDB
 {
     public class CosmosDBEventStoreInitializer<TAggregate, TKey>
         : IEventStoreInitializer<TAggregate, TKey>

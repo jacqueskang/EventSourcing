@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace JKang.EventSourcing.Persistence.DynamoDB
+﻿namespace JKang.EventSourcing.Persistence.CosmosDB
 {
     public class CosmosDBEventStoreOptions
     {
