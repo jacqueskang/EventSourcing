@@ -15,7 +15,8 @@
 1. Create the DbContext containing the table for storing events
 
     ```csharp
-        public class SampleDbContext : DbContext, IEventSourcingDbContext<GiftCard, Guid>
+        public class SampleDbContext : DbContext,
+            IEventDbContext<GiftCard, Guid>
         {
             public SampleDbContext(DbContextOptions<SampleDbContext> options)
                 : base(options)
@@ -24,36 +25,24 @@
             public DbSet<EventEntity<Guid>> GiftCardEvents { get; set; }
 
             protected override void OnModelCreating(ModelBuilder modelBuilder)
-                => modelBuilder.ApplyConfiguration(new EventEntityConfiguration<Guid>());
+            {
+                modelBuilder.ApplyConfiguration(new EventEntityConfiguration<Guid>());
+            }
 
-            DbSet<EventEntity<Guid>> IEventSourcingDbContext<GiftCard, Guid>.GetDbSet()
-                => GiftCardEvents;
+            DbSet<EventEntity<Guid>> IEventDbContext<GiftCard, Guid>.GetEventDbSet() => GiftCardEvents;
         }
     ```
 
-1. Register necessary services in ConfigureServices()
+1. Register event sourcing services in ConfigureServices()
 
     ```csharp
     services
-        .AddDbContext<SampleDbContext>(builder =>
-        {
-            builder.UseInMemoryDatabase("eventstore");
-        })
+        .AddDbContext<SampleDbContext>(x => x.UseInMemoryDatabase("local"));
+
+    services
         .AddEventSourcing(builder =>
         {
-            builder.UseDbEventStore<SampleDbContext, GiftCard, Guid>();
+            builder
+                .UseEfCoreEventStore<SampleDbContext, GiftCard, Guid>();
         });
-    ```
-
-1. (Optional) If you want automatically create the database during application startup:
-
-    ```csharp
-    public void Configure(
-        IApplicationBuilder app,
-        IEventStoreInitializer<GiftCard, Guid> giftCardStoreInitializer)
-    {
-        giftCardStoreInitializer.EnsureCreatedAsync().Wait();
-
-        //...
-    }
     ```

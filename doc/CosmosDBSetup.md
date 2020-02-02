@@ -6,7 +6,7 @@
     PM> Install-Package JKang.EventSourcing.Persistence.CosmosDB
     ```
 
-1. Register necessary services in ConfigureServices()
+1. Register event sourcing services in ConfigureServices()
 
     ```csharp
 	services
@@ -23,17 +23,4 @@
                 x.ContainerId = "GiftcardEvents";
             });
         });
-    ```
-
-1. (Optional) If you want automatically create the CosmosDB database and collection during application startup:
-
-    ```csharp
-    public void Configure(
-        IApplicationBuilder app,
-        IEventStoreInitializer<GiftCard, Guid> giftCardStoreInitializer)
-    {
-        giftCardStoreInitializer.EnsureCreatedAsync().Wait();
-
-        //...
-    }
     ```
