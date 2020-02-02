@@ -4,7 +4,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace JKang.EventSourcing.Persistence.FileSystem
 {
-    internal static class Standards
+    internal static class Defaults
     {
         public static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings
         {

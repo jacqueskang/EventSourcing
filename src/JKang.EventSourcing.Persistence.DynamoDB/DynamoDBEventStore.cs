@@ -4,8 +4,6 @@ using JKang.EventSourcing.Domain;
 using JKang.EventSourcing.Events;
 using JKang.EventSourcing.Options;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,15 +16,6 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
     public class DynamoDBEventStore<TAggregate, TKey> : IEventStore<TAggregate, TKey>
         where TAggregate : IAggregate<TKey>
     {
-        private static readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings
-        {
-            TypeNameHandling = TypeNameHandling.Objects,
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore,
-            Formatting = Formatting.None,
-            Converters = new[] { new StringEnumConverter() },
-            MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead,
-        };
         private readonly Table _table;
 
         public DynamoDBEventStore(
@@ -45,35 +34,9 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
             IAggregateEvent<TKey> @event,
             CancellationToken cancellationToken = default)
         {
-            string json = JsonConvert.SerializeObject(@event, _jsonSerializerSettings);
+            string json = JsonConvert.SerializeObject(@event, Defaults.JsonSerializerSettings);
             var item = Document.FromJson(json);
             await _table.PutItemAsync(item, cancellationToken).ConfigureAwait(false);
-        }
-
-        private static T Convert<T>(DynamoDBEntry entry)
-        {
-            Type type = typeof(T);
-#pragma warning disable IDE0011 // Add braces
-            if (type == typeof(bool)) return (T)(object)entry.AsBoolean();
-            if (type == typeof(byte)) return (T)(object)entry.AsByte();
-            if (type == typeof(byte[])) return (T)(object)entry.AsByteArray();
-            if (type == typeof(char)) return (T)(object)entry.AsChar();
-            if (type == typeof(DateTime)) return (T)(object)entry.AsDateTime();
-            if (type == typeof(decimal)) return (T)(object)entry.AsDecimal();
-            if (type == typeof(double)) return (T)(object)entry.AsDouble();
-            if (type == typeof(Guid)) return (T)(object)entry.AsGuid();
-            if (type == typeof(int)) return (T)(object)entry.AsInt();
-            if (type == typeof(long)) return (T)(object)entry.AsLong();
-            if (type == typeof(MemoryStream)) return (T)(object)entry.AsMemoryStream();
-            if (type == typeof(sbyte)) return (T)(object)entry.AsSByte();
-            if (type == typeof(short)) return (T)(object)entry.AsShort();
-            if (type == typeof(float)) return (T)(object)entry.AsSingle();
-            if (type == typeof(string)) return (T)(object)entry.AsString();
-            if (type == typeof(uint)) return (T)(object)entry.AsUInt();
-            if (type == typeof(ulong)) return (T)(object)entry.AsULong();
-            if (type == typeof(ushort)) return (T)(object)entry.AsUShort();
-#pragma warning restore IDE0011 // Add braces
-            throw new InvalidOperationException($"{type.FullName} is not supported as aggregate key in DynamoDB");
         }
 
         public async Task<TKey[]> GetAggregateIdsAsync(
@@ -90,7 +53,7 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
                 foreach (Document document in documents)
                 {
                     DynamoDBEntry entry = document["aggregateId"];
-                    TKey id = Convert<TKey>(entry);
+                    TKey id = Defaults.Convert<TKey>(entry);
                     ids.Add(id);
                 }
             }
@@ -113,7 +76,7 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
                 foreach (Document document in documents)
                 {
                     string json = document.ToJson();
-                    IAggregateEvent<TKey> @event = JsonConvert.DeserializeObject<IAggregateEvent<TKey>>(json, _jsonSerializerSettings);
+                    IAggregateEvent<TKey> @event = JsonConvert.DeserializeObject<IAggregateEvent<TKey>>(json, Defaults.JsonSerializerSettings);
                     events.Add(@event);
                 }
             } while (!search.IsDone);

@@ -36,7 +36,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem
                 throw new ArgumentNullException(nameof(@event));
             }
 
-            string serialized = JsonConvert.SerializeObject(@event, Standards.JsonSerializerSettings);
+            string serialized = JsonConvert.SerializeObject(@event, Defaults.JsonSerializerSettings);
             string filePath = GetFilePath(@event.AggregateId);
             using (var fs = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.None))
             using (var sw = new StreamWriter(fs))
@@ -95,7 +95,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem
                     }
                     else
                     {
-                        events.Add(JsonConvert.DeserializeObject<IAggregateEvent<TKey>>(serialized, Standards.JsonSerializerSettings));
+                        events.Add(JsonConvert.DeserializeObject<IAggregateEvent<TKey>>(serialized, Defaults.JsonSerializerSettings));
                     }
                     serialized = await sr.ReadLineAsync().ConfigureAwait(false);
                 }

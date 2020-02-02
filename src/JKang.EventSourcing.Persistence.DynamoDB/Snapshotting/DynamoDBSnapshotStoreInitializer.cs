@@ -2,22 +2,23 @@
 using Amazon.DynamoDBv2.Model;
 using JKang.EventSourcing.Domain;
 using JKang.EventSourcing.Options;
+using JKang.EventSourcing.Snapshotting.Persistence;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace JKang.EventSourcing.Persistence.DynamoDB
+namespace JKang.EventSourcing.Persistence.DynamoDB.Snapshotting
 {
-    public class DynamoDBEventStoreInitializer<TAggregate, TKey>
-        : IEventStoreInitializer<TAggregate, TKey>
+    public class DynamoDBSnapshotStoreInitializer<TAggregate, TKey>
+        : ISnapshotStoreInitializer<TAggregate, TKey>
         where TAggregate : IAggregate<TKey>
     {
-        private readonly DynamoDBEventStoreOptions _options;
+        private readonly DynamoDBSnapshotStoreOptions _options;
         private readonly IAmazonDynamoDB _dynamoDB;
 
-        public DynamoDBEventStoreInitializer(
-            IAggregateOptionsMonitor<TAggregate, TKey, DynamoDBEventStoreOptions> monitor,
+        public DynamoDBSnapshotStoreInitializer(
+            IAggregateOptionsMonitor<TAggregate, TKey, DynamoDBSnapshotStoreOptions> monitor,
             IAmazonDynamoDB dynamoDB)
         {
             if (monitor is null)
@@ -36,6 +37,7 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
             {
                 return;
             }
+
             await _dynamoDB.CreateTableAsync(new CreateTableRequest
             {
                 TableName = _options.TableName,

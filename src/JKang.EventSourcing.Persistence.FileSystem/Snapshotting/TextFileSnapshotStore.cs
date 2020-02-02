@@ -35,7 +35,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem.Snapshotting
                 throw new ArgumentNullException(nameof(snapshot));
             }
 
-            string serialized = JsonConvert.SerializeObject(snapshot, Standards.JsonSerializerSettings);
+            string serialized = JsonConvert.SerializeObject(snapshot, Defaults.JsonSerializerSettings);
             string filePath = GetFilePath(snapshot.AggregateId, snapshot.AggregateVersion);
             File.WriteAllText(filePath, serialized);
             return Task.CompletedTask;
@@ -65,7 +65,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem.Snapshotting
             string filePath = GetFilePath(aggregateId, latestVersion);
             string serialized = File.ReadAllText(filePath);
             IAggregateSnapshot<TKey> snapshot = JsonConvert.DeserializeObject<IAggregateSnapshot<TKey>>(
-                serialized, Standards.JsonSerializerSettings);
+                serialized, Defaults.JsonSerializerSettings);
             return Task.FromResult(snapshot);
         }
 
