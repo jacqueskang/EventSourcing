@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JKang.EventSourcing.Abstractions" Version="0.5.4" />
+    <PackageReference Include="JKang.EventSourcing.Abstractions" Version="1.0.0-beta.2" />
   </ItemGroup>
 
 </Project>

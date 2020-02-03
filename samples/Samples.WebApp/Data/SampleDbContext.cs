@@ -5,7 +5,7 @@ using System;
 
 namespace Samples.WebApp.Data
 {
-    public class SampleDbContext : DbContext, IEventSourcingDbContext<GiftCard, Guid>
+    public class SampleDbContext : DbContext, IEventDbContext<GiftCard, Guid>
     {
         public SampleDbContext(DbContextOptions<SampleDbContext> options)
             : base(options)
@@ -16,7 +16,7 @@ namespace Samples.WebApp.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
             => modelBuilder.ApplyConfiguration(new EventEntityConfiguration<Guid>());
 
-        DbSet<EventEntity<Guid>> IEventSourcingDbContext<GiftCard, Guid>.GetDbSet()
+        DbSet<EventEntity<Guid>> IEventDbContext<GiftCard, Guid>.GetEventDbSet()
             => GiftCardEvents;
     }
 }

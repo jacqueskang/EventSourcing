@@ -1,8 +1,6 @@
 using JKang.EventSourcing.Persistence;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,7 +31,7 @@ namespace Samples.WebApp
             });
 
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc();
 
             services
                 .AddScoped<IGiftCardRepository, GiftCardRepository>()
@@ -46,44 +44,35 @@ namespace Samples.WebApp
                 });
 
             services
-                .AddDefaultAWSOptions(Configuration.GetAWSOptions())
                 .AddEventSourcing(builder =>
                 {
                     builder
-                        .UseJsonEventSerializer()
-                        //.UseTextFileEventStore<GiftCard, Guid>(x =>
-                        //{
-                        //    x.Folder = "C:\\Temp\\EventSourcing\\GiftCards";
-                        //})
-                        .UseDbEventStore<SampleDbContext, GiftCard, Guid>()
-                        //.UseDynamoDBEventStore<GiftCard, Guid>(Configuration.GetSection("GiftCardEventStore"))
-                        ;
+                        .UseEfCoreEventStore<SampleDbContext, GiftCard, Guid>();
                 });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(
             IApplicationBuilder app,
-            IHostingEnvironment env,
             IEventStoreInitializer<GiftCard, Guid> eventStoreInitializer)
         {
             eventStoreInitializer.EnsureCreatedAsync().Wait();
 
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Error");
-                app.UseHsts();
-            }
+            app.UseExceptionHandler("/Error");
+            app.UseHsts();
 
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
-            app.UseCookiePolicy();
 
-            app.UseMvc();
+            app.UseStaticFiles();
+
+            app.UseRouting();
+
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapRazorPages();
+            });
         }
     }
 }
