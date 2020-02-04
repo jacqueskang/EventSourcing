@@ -22,7 +22,7 @@ namespace JKang.EventSourcing.TestingWebApp.Pages.GiftCards
 
         public async Task<IActionResult> OnGetAsync(Guid id)
         {
-            GiftCard = await _repository.FindGiftCardAsync(id, true)
+            GiftCard = await _repository.FindGiftCardAsync(id)
                 ?? throw new InvalidOperationException("Gift card not found");
 
             return Page();
@@ -30,7 +30,7 @@ namespace JKang.EventSourcing.TestingWebApp.Pages.GiftCards
 
         public async Task<IActionResult> OnPostDebitAsync(Guid id)
         {
-            GiftCard = await _repository.FindGiftCardAsync(id, true)
+            GiftCard = await _repository.FindGiftCardAsync(id)
                 ?? throw new InvalidOperationException("Gift card not found");
 
             GiftCard.Debit(Amount);

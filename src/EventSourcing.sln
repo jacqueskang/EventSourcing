@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		..\.travis.yml = ..\.travis.yml
 		Directory.Build.props = Directory.Build.props
+		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Persistence.EfCore", "JKang.EventSourcing.Persistence.EfCore\JKang.EventSourcing.Persistence.EfCore.csproj", "{5473865D-3737-4719-893B-9DD6A10E5A35}"
@@ -29,7 +30,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Persist
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Options", "JKang.EventSourcing.Options\JKang.EventSourcing.Options.csproj", "{5230D7B5-EE3C-43B4-BCBB-2FA6487BDA7D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JKang.EventSourcing.Abstractions.Tests", "JKang.EventSourcing.Abstractions.Tests\JKang.EventSourcing.Abstractions.Tests.csproj", "{1D8A6FFC-1D14-4EA0-A42A-959E38D46EC1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Abstractions.Tests", "JKang.EventSourcing.Abstractions.Tests\JKang.EventSourcing.Abstractions.Tests.csproj", "{1D8A6FFC-1D14-4EA0-A42A-959E38D46EC1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{6374E9CF-DFD8-4A86-BBEC-6F2D2E09B8D6}"
+	ProjectSection(SolutionItems) = preProject
+		..\doc\CosmosDBSetup.md = ..\doc\CosmosDBSetup.md
+		..\doc\DynamoDBSetup.md = ..\doc\DynamoDBSetup.md
+		..\doc\EfCoreSetup.md = ..\doc\EfCoreSetup.md
+		..\doc\FileSystemSetup.md = ..\doc\FileSystemSetup.md
+		..\doc\Snapshots.md = ..\doc\Snapshots.md
+		..\doc\StoreInitialization.md = ..\doc\StoreInitialization.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -84,6 +95,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6374E9CF-DFD8-4A86-BBEC-6F2D2E09B8D6} = {3CE8F82A-51A6-46BC-9A78-590642AA5242}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E4CE6D6B-D967-402C-BDBE-0949B55C1F1B}

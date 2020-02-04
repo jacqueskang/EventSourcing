@@ -1,6 +1,5 @@
 ﻿using JKang.EventSourcing.Domain;
 using JKang.EventSourcing.Events;
-using JKang.EventSourcing.Snapshotting;
 using JKang.EventSourcing.Snapshotting.Persistence;
 using System;
 using System.Collections.Generic;
@@ -59,11 +58,12 @@ namespace JKang.EventSourcing.Persistence
             return _eventStore.GetAggregateIdsAsync();
         }
 
-        protected async Task<TAggregate> FindAggregateAsync(TKey id, bool useSnapshot,
+        protected async Task<TAggregate> FindAggregateAsync(TKey id,
+            bool ignoreSnapshot = false,
             CancellationToken cancellationToken = default)
         {
             IAggregateSnapshot<TKey> snapshot = null;
-            if (useSnapshot)
+            if (!ignoreSnapshot)
             {
                 snapshot = await _snapshotStore
                     .FindLastSnapshotAsync(id, cancellationToken)
