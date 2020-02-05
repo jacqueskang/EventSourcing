@@ -90,5 +90,5 @@ To enable this feature you need to implement the following:
 
 1. By default when calling `AggregateRepository<TAggregate, TKey>.FindAggregateAsync()` it automatically retrieve the last snapshot. You can force not loading any snapshot by calling:
     ```csharp
-    FindAggregateAsync(aggregateId, useSnapshot: false)
+    FindAggregateAsync(aggregateId, ignoreSnapshot: true)
     ```
