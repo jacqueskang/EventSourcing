@@ -161,6 +161,7 @@ namespace JKang.EventSourcing.Domain
         internal class Changeset : IAggregateChangeset<TKey>
         {
             private readonly Aggregate<TKey> _aggregate;
+            private bool _committed = false;
 
             public Changeset(
                 Aggregate<TKey> aggregate,
@@ -182,6 +183,11 @@ namespace JKang.EventSourcing.Domain
 
             public void Commit()
             {
+                if (_committed)
+                {
+                    throw new InvalidOperationException("The changeset is already committed");
+                }
+
                 for (int i = 0; i < Events.Count(); i++)
                 {
                     IAggregateEvent<TKey> @evt = _aggregate._unsavedEvents.Dequeue();
@@ -189,6 +195,7 @@ namespace JKang.EventSourcing.Domain
                 }
 
                 _aggregate._unsavedSnapshot = null;
+                _committed = true;
             }
         }
     }
