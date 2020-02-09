@@ -22,7 +22,7 @@ namespace JKang.EventSourcing.Persistence
             _snapshotStore = snapshotStore ?? throw new ArgumentNullException(nameof(snapshotStore));
         }
 
-        protected async Task SaveAggregateAsync(TAggregate aggregate,
+        protected async Task<IAggregateChangeset<TKey>> SaveAggregateAsync(TAggregate aggregate,
             CancellationToken cancellationToken = default)
         {
             if (aggregate is null)
@@ -35,23 +35,16 @@ namespace JKang.EventSourcing.Persistence
             foreach (IAggregateEvent<TKey> @event in changeset.Events)
             {
                 await _eventStore.AddEventAsync(@event, cancellationToken).ConfigureAwait(false);
-                await OnEventSavedAsync(@event, cancellationToken).ConfigureAwait(false);
             }
 
             if (changeset.Snapshot != null)
             {
                 await _snapshotStore.AddSnapshotAsync(changeset.Snapshot, cancellationToken).ConfigureAwait(false);
-                await OnSnapshotSavedAsync(changeset.Snapshot, cancellationToken).ConfigureAwait(false);
             }
 
             changeset.Commit();
+            return changeset;
         }
-
-        protected virtual Task OnEventSavedAsync(IAggregateEvent<TKey> e,
-            CancellationToken cancellationToken = default) => Task.CompletedTask;
-
-        protected virtual Task OnSnapshotSavedAsync(IAggregateSnapshot<TKey> snapshot,
-            CancellationToken cancellationToken = default) => Task.CompletedTask;
 
         protected Task<TKey[]> GetAggregateIdsAsync()
         {
