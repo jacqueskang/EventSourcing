@@ -35,27 +35,19 @@ namespace JKang.EventSourcing.Persistence
             foreach (IAggregateEvent<TKey> @event in changeset.Events)
             {
                 await _eventStore.AddEventAsync(@event, cancellationToken).ConfigureAwait(false);
-                await OnEventSavedAsync(@event, cancellationToken).ConfigureAwait(false);
             }
 
             if (changeset.Snapshot != null)
             {
                 await _snapshotStore.AddSnapshotAsync(changeset.Snapshot, cancellationToken).ConfigureAwait(false);
-                await OnSnapshotSavedAsync(changeset.Snapshot, cancellationToken).ConfigureAwait(false);
             }
 
             changeset.Commit();
         }
 
-        protected virtual Task OnEventSavedAsync(IAggregateEvent<TKey> e,
-            CancellationToken cancellationToken = default) => Task.CompletedTask;
-
-        protected virtual Task OnSnapshotSavedAsync(IAggregateSnapshot<TKey> snapshot,
-            CancellationToken cancellationToken = default) => Task.CompletedTask;
-
-        protected Task<TKey[]> GetAggregateIdsAsync()
+        protected Task<TKey[]> GetAggregateIdsAsync(CancellationToken cancellationToken = default)
         {
-            return _eventStore.GetAggregateIdsAsync();
+            return _eventStore.GetAggregateIdsAsync(cancellationToken);
         }
 
         protected async Task<TAggregate> FindAggregateAsync(TKey id,

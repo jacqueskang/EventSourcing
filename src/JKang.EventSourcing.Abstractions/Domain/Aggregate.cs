@@ -1,5 +1,4 @@
 ﻿using JKang.EventSourcing.Events;
-using JKang.EventSourcing.Snapshotting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
