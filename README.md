@@ -18,6 +18,7 @@ Support various of event store:
  - JKang.EventSourcing.Persistence.EfCore [![NuGet version](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.EfCore.svg)](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.EfCore)
  - JKang.EventSourcing.Persistence.DynamoDB [![NuGet version](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.DynamoDB.svg)](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.DynamoDB)
  - JKang.EventSourcing.Persistence.CosmosDB [![NuGet version](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.CosmosDB.svg)](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.CosmosDB)
+ - JKang.EventSourcing.Persistence.Caching [![NuGet version](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.Caching.svg)](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.Caching)
 
 ## Quick Start:
 
@@ -190,13 +191,22 @@ giftCard.Debit(50); // ==> balance: 10
 giftCard.Debit(20); // ==> invalid operation exception
 ```
 
-## How to programmatically initialize event store?
+## FAQs
+
+### How to programmatically initialize event store?
 
 See [this page](doc/StoreInitialization.md).
 
-## How to use snapshots to optimize performance?
+### How to use snapshots to optimize performance?
 
 See [this page](doc/Snapshots.md).
+
+### How to improve performance using caching?
+
+Consider install the nuget package `JKang.EventSourcing.Persistence.Caching` and inherit the `CachedAggregateRepository` class.
+It leverages `Microsoft.Extensions.Caching.Distributed.IDistributedCache` to cache aggregate every time after loaded from or saved into repository.
+
+Consider configuring a short sliding expiration (e.g., 5 sec) to reduce the chance of having cache out of date.
 
 ---
 __Please feel free to download, fork and/or provide any feedback!__

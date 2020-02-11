@@ -30,7 +30,7 @@ namespace JKang.EventSourcing.TestingWebApp
             services.AddRazorPages();
 
             services
-                .AddScoped<IGiftCardRepository, GiftCardRepository>();
+                .AddScoped<IGiftCardRepository, CachedGiftCardRepository>();
 
             // change the following value to switch persistence mode
             PersistenceMode persistenceMode = PersistenceMode.EfCore;
