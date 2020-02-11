@@ -7,6 +7,7 @@ namespace JKang.EventSourcing.Domain
     {
         TKey Id { get; }
         int Version { get; }
+        IAggregateSnapshot<TKey> Snapshot { get; }
         IEnumerable<IAggregateEvent<TKey>> Events { get; }
         IAggregateChangeset<TKey> GetChangeset();
     }
