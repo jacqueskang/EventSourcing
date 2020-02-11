@@ -42,6 +42,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{6374E9CF-DFD
 		..\doc\StoreInitialization.md = ..\doc\StoreInitialization.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JKang.EventSourcing.Persistence.Caching", "JKang.EventSourcing.Persistence.Caching\JKang.EventSourcing.Persistence.Caching.csproj", "{5BDFE811-5E80-41E0-9641-90BB0F3C34A8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -92,6 +94,10 @@ Global
 		{1D8A6FFC-1D14-4EA0-A42A-959E38D46EC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D8A6FFC-1D14-4EA0-A42A-959E38D46EC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1D8A6FFC-1D14-4EA0-A42A-959E38D46EC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BDFE811-5E80-41E0-9641-90BB0F3C34A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BDFE811-5E80-41E0-9641-90BB0F3C34A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BDFE811-5E80-41E0-9641-90BB0F3C34A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BDFE811-5E80-41E0-9641-90BB0F3C34A8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

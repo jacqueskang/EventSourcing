@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JKang.EventSourcing" Version="1.0.0-beta.2" />
-    <PackageReference Include="JKang.EventSourcing.Persistence.EfCore" Version="1.0.0-beta.2" />
+    <PackageReference Include="JKang.EventSourcing" Version="1.0.1" />
+    <PackageReference Include="JKang.EventSourcing.Persistence.EfCore" Version="1.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.1" />
   </ItemGroup>
 
