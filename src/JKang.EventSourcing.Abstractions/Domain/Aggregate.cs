@@ -1,5 +1,4 @@
 ﻿using JKang.EventSourcing.Events;
-using JKang.EventSourcing.Snapshotting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -86,7 +85,7 @@ namespace JKang.EventSourcing.Domain
 
         public IEnumerable<IAggregateEvent<TKey>> Events => _savedEvents.Concat(_unsavedEvents);
 
-        public IAggregateSnapshot<TKey> Snapshot { get; } = null;
+        public IAggregateSnapshot<TKey> Snapshot { get; private set; } = null;
 
         public void TakeSnapshot()
         {
@@ -194,6 +193,14 @@ namespace JKang.EventSourcing.Domain
                     _aggregate._savedEvents.Enqueue(@evt);
                 }
 
+                if (Snapshot != null)
+                {
+                    _aggregate.Snapshot = Snapshot;
+                    while (_aggregate._savedEvents.Any() && _aggregate._savedEvents.First().AggregateVersion <= Snapshot.AggregateVersion)
+                    {
+                        _aggregate._savedEvents.Dequeue();
+                    }
+                }
                 _aggregate._unsavedSnapshot = null;
                 _committed = true;
             }
