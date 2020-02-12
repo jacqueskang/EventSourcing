@@ -51,13 +51,14 @@ namespace JKang.EventSourcing.Persistence.EfCore
 
         public async Task<IAggregateEvent<TKey>[]> GetEventsAsync(
             TKey aggregateId,
-            int skip = 0,
+            int minVersion, int maxVersion,
             CancellationToken cancellationToken = default)
         {
             List<string> serializedEvents = await _context.GetEventDbSet()
                 .Where(x => x.AggregateId.Equals(aggregateId))
+                .Where(x => x.AggregateVersion >= minVersion)
+                .Where(x => x.AggregateVersion <= maxVersion)
                 .OrderBy(x => x.AggregateVersion)
-                .Skip(skip)
                 .Select(x => x.Serialized)
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);

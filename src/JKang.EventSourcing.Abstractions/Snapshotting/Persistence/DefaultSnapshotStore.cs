@@ -13,7 +13,8 @@ namespace JKang.EventSourcing.Snapshotting.Persistence
             return Task.CompletedTask;
         }
 
-        public Task<IAggregateSnapshot<TKey>> FindLastSnapshotAsync(TKey aggregateId, CancellationToken cancellationToken = default)
+        public Task<IAggregateSnapshot<TKey>> FindLastSnapshotAsync(TKey aggregateId, int maxVersion,
+            CancellationToken cancellationToken = default)
         {
             return Task.FromResult(null as IAggregateSnapshot<TKey>);
         }

@@ -53,18 +53,22 @@ namespace JKang.EventSourcing.Persistence
 
         protected virtual async Task<TAggregate> FindAggregateAsync(TKey id,
             bool ignoreSnapshot = false,
+            int version = -1,
             CancellationToken cancellationToken = default)
         {
+            int maxVersion = version <= 0 ? int.MaxValue : version;
+
             IAggregateSnapshot<TKey> snapshot = null;
             if (!ignoreSnapshot)
             {
                 snapshot = await _snapshotStore
-                    .FindLastSnapshotAsync(id, cancellationToken)
+                    .FindLastSnapshotAsync(id, maxVersion,  cancellationToken)
                     .ConfigureAwait(false);
             }
 
+            int minVersion = snapshot == null ? 1 : snapshot.AggregateVersion + 1;
             IAggregateEvent<TKey>[] events = await _eventStore
-                .GetEventsAsync(id, snapshot == null ? 0 : snapshot.AggregateVersion, cancellationToken)
+                .GetEventsAsync(id, minVersion, maxVersion, cancellationToken)
                 .ConfigureAwait(false);
 
             if (snapshot == null)

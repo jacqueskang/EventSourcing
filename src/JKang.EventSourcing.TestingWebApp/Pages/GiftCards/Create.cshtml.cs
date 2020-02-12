@@ -10,7 +10,7 @@ namespace JKang.EventSourcing.TestingWebApp.Pages.GiftCards
         private readonly IGiftCardRepository _repository;
 
         [BindProperty]
-        public decimal InitialCredit { get; set; } = 100;
+        public decimal InitialCredit { get; set; } = 500;
 
         public CreateModel(IGiftCardRepository repository)
         {
