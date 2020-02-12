@@ -17,6 +17,9 @@ namespace JKang.EventSourcing.TestingWebApp.Pages.GiftCards
 
         public GiftCard GiftCard { get; private set; }
 
+        [TempData]
+        public string Error { get; set; }
+
         [BindProperty]
         public decimal Amount { get; set; } = 30;
 
@@ -30,11 +33,18 @@ namespace JKang.EventSourcing.TestingWebApp.Pages.GiftCards
 
         public async Task<IActionResult> OnPostDebitAsync(Guid id)
         {
-            GiftCard = await _repository.FindGiftCardAsync(id)
-                ?? throw new InvalidOperationException("Gift card not found");
+            try
+            {
+                GiftCard = await _repository.FindGiftCardAsync(id)
+                    ?? throw new InvalidOperationException("Gift card not found");
 
-            GiftCard.Debit(Amount);
-            await _repository.SaveGiftCardAsync(GiftCard);
+                GiftCard.Debit(Amount);
+                await _repository.SaveGiftCardAsync(GiftCard);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Error = ex.Message;
+            }
             return RedirectToPage(new { id });
         }
 

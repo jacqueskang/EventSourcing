@@ -42,19 +42,20 @@ namespace JKang.EventSourcing.Persistence
         protected override async Task<TAggregate> FindAggregateAsync(
             TKey id,
             bool ignoreSnapshot = false,
+            int version = -1,
             CancellationToken cancellationToken = default)
         {
-            string key = GetCacheKey(id);
+            string key = GetCacheKey(id, version);
             string serialized = await _cache.GetStringAsync(key, cancellationToken).ConfigureAwait(false);
             if (!string.IsNullOrEmpty(serialized))
             {
                 return DeserializeAggregate(serialized);
             }
 
-            TAggregate aggregate = await base.FindAggregateAsync(id, ignoreSnapshot, cancellationToken)
+            TAggregate aggregate = await base.FindAggregateAsync(id, ignoreSnapshot, version, cancellationToken)
                 .ConfigureAwait(false);
 
-            await CacheAsync(aggregate, cancellationToken).ConfigureAwait(false);
+            await CacheAsync(aggregate, version, cancellationToken).ConfigureAwait(false);
 
             return aggregate;
         }
@@ -71,20 +72,20 @@ namespace JKang.EventSourcing.Persistence
             IAggregateChangeset<TKey> changeset = await base.SaveAggregateAsync(aggregate, cancellationToken)
                 .ConfigureAwait(false);
 
-            await CacheAsync(aggregate, cancellationToken).ConfigureAwait(false);
+            await CacheAsync(aggregate, -1, cancellationToken).ConfigureAwait(false);
 
             return changeset;
         }
 
-        private async Task CacheAsync(TAggregate aggregate,
+        private async Task CacheAsync(TAggregate aggregate, int version,
             CancellationToken cancellationToken)
         {
             string serialized = SerializeAggregate(aggregate);
-            string key = GetCacheKey(aggregate.Id);
+            string key = GetCacheKey(aggregate.Id, version);
             await _cache.SetStringAsync(key, serialized, _cacheOptions, cancellationToken).ConfigureAwait(false);
         }
 
-        protected virtual string GetCacheKey(TKey id) => $"{typeof(TAggregate).FullName}_{id}";
+        protected virtual string GetCacheKey(TKey id, int version) => $"{typeof(TAggregate).FullName}_{id}_{version}";
 
         protected virtual TAggregate DeserializeAggregate(string serialized)
         {

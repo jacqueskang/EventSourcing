@@ -1,0 +1,83 @@
+﻿@page
+@model JKang.EventSourcing.TestingWebApp.Pages.GiftCards.PreviousVersionModel
+@{
+    ViewData["Title"] = $"Gift card #{Model.GiftCard.Id}";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <form method="get" class="form">
+            <div class="form-group">
+                <input type="hidden" name="id" value="@Model.GiftCard.Id" />
+                <input type="hidden" name="maxVersion" value="@Model.MaxVersion" />
+
+                <label>Version</label>
+
+                <select name="version" class="form-control" onchange="this.form.submit()">
+                    @for (int i = 1; i <= Model.MaxVersion; i++)
+                    {
+                        if (i == Model.GiftCard.Version)
+                        {
+                            <option selected>@i</option>
+                        }
+                        else
+                        {
+                            <option>@i</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="custom-control custom-checkbox">
+                @if (Model.IgnoreSnapshot)
+                {
+                    <input type="checkbox" class="custom-control-input" id="ignoreSnapshot" name="ignoreSnapshot" checked="checked" onchange="this.form.submit()">
+                }
+                else
+                {
+                    <input type="checkbox" class="custom-control-input" id="ignoreSnapshot" name="ignoreSnapshot" onchange="this.form.submit()">
+                }
+
+                <label class="custom-control-label" for="ignoreSnapshot">Ignore snapshots</label>
+            </div>
+        </form>
+
+        <h3>Balance: <strong>@Model.GiftCard.Balance.ToString("0.00") €</strong></h3>
+    </div>
+
+    <div class="col-md-6">
+        <h3>History</h3>
+
+        @if (Model.GiftCard.Snapshot != null)
+        {
+            <div class="alert alert-info" role="alert">
+                Loaded from snapshot (version @Model.GiftCard.Snapshot.AggregateVersion)
+            </div>
+        }
+
+        <table class="table table-striped table-sm">
+            <thead>
+                <tr>
+                    <th>Version</th>
+                    <th>Timestamp</th>
+                    <th>Event</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var @e in Model.GiftCard.Events.OrderByDescending(x => x.AggregateVersion))
+                {
+                    <tr>
+                        <td>@e.AggregateVersion</td>
+                        <td>@e.Timestamp</td>
+                        <td>@e</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

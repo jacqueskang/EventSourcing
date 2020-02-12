@@ -4,9 +4,7 @@
     ViewData["Title"] = "Home page";
 }
 
-<a class="btn btn-primary" asp-page="/GiftCards/Create">New gift card</a>
-
-<h3>Existing gift cards</h3>
+<h3>Gift cards</h3>
 <ul>
     @foreach (var id in Model.GiftCardIds)
     {
@@ -15,3 +13,8 @@
         </li>
     }
 </ul>
+
+<div>
+    <a class="btn btn-primary" asp-page="/GiftCards/Create">New gift card</a>
+</div>
+

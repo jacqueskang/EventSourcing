@@ -10,7 +10,7 @@ namespace JKang.EventSourcing.Snapshotting.Persistence
         Task AddSnapshotAsync(IAggregateSnapshot<TKey> snapshot,
             CancellationToken cancellationToken = default);
 
-        Task<IAggregateSnapshot<TKey>> FindLastSnapshotAsync(TKey aggregateId,
+        Task<IAggregateSnapshot<TKey>> FindLastSnapshotAsync(TKey aggregateId, int maxVersion,
             CancellationToken cancellationToken = default);
     }
 }

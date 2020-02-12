@@ -42,13 +42,15 @@ namespace JKang.EventSourcing.Persistence.DynamoDB.Snapshotting
             await _table.PutItemAsync(item, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<IAggregateSnapshot<TKey>> FindLastSnapshotAsync(TKey aggregateId,
+        public async Task<IAggregateSnapshot<TKey>> FindLastSnapshotAsync(TKey aggregateId, int maxVersion,
             CancellationToken cancellationToken = default)
         {
 
+            var filter = new QueryFilter("aggregateId", QueryOperator.Equal, aggregateId as dynamic);
+            filter.AddCondition("aggregateVersion", QueryOperator.LessThanOrEqual, maxVersion);
             Search search = _table.Query(new QueryOperationConfig
             {
-                Filter = new QueryFilter("aggregateId", QueryOperator.Equal, aggregateId as dynamic),
+                Filter = filter,
                 Limit = 1,
                 BackwardSearch = true,
             });

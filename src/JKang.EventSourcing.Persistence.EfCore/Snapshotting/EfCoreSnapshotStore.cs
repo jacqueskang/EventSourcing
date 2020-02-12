@@ -39,11 +39,12 @@ namespace JKang.EventSourcing.Persistence.EfCore.Snapshotting
             await _context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<IAggregateSnapshot<TKey>> FindLastSnapshotAsync(TKey aggregateId,
+        public async Task<IAggregateSnapshot<TKey>> FindLastSnapshotAsync(TKey aggregateId, int maxVersion,
             CancellationToken cancellationToken = default)
         {
             string serialized = await _context.GetSnapshotDbSet()
                 .Where(x => x.AggregateId.Equals(aggregateId))
+                .Where(x => x.AggregateVersion <= maxVersion)
                 .OrderByDescending(x => x.AggregateVersion)
                 .Select(x => x.Serialized)
                 .FirstOrDefaultAsync(cancellationToken)

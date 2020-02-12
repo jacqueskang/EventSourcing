@@ -64,10 +64,13 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
 
         public async Task<IAggregateEvent<TKey>[]> GetEventsAsync(
             TKey aggregateId,
-            int skip = 0,
+            int minVersion,
+            int maxVersion,
             CancellationToken cancellationToken = default)
         {
-            Search search = _table.Query(aggregateId as dynamic, new QueryFilter("aggregateVersion", QueryOperator.GreaterThan, skip));
+            var filter = new QueryFilter("aggregateVersion", QueryOperator.GreaterThanOrEqual, minVersion);
+            filter.AddCondition("aggregateVersion", QueryOperator.LessThanOrEqual, maxVersion);
+            Search search = this._table.Query(aggregateId as dynamic, filter);
 
             var events = new List<IAggregateEvent<TKey>>();
             do

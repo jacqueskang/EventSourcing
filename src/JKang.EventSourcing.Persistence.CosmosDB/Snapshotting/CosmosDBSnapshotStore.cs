@@ -49,13 +49,13 @@ namespace JKang.EventSourcing.Persistence.CosmosDB.Snapshotting
                 .ConfigureAwait(false);
         }
 
-        public async Task<IAggregateSnapshot<TKey>> FindLastSnapshotAsync(TKey aggregateId,
+        public async Task<IAggregateSnapshot<TKey>> FindLastSnapshotAsync(TKey aggregateId, int maxVersion,
             CancellationToken cancellationToken = default)
         {
             string query = $@"
 SELECT TOP 1 VALUE c.data
 FROM c
-WHERE c.data.aggregateId = '{aggregateId}'
+WHERE c.data.aggregateId = '{aggregateId}' AND c.data.aggregateVersion <= {maxVersion}
 ORDER BY c.data.aggregateVersion DESC";
 
             FeedIterator<IAggregateSnapshot<TKey>> iterator = _container
