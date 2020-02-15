@@ -45,17 +45,24 @@ namespace JKang.EventSourcing.Persistence
             int version = -1,
             CancellationToken cancellationToken = default)
         {
-            string key = GetCacheKey(id, version);
-            string serialized = await _cache.GetStringAsync(key, cancellationToken).ConfigureAwait(false);
-            if (!string.IsNullOrEmpty(serialized))
+            try
             {
-                return DeserializeAggregate(serialized);
+                string key = GetCacheKey(id, version);
+                string serialized = await _cache.GetStringAsync(key, cancellationToken).ConfigureAwait(false);
+                if (!string.IsNullOrEmpty(serialized))
+                {
+                    return DeserializeAggregate(serialized);
+                }
             }
+            catch { }
 
             TAggregate aggregate = await base.FindAggregateAsync(id, ignoreSnapshot, version, cancellationToken)
                 .ConfigureAwait(false);
 
-            await CacheAsync(aggregate, version, cancellationToken).ConfigureAwait(false);
+            if (aggregate != null)
+            {
+                await CacheAsync(aggregate, version, cancellationToken).ConfigureAwait(false);
+            }
 
             return aggregate;
         }
