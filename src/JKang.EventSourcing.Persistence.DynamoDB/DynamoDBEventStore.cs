@@ -68,8 +68,7 @@ namespace JKang.EventSourcing.Persistence.DynamoDB
             int maxVersion,
             CancellationToken cancellationToken = default)
         {
-            var filter = new QueryFilter("aggregateVersion", QueryOperator.GreaterThanOrEqual, minVersion);
-            filter.AddCondition("aggregateVersion", QueryOperator.LessThanOrEqual, maxVersion);
+            var filter = new QueryFilter("aggregateVersion", QueryOperator.Between, minVersion, maxVersion);
             Search search = this._table.Query(aggregateId as dynamic, filter);
 
             var events = new List<IAggregateEvent<TKey>>();
