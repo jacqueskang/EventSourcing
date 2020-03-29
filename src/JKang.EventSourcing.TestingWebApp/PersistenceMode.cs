@@ -5,6 +5,7 @@
         FileSystem,
         EfCore,
         DynamoDB,
-        CosmosDB
+        CosmosDB,
+        S3
     }
 }
