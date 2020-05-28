@@ -17,6 +17,7 @@ Support various of event store:
  - JKang.EventSourcing.Persistence.EfCore [![NuGet version](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.EfCore.svg)](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.EfCore)
  - JKang.EventSourcing.Persistence.DynamoDB [![NuGet version](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.DynamoDB.svg)](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.DynamoDB)
  - JKang.EventSourcing.Persistence.CosmosDB [![NuGet version](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.CosmosDB.svg)](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.CosmosDB)
+ - JKang.EventSourcing.Persistence.S3 [![NuGet version](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.S3.svg)](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.S3)
  - JKang.EventSourcing.Persistence.Caching [![NuGet version](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.Caching.svg)](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.Caching)
 
 ## Quick Start:
