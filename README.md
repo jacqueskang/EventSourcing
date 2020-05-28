@@ -1,5 +1,4 @@
-[![Build Status](https://travis-ci.com/jacqueskang/EventSourcing.svg?branch=develop)](https://travis-ci.com/jacqueskang/EventSourcing)
-
+[![Build Status](https://dev.azure.com/jacques-kang/EventSourcing/_apis/build/status/jacqueskang-eventsourcing-ci?branchName=develop)](https://dev.azure.com/jacques-kang/EventSourcing/_build/latest?definitionId=11&branchName=develop)
 # EventSourcing
 
 A .NET Core event sourcing framework.
