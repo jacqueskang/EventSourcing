@@ -12,7 +12,7 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  nugetVersion: '$(Build.BuildNumber)-beta'
+  nugetVersion: '$(Build.BuildNumber)'
 
 steps:
 - task: DotNetCoreCLI@2
