@@ -26,10 +26,6 @@ Let's implement a simple gift card management system with the following use case
  * Create gift cards with initial credit
  * Debit the gift card specifying amount while overpaying is not allowed
 
->
-> A live-demostration can be find [__here__](https://jkang-event-sourcing.azurewebsites.net/)
->
-
 I'm adopting *DDD (Domain Driven Design)* approach and implement the *GiftCard* entity as an **Rich Domain Aggregate** which encapsulates/protects its internal data/state, and contains itself business logics ensuring data integrity.
 
 ### Step 1 - Create aggregate events
