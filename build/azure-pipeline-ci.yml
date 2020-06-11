@@ -1,3 +1,9 @@
+parameters:
+- name: stable
+  displayName: Is stable
+  type: boolean
+  default: false
+
 name: 1.1.1$(Rev:.r)
 
 trigger:
@@ -12,7 +18,10 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  nugetVersion: '$(Build.BuildNumber)'
+  ${{ if parameters.stable }}:
+    nugetVersion: '$(Build.BuildNumber)'
+  ${{ if eq(parameters.stable, false) }}:
+    nugetVersion: '$(Build.BuildNumber)-rc'
 
 steps:
 - task: DotNetCoreCLI@2
