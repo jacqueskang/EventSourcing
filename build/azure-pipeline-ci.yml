@@ -4,7 +4,7 @@ parameters:
   type: boolean
   default: false
 
-name: 1.1.1$(Rev:.r)-$(parameters.stable)
+name: 1.1.1$(Rev:.r)$(suffix)
 
 trigger:
   branches:
@@ -18,10 +18,9 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  ${{ if parameters.stable }}:
-    nugetVersion: '$(Build.BuildNumber)'
   ${{ if eq(parameters.stable, false) }}:
-    nugetVersion: '$(Build.BuildNumber)-rc'
+    suffix: '-beta'
+  nugetVersion: '$(Build.BuildNumber)'
 
 steps:
 - task: DotNetCoreCLI@2
