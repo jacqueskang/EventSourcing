@@ -18,6 +18,8 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
+  ${{ if parameters.stable) }}:
+    suffix: ''
   ${{ if eq(parameters.stable, false) }}:
     suffix: '-beta'
   nugetVersion: '$(Build.BuildNumber)'
