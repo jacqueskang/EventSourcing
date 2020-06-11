@@ -4,7 +4,7 @@ parameters:
   type: boolean
   default: false
 
-name: 1.1.1$(Rev:.r)
+name: 1.1.1$(Rev:.r)-$(parameters.stable)
 
 trigger:
   branches:
