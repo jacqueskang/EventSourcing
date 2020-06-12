@@ -1,0 +1,10 @@
+<Project>
+ <PropertyGroup>
+   <Version>1.0.0</Version>
+   <Authors>Jacques Kang</Authors>
+   <Product>JKang.EventSourcing</Product>
+   <PackageTags>event sourcing</PackageTags>
+   <PackageProjectUrl>https://github.com/jacqueskang/EventSourcing</PackageProjectUrl>
+   <Description>.NET Core event sourcing framework</Description>
+ </PropertyGroup>
+</Project>

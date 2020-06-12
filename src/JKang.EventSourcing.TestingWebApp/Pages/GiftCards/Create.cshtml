@@ -1,0 +1,17 @@
+﻿@page
+@model JKang.EventSourcing.TestingWebApp.Pages.GiftCards.CreateModel
+@{
+    ViewData["Title"] = "Create gift card";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form method="post">
+    <div class="form-group">
+        <label asp-for="InitialCredit"></label>
+        <input asp-for="InitialCredit" class="form-control" />
+        <span class="text-danger" asp-validation-for="InitialCredit"></span>
+    </div>
+
+    <input type="submit" class="btn btn-primary" value="Create" />
+</form>

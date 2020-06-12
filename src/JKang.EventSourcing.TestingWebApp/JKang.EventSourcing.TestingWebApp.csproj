@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>cb5278a6-703d-43fa-abf8-17397caac03b</UserSecretsId>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.6.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JKang.EventSourcing.Persistence.CosmosDB\JKang.EventSourcing.Persistence.CosmosDB.csproj" />
+    <ProjectReference Include="..\JKang.EventSourcing.Persistence.DynamoDB\JKang.EventSourcing.Persistence.DynamoDB.csproj" />
+    <ProjectReference Include="..\JKang.EventSourcing.Persistence.EfCore\JKang.EventSourcing.Persistence.EfCore.csproj" />
+    <ProjectReference Include="..\JKang.EventSourcing.Persistence.FileSystem\JKang.EventSourcing.Persistence.FileSystem.csproj" />
+    <ProjectReference Include="..\JKang.EventSourcing.TestingFixtures\JKang.EventSourcing.TestingFixtures.csproj" />
+    <ProjectReference Include="..\JKang.EventSourcing\JKang.EventSourcing.csproj" />
+  </ItemGroup>
+
+</Project>

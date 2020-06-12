@@ -1,0 +1,105 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29102.190
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Abstractions", "JKang.EventSourcing.Abstractions\JKang.EventSourcing.Abstractions.csproj", "{A43C514F-B820-453C-B18A-BF5C2162CBD5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Persistence.FileSystem", "JKang.EventSourcing.Persistence.FileSystem\JKang.EventSourcing.Persistence.FileSystem.csproj", "{6D98F447-6ACD-40D6-AB47-A7C113ECBC1A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing", "JKang.EventSourcing\JKang.EventSourcing.csproj", "{F4C9B447-EF12-47AA-82FE-8EB0FA48DDDF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3CE8F82A-51A6-46BC-9A78-590642AA5242}"
+	ProjectSection(SolutionItems) = preProject
+		..\.travis.yml = ..\.travis.yml
+		Directory.Build.props = Directory.Build.props
+		..\README.md = ..\README.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Persistence.EfCore", "JKang.EventSourcing.Persistence.EfCore\JKang.EventSourcing.Persistence.EfCore.csproj", "{5473865D-3737-4719-893B-9DD6A10E5A35}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Persistence.DynamoDB", "JKang.EventSourcing.Persistence.DynamoDB\JKang.EventSourcing.Persistence.DynamoDB.csproj", "{83906658-11ED-4097-AA85-3E3B7503E3BD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Persistence.DynamoDB.Tests", "JKang.EventSourcing.Persistence.DynamoDB.Tests\JKang.EventSourcing.Persistence.DynamoDB.Tests.csproj", "{5BCAB08D-A4E5-4698-96A7-321A6625B7FC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.TestingFixtures", "JKang.EventSourcing.TestingFixtures\JKang.EventSourcing.TestingFixtures.csproj", "{DE78F4D8-22C3-46FC-B325-2CB12A88F976}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.TestingWebApp", "JKang.EventSourcing.TestingWebApp\JKang.EventSourcing.TestingWebApp.csproj", "{08A1EB3B-A44D-4E13-A842-9528CBAE79ED}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Persistence.CosmosDB", "JKang.EventSourcing.Persistence.CosmosDB\JKang.EventSourcing.Persistence.CosmosDB.csproj", "{97ED19E1-95FB-4B52-9FAC-70B899EEC624}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Options", "JKang.EventSourcing.Options\JKang.EventSourcing.Options.csproj", "{5230D7B5-EE3C-43B4-BCBB-2FA6487BDA7D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JKang.EventSourcing.Abstractions.Tests", "JKang.EventSourcing.Abstractions.Tests\JKang.EventSourcing.Abstractions.Tests.csproj", "{1D8A6FFC-1D14-4EA0-A42A-959E38D46EC1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{6374E9CF-DFD8-4A86-BBEC-6F2D2E09B8D6}"
+	ProjectSection(SolutionItems) = preProject
+		..\doc\CosmosDBSetup.md = ..\doc\CosmosDBSetup.md
+		..\doc\DynamoDBSetup.md = ..\doc\DynamoDBSetup.md
+		..\doc\EfCoreSetup.md = ..\doc\EfCoreSetup.md
+		..\doc\FileSystemSetup.md = ..\doc\FileSystemSetup.md
+		..\doc\Snapshots.md = ..\doc\Snapshots.md
+		..\doc\StoreInitialization.md = ..\doc\StoreInitialization.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A43C514F-B820-453C-B18A-BF5C2162CBD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A43C514F-B820-453C-B18A-BF5C2162CBD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A43C514F-B820-453C-B18A-BF5C2162CBD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A43C514F-B820-453C-B18A-BF5C2162CBD5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D98F447-6ACD-40D6-AB47-A7C113ECBC1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D98F447-6ACD-40D6-AB47-A7C113ECBC1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D98F447-6ACD-40D6-AB47-A7C113ECBC1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D98F447-6ACD-40D6-AB47-A7C113ECBC1A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4C9B447-EF12-47AA-82FE-8EB0FA48DDDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4C9B447-EF12-47AA-82FE-8EB0FA48DDDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4C9B447-EF12-47AA-82FE-8EB0FA48DDDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4C9B447-EF12-47AA-82FE-8EB0FA48DDDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5473865D-3737-4719-893B-9DD6A10E5A35}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5473865D-3737-4719-893B-9DD6A10E5A35}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5473865D-3737-4719-893B-9DD6A10E5A35}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5473865D-3737-4719-893B-9DD6A10E5A35}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83906658-11ED-4097-AA85-3E3B7503E3BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83906658-11ED-4097-AA85-3E3B7503E3BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83906658-11ED-4097-AA85-3E3B7503E3BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83906658-11ED-4097-AA85-3E3B7503E3BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BCAB08D-A4E5-4698-96A7-321A6625B7FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BCAB08D-A4E5-4698-96A7-321A6625B7FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BCAB08D-A4E5-4698-96A7-321A6625B7FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BCAB08D-A4E5-4698-96A7-321A6625B7FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE78F4D8-22C3-46FC-B325-2CB12A88F976}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE78F4D8-22C3-46FC-B325-2CB12A88F976}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE78F4D8-22C3-46FC-B325-2CB12A88F976}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE78F4D8-22C3-46FC-B325-2CB12A88F976}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08A1EB3B-A44D-4E13-A842-9528CBAE79ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08A1EB3B-A44D-4E13-A842-9528CBAE79ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08A1EB3B-A44D-4E13-A842-9528CBAE79ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08A1EB3B-A44D-4E13-A842-9528CBAE79ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97ED19E1-95FB-4B52-9FAC-70B899EEC624}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97ED19E1-95FB-4B52-9FAC-70B899EEC624}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97ED19E1-95FB-4B52-9FAC-70B899EEC624}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97ED19E1-95FB-4B52-9FAC-70B899EEC624}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5230D7B5-EE3C-43B4-BCBB-2FA6487BDA7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5230D7B5-EE3C-43B4-BCBB-2FA6487BDA7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5230D7B5-EE3C-43B4-BCBB-2FA6487BDA7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5230D7B5-EE3C-43B4-BCBB-2FA6487BDA7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D8A6FFC-1D14-4EA0-A42A-959E38D46EC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D8A6FFC-1D14-4EA0-A42A-959E38D46EC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D8A6FFC-1D14-4EA0-A42A-959E38D46EC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D8A6FFC-1D14-4EA0-A42A-959E38D46EC1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6374E9CF-DFD8-4A86-BBEC-6F2D2E09B8D6} = {3CE8F82A-51A6-46BC-9A78-590642AA5242}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E4CE6D6B-D967-402C-BDBE-0949B55C1F1B}
+	EndGlobalSection
+EndGlobal

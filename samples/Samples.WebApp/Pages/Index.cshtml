@@ -1,0 +1,19 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<p></p>
+
+<a class="btn btn-primary" asp-page="/GiftCards/Create">New gift card</a>
+
+<h3>Existing gift cards</h3>
+<ul>
+    @foreach (var id in Model.GiftCardIds)
+    {
+        <li>
+            <a asp-page="/GiftCards/Details" asp-route-id="@id">@id</a>
+        </li>
+    }
+</ul>
