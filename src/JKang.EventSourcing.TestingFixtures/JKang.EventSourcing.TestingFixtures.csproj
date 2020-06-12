@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\JKang.EventSourcing.Abstractions\JKang.EventSourcing.Abstractions.csproj" />
+    <ProjectReference Include="..\JKang.EventSourcing.Persistence.Caching\JKang.EventSourcing.Persistence.Caching.csproj" />
   </ItemGroup>
 
 </Project>

@@ -22,7 +22,7 @@ namespace JKang.EventSourcing.Persistence
             _snapshotStore = snapshotStore ?? throw new ArgumentNullException(nameof(snapshotStore));
         }
 
-        protected async Task SaveAggregateAsync(TAggregate aggregate,
+        protected virtual async Task<IAggregateChangeset<TKey>> SaveAggregateAsync(TAggregate aggregate,
             CancellationToken cancellationToken = default)
         {
             if (aggregate is null)
@@ -35,43 +35,40 @@ namespace JKang.EventSourcing.Persistence
             foreach (IAggregateEvent<TKey> @event in changeset.Events)
             {
                 await _eventStore.AddEventAsync(@event, cancellationToken).ConfigureAwait(false);
-                await OnEventSavedAsync(@event, cancellationToken).ConfigureAwait(false);
             }
 
             if (changeset.Snapshot != null)
             {
                 await _snapshotStore.AddSnapshotAsync(changeset.Snapshot, cancellationToken).ConfigureAwait(false);
-                await OnSnapshotSavedAsync(changeset.Snapshot, cancellationToken).ConfigureAwait(false);
             }
 
             changeset.Commit();
+            return changeset;
         }
 
-        protected virtual Task OnEventSavedAsync(IAggregateEvent<TKey> e,
-            CancellationToken cancellationToken = default) => Task.CompletedTask;
-
-        protected virtual Task OnSnapshotSavedAsync(IAggregateSnapshot<TKey> snapshot,
-            CancellationToken cancellationToken = default) => Task.CompletedTask;
-
-        protected Task<TKey[]> GetAggregateIdsAsync()
+        protected virtual Task<TKey[]> GetAggregateIdsAsync()
         {
             return _eventStore.GetAggregateIdsAsync();
         }
 
-        protected async Task<TAggregate> FindAggregateAsync(TKey id,
+        protected virtual async Task<TAggregate> FindAggregateAsync(TKey id,
             bool ignoreSnapshot = false,
+            int version = -1,
             CancellationToken cancellationToken = default)
         {
+            int maxVersion = version <= 0 ? int.MaxValue : version;
+
             IAggregateSnapshot<TKey> snapshot = null;
             if (!ignoreSnapshot)
             {
                 snapshot = await _snapshotStore
-                    .FindLastSnapshotAsync(id, cancellationToken)
+                    .FindLastSnapshotAsync(id, maxVersion,  cancellationToken)
                     .ConfigureAwait(false);
             }
 
+            int minVersion = snapshot == null ? 1 : snapshot.AggregateVersion + 1;
             IAggregateEvent<TKey>[] events = await _eventStore
-                .GetEventsAsync(id, snapshot == null ? 0 : snapshot.AggregateVersion, cancellationToken)
+                .GetEventsAsync(id, minVersion, maxVersion, cancellationToken)
                 .ConfigureAwait(false);
 
             if (snapshot == null)

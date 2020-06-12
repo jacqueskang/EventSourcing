@@ -73,8 +73,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem
         }
 
         public async Task<IAggregateEvent<TKey>[]> GetEventsAsync(TKey aggregateId,
-            int skip = 0,
-            CancellationToken cancellationToken = default)
+            int minVersion, int maxVersion, CancellationToken cancellationToken = default)
         {
             string filePath = GetFilePath(aggregateId);
             if (!File.Exists(filePath))
@@ -89,13 +88,18 @@ namespace JKang.EventSourcing.Persistence.FileSystem
                 string serialized = await sr.ReadLineAsync().ConfigureAwait(false);
                 while (!string.IsNullOrEmpty(serialized))
                 {
-                    if (skip > 0)
+                    if (minVersion > 1)
                     {
-                        skip--;
+                        minVersion--;
                     }
                     else
                     {
-                        events.Add(JsonConvert.DeserializeObject<IAggregateEvent<TKey>>(serialized, Defaults.JsonSerializerSettings));
+                        IAggregateEvent<TKey> @event = JsonConvert.DeserializeObject<IAggregateEvent<TKey>>(serialized, Defaults.JsonSerializerSettings);
+                        events.Add(@event);
+                        if (@event.AggregateVersion >= maxVersion)
+                        {
+                            break;
+                        }
                     }
                     serialized = await sr.ReadLineAsync().ConfigureAwait(false);
                 }

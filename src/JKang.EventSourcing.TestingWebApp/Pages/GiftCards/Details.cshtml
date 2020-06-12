@@ -6,6 +6,13 @@
 
 <h2>@ViewData["Title"]</h2>
 
+@if (Model.Error != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @Model.Error
+    </div>
+}
+
 <h3>Balance: <strong>@Model.GiftCard.Balance.ToString("0.00") €</strong></h3>
 <small>Version: @Model.GiftCard.Version</small>
 
@@ -32,7 +39,16 @@
                    asp-page-handler="TakeSnapshot"
                    asp-route-id="@Model.GiftCard.Id" />
         </form>
+
+        <div class="mt-2">
+            <a class="btn btn-info" target="_blank"
+               asp-page="PreviousVersion"
+               asp-route-id="@Model.GiftCard.Id"
+               asp-route-maxVersion="@Model.GiftCard.Version">Show previous version</a>
+        </div>
+
     </div>
+
 
     <div class="col-md-6">
         <h3>History</h3>

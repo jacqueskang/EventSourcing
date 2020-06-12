@@ -41,7 +41,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem.Snapshotting
             return Task.CompletedTask;
         }
 
-        public Task<IAggregateSnapshot<TKey>> FindLastSnapshotAsync(TKey aggregateId,
+        public Task<IAggregateSnapshot<TKey>> FindLastSnapshotAsync(TKey aggregateId, int maxVersion,
             CancellationToken cancellationToken = default)
         {
             if (!Directory.Exists(_options.Folder))
@@ -54,6 +54,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem.Snapshotting
                 .Select(x => Path.GetFileNameWithoutExtension(x))
                 .Select(x => x.Split('.').LastOrDefault())
                 .Select(x => int.TryParse(x, NumberStyles.Integer, CultureInfo.InvariantCulture, out int version) ? version : -1)
+                .Where(x => x <= maxVersion)
                 .OrderByDescending(x => x)
                 .FirstOrDefault();
 
@@ -70,6 +71,6 @@ namespace JKang.EventSourcing.Persistence.FileSystem.Snapshotting
         }
 
         private string GetFilePath(TKey aggregateId, int version)
-            => Path.Combine(_options.Folder, $"{aggregateId}.{version.ToString(CultureInfo.InvariantCulture)}.snapshot");       
+            => Path.Combine(_options.Folder, $"{aggregateId}.{version.ToString(CultureInfo.InvariantCulture)}.snapshot");
     }
 }

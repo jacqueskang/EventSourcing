@@ -1,16 +1,21 @@
 ﻿using JKang.EventSourcing.Persistence;
 using JKang.EventSourcing.Snapshotting.Persistence;
+using Microsoft.Extensions.Caching.Distributed;
 using System;
 using System.Threading.Tasks;
 
 namespace JKang.EventSourcing.TestingFixtures
 {
-    public class GiftCardRepository : AggregateRepository<GiftCard, Guid>, IGiftCardRepository
+    public class CachedGiftCardRepository : CachedAggregateRepository<GiftCard, Guid>, IGiftCardRepository
     {
-        public GiftCardRepository(
+        public CachedGiftCardRepository(
             IEventStore<GiftCard, Guid> eventStore,
-            ISnapshotStore<GiftCard, Guid> snapshotStore)
-            : base(eventStore, snapshotStore)
+            ISnapshotStore<GiftCard, Guid> snapshotStore,
+            IDistributedCache cache)
+            : base(eventStore, snapshotStore, cache, new DistributedCacheEntryOptions
+            {
+                SlidingExpiration = TimeSpan.FromSeconds(10)
+            })
         { }
 
         public Task SaveGiftCardAsync(GiftCard giftCard) => SaveAggregateAsync(giftCard);
