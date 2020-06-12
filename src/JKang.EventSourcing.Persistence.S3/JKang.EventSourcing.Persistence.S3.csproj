@@ -2,12 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AWSSDK.S3" Version="3.3.110.42" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\JKang.EventSourcing.Abstractions\JKang.EventSourcing.Abstractions.csproj" />
-    <ProjectReference Include="..\JKang.EventSourcing.Persistence.Caching\JKang.EventSourcing.Persistence.Caching.csproj" />
+    <ProjectReference Include="..\JKang.EventSourcing.Options\JKang.EventSourcing.Options.csproj" />
   </ItemGroup>
 
 </Project>

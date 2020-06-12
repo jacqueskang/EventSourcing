@@ -1,5 +1,4 @@
-[![Build Status](https://travis-ci.com/jacqueskang/EventSourcing.svg?branch=develop)](https://travis-ci.com/jacqueskang/EventSourcing)
-
+[![Build Status](https://dev.azure.com/jacques-kang/EventSourcing/_apis/build/status/jacqueskang-eventsourcing-ci?branchName=develop)](https://dev.azure.com/jacques-kang/EventSourcing/_build/latest?definitionId=11&branchName=develop)
 # EventSourcing
 
 A .NET Core event sourcing framework.
@@ -18,6 +17,7 @@ Support various of event store:
  - JKang.EventSourcing.Persistence.EfCore [![NuGet version](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.EfCore.svg)](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.EfCore)
  - JKang.EventSourcing.Persistence.DynamoDB [![NuGet version](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.DynamoDB.svg)](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.DynamoDB)
  - JKang.EventSourcing.Persistence.CosmosDB [![NuGet version](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.CosmosDB.svg)](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.CosmosDB)
+ - JKang.EventSourcing.Persistence.S3 [![NuGet version](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.S3.svg)](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.S3)
  - JKang.EventSourcing.Persistence.Caching [![NuGet version](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.Caching.svg)](https://badge.fury.io/nu/JKang.EventSourcing.Persistence.Caching)
 
 ## Quick Start:
@@ -25,10 +25,6 @@ Support various of event store:
 Let's implement a simple gift card management system with the following use cases:
  * Create gift cards with initial credit
  * Debit the gift card specifying amount while overpaying is not allowed
-
->
-> A live-demostration can be find [__here__](https://jkang-event-sourcing.azurewebsites.net/)
->
 
 I'm adopting *DDD (Domain Driven Design)* approach and implement the *GiftCard* entity as an **Rich Domain Aggregate** which encapsulates/protects its internal data/state, and contains itself business logics ensuring data integrity.
 

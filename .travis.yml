@@ -1,9 +1,0 @@
-language: csharp
-mono: none
-dotnet: 3.1
-sudo: required
-script:
- - cd src
- - dotnet restore
- - dotnet build --configuration Release
- - dotnet test JKang.EventSourcing.Persistence.DynamoDB.Tests

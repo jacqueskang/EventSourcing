@@ -1,4 +1,5 @@
 using Amazon.DynamoDBv2;
+using Amazon.S3;
 using JKang.EventSourcing.Persistence;
 using JKang.EventSourcing.Persistence.CosmosDB;
 using JKang.EventSourcing.Snapshotting.Persistence;
@@ -33,7 +34,7 @@ namespace JKang.EventSourcing.TestingWebApp
                 .AddScoped<IGiftCardRepository, GiftCardRepository>();
 
             // change the following value to switch persistence mode
-            PersistenceMode persistenceMode = PersistenceMode.EfCore;
+            PersistenceMode persistenceMode = PersistenceMode.S3;
 
             switch (persistenceMode)
             {
@@ -48,6 +49,9 @@ namespace JKang.EventSourcing.TestingWebApp
                     break;
                 case PersistenceMode.EfCore:
                     ConfigureServicesForEfCore(services);
+                    break;
+                case PersistenceMode.S3:
+                    ConfigureServicesForS3(services);
                     break;
                 default:
                     break;
@@ -116,6 +120,28 @@ namespace JKang.EventSourcing.TestingWebApp
                         .UseEfCoreEventStore<SampleDbContext, GiftCard, Guid>()
                         .UseEfCoreSnapshotStore<SampleDbContext, GiftCard, Guid>()
                         ;
+                });
+        }
+
+        public void ConfigureServicesForS3(IServiceCollection services)
+        {
+            services
+                .AddDefaultAWSOptions(Configuration.GetAWSOptions())
+                .AddAWSService<IAmazonS3>();
+
+            services
+                .AddDbContext<SampleDbContext>(x => x.UseInMemoryDatabase("eventstore"));
+
+            services
+                .AddEventSourcing(builder =>
+                {
+                    builder
+                        .UseEfCoreEventStore<SampleDbContext, GiftCard, Guid>()
+                        .UseS3SnapshotStore<GiftCard, Guid>(x =>
+                        {
+                            x.BucketName = "jkang-eventsourcing-dev";
+                            x.Prefix = "giftcards";
+                        });
                 });
         }
 

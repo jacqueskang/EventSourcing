@@ -1,4 +1,4 @@
-# Setup CosmosDB event store
+# Setup file system event store
 
 1. Install NuGet package [JKang.EventSourcing.Persistence.FileSystem](https://www.nuget.org/packages/JKang.EventSourcing.Persistence.FileSystem/)
 
