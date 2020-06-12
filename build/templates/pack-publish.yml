@@ -1,0 +1,26 @@
+parameters:
+- name: buildConfiguration
+  type: string
+
+- name: versionEnvVar
+  type: string
+
+  
+steps:
+- task: DotNetCoreCLI@2
+  displayName: Pack
+  inputs:
+    command: 'pack'
+    packagesToPack: 'src/**/*.csproj'
+    configuration: ${{parameters.buildConfiguration}}
+    nobuild: true
+    versioningScheme: 'byEnvVar'
+    versionEnvVar: ${{parameters.versionEnvVar}}
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
+  displayName: Publish artifacts
+
