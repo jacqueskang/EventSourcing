@@ -1,10 +1,7 @@
-parameters:
-- name: stable
-  displayName: Is stable
-  type: boolean
-  default: false
+variables:
+- template: version.yml
 
-name: 1.1.1$(Rev:.r)$(suffix)
+name: $(version)-ci-$(Date:yyyyMMdd)$(Rev:.r)
 
 trigger:
   branches:
@@ -16,40 +13,12 @@ pr: none
 pool:
   vmImage: 'ubuntu-16.04'
 
-variables:
-  buildConfiguration: 'Release'
-  ${{ if parameters.stable }}:
-    suffix: ''
-  ${{ if eq(parameters.stable, false) }}:
-    suffix: '-beta'
-  nugetVersion: '$(Build.BuildNumber)'
-
 steps:
-- task: DotNetCoreCLI@2
-  displayName: Build
-  inputs:
-    command: 'build'
-    projects: 'src/*.sln'
-    arguments: '--configuration $(buildConfiguration)'
+- template: templates/build-test.yml
+  parameters:
+    buildConfiguration: Release
 
-- task: DotNetCoreCLI@2
-  displayName: Test
-  inputs:
-    command: 'test'
-    projects: 'src/*Tests/*.csproj'
-    arguments: '--configuration $(buildConfiguration)'
-
-- task: DotNetCoreCLI@2
-  displayName: Pack
-  inputs:
-    command: 'pack'
-    packagesToPack: 'src/**/*.csproj'
-    nobuild: true
-    versioningScheme: 'byEnvVar'
-    versionEnvVar: 'nugetVersion'
-
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
+- template: templates/pack-publish.yml
+  parameters:
+    buildConfiguration: Release
+    versionEnvVar: Build.BuildNumber
