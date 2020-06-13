@@ -49,6 +49,6 @@ steps:
 - script: |
     git config --global user.name "Azure DevOps"
     git config --global user.email "fake@dev.azure.com"
-    git tag -a "v$(nugetVersion)" -m "v$(nugetVersion)"
-    git push origin "v$(nugetVersion)"
+    git tag -a "v$(version)" -m "v$(version)"
+    git push origin "v$(version)"
   displayName: Tag source
