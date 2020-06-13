@@ -30,12 +30,9 @@ pool:
 
 steps:
 - bash: |
-    echo "##vso[task.setvariable variable=nugetVersion]$(version)"
-  condition: ${{ parameters.stable }}
-
-- bash: |
     echo "##vso[task.setvariable variable=nugetVersion]$(Build.BuildNumber)"
-  condition: not(${{ parameters.stable }})
+  condition: ${{ not(eq(parameters.quality, 'stable')) }}
+  displayName: 'Override package version'
 
 - checkout: self
   persistCredentials: true
