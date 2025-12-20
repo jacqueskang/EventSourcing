@@ -11,6 +11,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Require version.yml change
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          set -euo pipefail
+          echo "Checking that version.yml was modified in this PR..."
+          # Fetch base branch to compare
+          git fetch origin ${{ github.event.pull_request.base.ref }} --depth=1
+          changed_files=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD || true)
+          echo "$changed_files"
+          if ! echo "$changed_files" | grep -xq 'version.yml'; then
+            echo "::error::Pull request must include an updated version.yml"
+            exit 1
+          fi
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
