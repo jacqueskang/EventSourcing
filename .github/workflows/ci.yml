@@ -52,7 +52,7 @@ jobs:
         run: dotnet build src/EventSourcing.sln --configuration Release --no-restore
 
       - name: Run tests
-        run: dotnet test src/EventSourcing.sln --configuration Release --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx" || true
+        run: dotnet test src/EventSourcing.sln --configuration Release --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" --results-directory ./TestResults || true
 
       - name: Upload test results
         if: always()
