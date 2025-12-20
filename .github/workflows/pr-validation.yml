@@ -46,7 +46,9 @@ jobs:
         run: dotnet build src/EventSourcing.sln --configuration Release --no-restore
 
       - name: Test
-        run: dotnet test src/EventSourcing.sln --no-build --verbosity normal
+        run: |
+          dotnet test src/JKang.EventSourcing.Abstractions.Tests/ --no-build --verbosity normal
+          dotnet test src/JKang.EventSourcing.Persistence.DynamoDB.Tests/ --no-build --verbosity normal
 
       - name: Upload test results (if any)
         if: always()
