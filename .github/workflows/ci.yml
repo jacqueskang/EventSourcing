@@ -20,22 +20,22 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
-          key: nuget-packages-${{ runner.os }}-$(sha1sum version.yml | cut -d' ' -f1)
+          key: nuget-packages-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
           restore-keys: |
             nuget-packages-${{ runner.os }}-
 
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '10.0.x'
 
       - name: Determine package version
         id: pkgver
         run: |
-          VERSION_LINE=$(grep '^  version:' version.yml || true)
-          VERSION=$(echo $VERSION_LINE | awk '{print $2}')
+          # Extract version from Directory.Build.props
+          VERSION=$(grep '<Version>' src/Directory.Build.props | sed 's/.*<Version>\(.*\)<\/Version>.*/\1/' || echo "0.0.0")
           if [ -z "$VERSION" ]; then
-            echo "version not found in version.yml, defaulting to 0.0.0"
+            echo "version not found in Directory.Build.props, defaulting to 0.0.0"
             VERSION=0.0.0
           fi
           # Append run number so CI packages are unique
@@ -52,7 +52,24 @@ jobs:
         run: dotnet build src/EventSourcing.sln --configuration Release --no-restore
 
       - name: Run tests
-        run: dotnet test src/EventSourcing.sln --configuration Release --no-build --verbosity normal || true
+        run: dotnet test src/EventSourcing.sln --configuration Release --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" --results-directory ./TestResults || true
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-test-results
+          path: '**/TestResults/*.trx'
+          if-no-files-found: warn
+
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: CI Test Results
+          path: '**/TestResults/*.trx'
+          reporter: dotnet-trx
+          fail-on-error: false
 
       - name: Pack NuGet packages
         run: |

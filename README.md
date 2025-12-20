@@ -204,5 +204,13 @@ It leverages `Microsoft.Extensions.Caching.Distributed.IDistributedCache` to cac
 
 Consider configuring a short sliding expiration (e.g., 5 sec) to reduce the chance of having cache out of date.
 
+## Contributing
+
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on:
+- Setting up your development environment
+- Code guidelines and conventions
+- How to submit pull requests
+- Release process
+
 ---
 __Please feel free to download, fork and/or provide any feedback!__
