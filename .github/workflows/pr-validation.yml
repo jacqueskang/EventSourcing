@@ -21,6 +21,16 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
 
+      - name: Diagnostic — environment & dotnet info
+        run: |
+          echo "Runner OS: $RUNNER_OS"
+          dotnet --info
+          dotnet --list-sdks
+          dotnet --list-runtimes
+          dotnet nuget locals all --list
+          ls -la
+          ls -la src || true
+
       - name: Cache NuGet packages
         uses: actions/cache@v4
         with:
@@ -29,8 +39,8 @@ jobs:
           restore-keys: |
             nuget-${{ runner.os }}-
 
-      - name: Restore
-        run: dotnet restore src/EventSourcing.sln
+      - name: Restore (diagnostic)
+        run: dotnet restore src/EventSourcing.sln -v diag
 
       - name: Build
         run: dotnet build src/EventSourcing.sln --configuration Release --no-restore
