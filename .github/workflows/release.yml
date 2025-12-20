@@ -1,0 +1,118 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to release (e.g., v1.2.0)'
+        required: true
+        type: string
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Determine version from tag
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG_NAME="${{ github.event.inputs.tag }}"
+          else
+            TAG_NAME="${GITHUB_REF#refs/tags/}"
+          fi
+          # Remove 'v' prefix if present
+          VERSION="${TAG_NAME#v}"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+          echo "Releasing version: $VERSION from tag: $TAG_NAME"
+
+      - name: Verify version matches Directory.Build.props
+        run: |
+          BUILD_VERSION=$(grep '<Version>' src/Directory.Build.props | sed 's/.*<Version>\(.*\)<\/Version>.*/\1/')
+          echo "Directory.Build.props version: $BUILD_VERSION"
+          echo "Tag version: ${{ env.VERSION }}"
+          if [ "$BUILD_VERSION" != "${{ env.VERSION }}" ]; then
+            echo "::error::Version mismatch! Directory.Build.props has $BUILD_VERSION but tag is ${{ env.VERSION }}"
+            exit 1
+          fi
+          echo "Version verified: ${{ env.VERSION }}"
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-packages-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            nuget-packages-${{ runner.os }}-
+
+      - name: Restore
+        run: |
+          set -euo pipefail
+          dotnet restore src/EventSourcing.sln
+
+      - name: Build
+        run: dotnet build src/EventSourcing.sln --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test src/EventSourcing.sln --configuration Release --no-build --verbosity normal
+
+      - name: Pack NuGet packages
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          echo "Packing projects with version ${{ env.VERSION }}"
+          find src -name "*.csproj" -print0 | while IFS= read -r -d '' proj; do
+            # Skip test projects
+            if [[ "$proj" == *".Tests.csproj" ]]; then
+              echo "Skipping test project: $proj"
+              continue
+            fi
+            echo "Packing $proj"
+            if dotnet pack "$proj" -c Release -o artifacts /p:PackageVersion=${{ env.VERSION }} --no-build; then
+              echo "Successfully packed $proj"
+            else
+              echo "::error::Pack failed for $proj"
+              exit 1
+            fi
+          done
+
+      - name: List artifacts
+        run: ls -lah artifacts/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.TAG_NAME }}
+          name: Release ${{ env.VERSION }}
+          draft: false
+          prerelease: false
+          files: artifacts/*.nupkg
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to NuGet.org
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          set -euo pipefail
+          echo "Publishing packages to NuGet.org"
+          for pkg in artifacts/*.nupkg; do
+            echo "Pushing $pkg"
+            dotnet nuget push "$pkg" -s https://api.nuget.org/v3/index.json -k "$NUGET_API_KEY" --skip-duplicate
+          done
+          echo "✅ Release ${{ env.VERSION }} published successfully!"

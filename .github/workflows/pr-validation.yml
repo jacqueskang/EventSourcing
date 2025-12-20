@@ -11,33 +11,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Require version.yml change if src changed
-        if: ${{ github.event_name == 'pull_request' }}
-        run: |
-          set -euo pipefail
-          echo "Checking that version.yml was modified in this PR if any src changes occurred..."
-          # Fetch base branch to compare
-          git fetch origin ${{ github.event.pull_request.base.ref }} --depth=1
-          changed_files=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD || true)
-          echo "$changed_files"
-          # If any files under src/ changed, require version.yml to be updated
-          if echo "$changed_files" | grep -E '^src/' -q; then
-            echo "Detected changes under src/; ensuring version.yml was modified..."
-            if ! echo "$changed_files" | grep -xq 'version.yml'; then
-              echo "::error::Pull request modifies src/ but does not include an updated version.yml"
-              exit 1
-            else
-              echo "version.yml updated."
-            fi
-          else
-            echo "No changes in src/ detected; skipping version.yml requirement."
-          fi
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
 
@@ -53,22 +29,15 @@ jobs:
         run: dotnet restore src/EventSourcing.sln
 
       - name: Build
-        run: dotnet build src/EventSourcing.sln --no-restore
+        run: dotnet build src/EventSourcing.sln --configuration Release --no-restore
 
-      - name: Test - all
-        run: |
-          set -euo pipefail
-          mkdir -p TestResults
-          for proj in src/*Tests/*.csproj; do
-            echo "Running tests for $proj"
-            name=$(basename "$proj" .csproj)
-            dotnet test "$proj" --no-build --logger "trx;LogFileName=${name}.trx" --results-directory TestResults
-          done
+      - name: Test
+        run: dotnet test src/EventSourcing.sln --configuration Release --no-build --verbosity normal
 
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-results
-          path: TestResults
+          path: '**/TestResults/*.trx'
 
