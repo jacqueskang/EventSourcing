@@ -61,8 +61,9 @@ jobs:
 
       - name: Test
         run: |
-          dotnet test src/JKang.EventSourcing.Abstractions.Tests/ --no-build --verbosity normal
-          dotnet test src/JKang.EventSourcing.Persistence.DynamoDB.Tests/ --no-build --verbosity normal
+          # Run tests by explicit csproj to avoid passing raw dll paths to VSTest
+          dotnet test src/JKang.EventSourcing.Abstractions.Tests/JKang.EventSourcing.Abstractions.Tests.csproj --no-build --verbosity normal --logger "trx" --results-directory TestResults
+          dotnet test src/JKang.EventSourcing.Persistence.DynamoDB.Tests/JKang.EventSourcing.Persistence.DynamoDB.Tests.csproj --no-build --verbosity normal --logger "trx" --results-directory TestResults
 
       - name: Upload test results (if any)
         if: always()
