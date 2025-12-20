@@ -1,0 +1,50 @@
+name: PR Validation (Minimal)
+
+on:
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
+
+      - name: Restore
+        run: dotnet restore src/EventSourcing.sln
+
+      - name: Build
+        run: dotnet build src/EventSourcing.sln --no-restore
+
+      - name: Test - all
+        run: |
+          set -euo pipefail
+          mkdir -p TestResults
+          for proj in src/*Tests/*.csproj; do
+            echo "Running tests for $proj"
+            name=$(basename "$proj" .csproj)
+            dotnet test "$proj" --no-build --logger "trx;LogFileName=${name}.trx" --results-directory TestResults
+          done
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults
+
