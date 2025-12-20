@@ -78,6 +78,15 @@ jobs:
           path: '**/TestResults/*.trx'
           if-no-files-found: warn
 
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Release Test Results
+          path: '**/TestResults/*.trx'
+          reporter: dotnet-trx
+          fail-on-error: true
+
       - name: Pack NuGet packages
         run: |
           set -euo pipefail
