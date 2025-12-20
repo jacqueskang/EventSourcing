@@ -55,8 +55,8 @@ Thank you for your interest in contributing to this project! This guide will hel
 Always create a new branch for your work:
 
 ```bash
-git checkout develop
-git pull upstream develop
+git checkout main
+git pull upstream main
 git checkout -b feat/your-feature-name
 ```
 
@@ -124,7 +124,7 @@ git commit -m "docs: update DynamoDB setup instructions"
 
 ```bash
 git fetch upstream
-git rebase upstream/develop
+git rebase upstream/main
 ```
 
 ### 6. Push to Your Fork
@@ -187,14 +187,14 @@ public async Task DebitGiftCard_WithSufficientBalance_Succeeds()
 3. **Create a Pull Request**:
    - Go to your fork on GitHub
    - Click "New Pull Request"
-   - Set base branch to `develop`
+   - Set base branch to `main`
    - Fill in the PR template
 
 4. **PR Requirements**:
    - All tests must pass (enforced by CI)
    - Code coverage should not decrease significantly
    - At least one maintainer approval required
-   - No merge conflicts with `develop`
+   - No merge conflicts with `main`
 
 ### PR Title Format
 
@@ -245,10 +245,10 @@ Maintainers handle releases following this process:
    <Version>1.3.0</Version>
    ```
 
-2. **Commit and merge to develop**:
+2. **Commit and merge to main**:
    ```bash
    git commit -m "chore: bump version to 1.3.0"
-   git push origin develop
+   git push origin main
    ```
 
 3. **Create and push tag**:
