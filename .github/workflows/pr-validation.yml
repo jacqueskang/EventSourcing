@@ -42,7 +42,7 @@ jobs:
           dotnet --list-sdks
           dotnet --list-runtimes
           dotnet nuget locals all --list
-          Get-ChildItem -Force |
+          Get-ChildItem -Force
           if (Test-Path src) { Get-ChildItem src -Force } else { Write-Output "No src folder" }
 
       - name: Cache NuGet packages
