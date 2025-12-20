@@ -29,7 +29,7 @@ jobs:
         run: dotnet restore src/EventSourcing.sln
 
       - name: Build
-        run: dotnet build src/EventSourcing.sln --configuration Release --no-restore
+        run: dotnet build src/EventSourcing.sln --no-restore
 
       - name: Test - all
         run: |
