@@ -169,7 +169,7 @@ services
 Notes:
  - You can choose other persistence store provided such as [CosmosDB](doc/CosmosDBSetup.md) or [DynamoDB](doc/DynamoDBSetup) etc.
 
-### Step 5 - implmement use cases
+### Step 5 - implement use cases
 
 ```csharp
 // create a new gift card with initial credit 100
