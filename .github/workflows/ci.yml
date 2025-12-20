@@ -3,7 +3,7 @@ name: CI Build & Pack
 on:
   push:
     branches:
-      - develop
+      - main
   workflow_dispatch: {}
 
 jobs:
