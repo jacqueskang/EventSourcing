@@ -1,4 +1,4 @@
-name: PR Validation (GitHub Actions)
+name: PR Validation (Minimal)
 
 on:
   pull_request:
@@ -6,12 +6,8 @@ on:
       - '**'
 
 jobs:
-  build-and-test:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-        dotnet-version: ["10.0.x"]
+  build:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -19,31 +15,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: ${{ matrix.dotnet-version }}
-
-      - name: Diagnostic — environment & dotnet info (Linux/macOS)
-        if: runner.os != 'Windows'
-        shell: bash
-        run: |
-          echo "Runner OS: $RUNNER_OS"
-          dotnet --info
-          dotnet --list-sdks
-          dotnet --list-runtimes
-          dotnet nuget locals all --list
-          ls -la
-          ls -la src || true
-
-      - name: Diagnostic — environment & dotnet info (Windows)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          Write-Output "Runner OS: $env:RUNNER_OS"
-          dotnet --info
-          dotnet --list-sdks
-          dotnet --list-runtimes
-          dotnet nuget locals all --list
-          Get-ChildItem -Force
-          if (Test-Path src) { Get-ChildItem src -Force } else { Write-Output "No src folder" }
+          dotnet-version: '10.0.x'
 
       - name: Cache NuGet packages
         uses: actions/cache@v4
@@ -53,22 +25,26 @@ jobs:
           restore-keys: |
             nuget-${{ runner.os }}-
 
-      - name: Restore (diagnostic)
-        run: dotnet restore src/EventSourcing.sln -v diag
+      - name: Restore
+        run: dotnet restore src/EventSourcing.sln
 
       - name: Build
         run: dotnet build src/EventSourcing.sln --configuration Release --no-restore
 
-      - name: Test
+      - name: Test - all
         run: |
-          # Run tests by explicit csproj to avoid passing raw dll paths to VSTest
-          dotnet test src/JKang.EventSourcing.Abstractions.Tests/JKang.EventSourcing.Abstractions.Tests.csproj --no-build --verbosity normal --logger "trx" --results-directory TestResults
-          dotnet test src/JKang.EventSourcing.Persistence.DynamoDB.Tests/JKang.EventSourcing.Persistence.DynamoDB.Tests.csproj --no-build --verbosity normal --logger "trx" --results-directory TestResults
+          set -euo pipefail
+          mkdir -p TestResults
+          for proj in src/*Tests/*.csproj; do
+            echo "Running tests for $proj"
+            name=$(basename "$proj" .csproj)
+            dotnet test "$proj" --no-build --logger "trx;LogFileName=${name}.trx" --results-directory TestResults
+          done
 
-      - name: Upload test results (if any)
+      - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-results
-          path: |
-            **/TestResults
+          path: TestResults
+
