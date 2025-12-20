@@ -1,0 +1,85 @@
+name: CI Build & Pack
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch: {}
+
+jobs:
+  build-and-pack:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-packages-${{ runner.os }}-$(sha1sum version.yml | cut -d' ' -f1)
+          restore-keys: |
+            nuget-packages-${{ runner.os }}-
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Determine package version
+        id: pkgver
+        run: |
+          VERSION_LINE=$(grep '^  version:' version.yml || true)
+          VERSION=$(echo $VERSION_LINE | awk '{print $2}')
+          if [ -z "$VERSION" ]; then
+            echo "version not found in version.yml, defaulting to 0.0.0"
+            VERSION=0.0.0
+          fi
+          # Append run number so CI packages are unique
+          PACKAGE_VERSION="${VERSION}-ci.${GITHUB_RUN_NUMBER}"
+          echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
+          echo "Determined PACKAGE_VERSION=$PACKAGE_VERSION"
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test --configuration Release --no-build --verbosity normal || true
+
+      - name: Pack NuGet packages
+        run: |
+          mkdir -p artifacts
+          dotnet pack "src/**/*.csproj" -c Release -o artifacts /p:PackageVersion=${{ env.PACKAGE_VERSION }} --no-build
+
+      - name: List artifacts
+        run: ls -la artifacts || true
+
+      - name: Upload NuGet packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-packages
+          path: artifacts/*.nupkg
+
+      - name: Publish to NuGet.org
+        if: ${{ github.ref == 'refs/heads/develop' }}
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          set -euo pipefail
+          echo "Publishing packages to NuGet.org"
+          shopt -s nullglob || true
+          files=(artifacts/*.nupkg)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No packages found, skipping publish"
+            exit 0
+          fi
+          for pkg in "${files[@]}"; do
+            echo "Pushing $pkg"
+            dotnet nuget push "$pkg" -s https://api.nuget.org/v3/index.json -k "$NUGET_API_KEY" --skip-duplicate
+          done
