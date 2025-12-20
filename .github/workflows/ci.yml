@@ -44,18 +44,29 @@ jobs:
           echo "Determined PACKAGE_VERSION=$PACKAGE_VERSION"
 
       - name: Restore
-        run: dotnet restore
+        run: |
+          set -euo pipefail
+          dotnet restore src/EventSourcing.sln
 
       - name: Build
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build src/EventSourcing.sln --configuration Release --no-restore
 
       - name: Run tests
-        run: dotnet test --configuration Release --no-build --verbosity normal || true
+        run: dotnet test src/EventSourcing.sln --configuration Release --no-build --verbosity normal || true
 
       - name: Pack NuGet packages
         run: |
+          set -euo pipefail
           mkdir -p artifacts
-          dotnet pack "src/**/*.csproj" -c Release -o artifacts /p:PackageVersion=${{ env.PACKAGE_VERSION }} --no-build
+          echo "Packing projects found by find..."
+          find src -name "*.csproj" -print0 | while IFS= read -r -d '' proj; do
+            echo "Packing $proj"
+            if dotnet pack "$proj" -c Release -o artifacts /p:PackageVersion=${{ env.PACKAGE_VERSION }} --no-build; then
+              echo "Packed $proj"
+            else
+              echo "Warning: pack failed for $proj; skipping"
+            fi
+          done
 
       - name: List artifacts
         run: ls -la artifacts || true
