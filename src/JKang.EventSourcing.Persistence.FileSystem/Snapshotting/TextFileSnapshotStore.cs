@@ -52,6 +52,7 @@ namespace JKang.EventSourcing.Persistence.FileSystem.Snapshotting
             int latestVersion = Directory
                 .GetFiles(_options.Folder, "*.snapshot")
                 .Select(x => Path.GetFileNameWithoutExtension(x))
+                .Where(x => x.StartsWith(aggregateId.ToString(), StringComparison.InvariantCultureIgnoreCase))
                 .Select(x => x.Split('.').LastOrDefault())
                 .Select(x => int.TryParse(x, NumberStyles.Integer, CultureInfo.InvariantCulture, out int version) ? version : -1)
                 .Where(x => x <= maxVersion)
