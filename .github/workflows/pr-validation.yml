@@ -32,7 +32,7 @@ jobs:
         run: dotnet build src/EventSourcing.sln --configuration Release --no-restore
 
       - name: Test
-        run: dotnet test src/EventSourcing.sln --configuration Release --no-build --verbosity normal
+        run: dotnet test src/EventSourcing.sln --configuration Release --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx"
 
       - name: Upload test results
         if: always()
@@ -40,4 +40,5 @@ jobs:
         with:
           name: test-results
           path: '**/TestResults/*.trx'
+          if-no-files-found: warn
 

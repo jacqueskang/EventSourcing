@@ -68,7 +68,15 @@ jobs:
         run: dotnet build src/EventSourcing.sln --configuration Release --no-restore
 
       - name: Run tests
-        run: dotnet test src/EventSourcing.sln --configuration Release --no-build --verbosity normal
+        run: dotnet test src/EventSourcing.sln --configuration Release --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx"
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-test-results
+          path: '**/TestResults/*.trx'
+          if-no-files-found: warn
 
       - name: Pack NuGet packages
         run: |
