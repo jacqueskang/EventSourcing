@@ -1,9 +1,10 @@
 using JKang.EventSourcing.Persistence;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Samples.Domain;
 using Samples.Persistence;
 using Samples.WebApp.Data;
@@ -23,15 +24,7 @@ namespace Samples.WebApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
-
-
-            services.AddMvc();
+            services.AddRazorPages();
 
             services
                 .AddScoped<IGiftCardRepository, GiftCardRepository>()
@@ -54,12 +47,16 @@ namespace Samples.WebApp
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(
             IApplicationBuilder app,
-            IEventStoreInitializer<GiftCard, Guid> eventStoreInitializer)
+            IWebHostEnvironment env)
         {
+            var eventStoreInitializer = app.ApplicationServices.GetRequiredService<IEventStoreInitializer<GiftCard, Guid>>();
             eventStoreInitializer.EnsureCreatedAsync().Wait();
 
-            app.UseExceptionHandler("/Error");
-            app.UseHsts();
+            if (!env.IsDevelopment())
+            {
+                app.UseExceptionHandler("/Error");
+                app.UseHsts();
+            }
 
             app.UseHttpsRedirection();
 
