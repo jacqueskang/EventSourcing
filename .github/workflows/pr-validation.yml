@@ -21,7 +21,9 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
 
-      - name: Diagnostic — environment & dotnet info
+      - name: Diagnostic — environment & dotnet info (Linux/macOS)
+        if: runner.os != 'Windows'
+        shell: bash
         run: |
           echo "Runner OS: $RUNNER_OS"
           dotnet --info
@@ -30,6 +32,18 @@ jobs:
           dotnet nuget locals all --list
           ls -la
           ls -la src || true
+
+      - name: Diagnostic — environment & dotnet info (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Write-Output "Runner OS: $env:RUNNER_OS"
+          dotnet --info
+          dotnet --list-sdks
+          dotnet --list-runtimes
+          dotnet nuget locals all --list
+          Get-ChildItem -Force |
+          if (Test-Path src) { Get-ChildItem src -Force } else { Write-Output "No src folder" }
 
       - name: Cache NuGet packages
         uses: actions/cache@v4
